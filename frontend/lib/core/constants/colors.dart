@@ -11,5 +11,7 @@ class AppColours {
   //White mixed colours
   static Color getWhiteMix(Color color, double opacity) {
     return Color.alphaBlend(Colors.white.withOpacity(opacity), color);
+
+    //ex:color: AppColours.getWhiteMix(AppColours.deepMagenta, 0.2)
   }
 }
