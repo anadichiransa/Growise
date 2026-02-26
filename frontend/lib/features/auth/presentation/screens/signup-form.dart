@@ -641,3 +641,256 @@ class _CustomDatePickerDialog extends StatefulWidget {
   @override
   State<_CustomDatePickerDialog> createState() => _CustomDatePickerDialogState();
 }
+
+class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
+  late TextEditingController _dateController;
+  DateTime? _selectedDate;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _dateController = TextEditingController();
+    _selectedDate = widget.initialDate;
+  }
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    super.dispose();
+  }
+
+  void _validateAndSetDate(String value) {
+    setState(() {
+      _errorMessage = null;
+    });
+
+    String digitsOnly = value.replaceAll(RegExp(r'[^\d]'), '');
+
+    if (digitsOnly.length == 8) {
+      try {
+        int day = int.parse(digitsOnly.substring(0, 2));
+        int month = int.parse(digitsOnly.substring(2, 4));
+        int year = int.parse(digitsOnly.substring(4, 8));
+
+        // Validate day
+        if (day < 1 || day > 31) {
+          setState(() {
+            _errorMessage = 'Day must be between 01 and 31';
+          });
+          return;
+        }
+
+        // Validate month
+        if (month < 1 || month > 12) {
+          setState(() {
+            _errorMessage = 'Month must be between 01 and 12';
+          });
+          return;
+        }
+
+        // Validate year
+        int currentYear = DateTime.now().year;
+        if (year < 2000 || year > currentYear) {
+          setState(() {
+            _errorMessage = 'Year must be between 2000 and $currentYear';
+          });
+          return;
+        }
+
+        // Try to create a valid date
+        DateTime parsedDate = DateTime(year, month, day);
+
+        // Check if the date is valid (e.g., not Feb 30)
+        if (parsedDate.day != day || parsedDate.month != month || parsedDate.year != year) {
+          setState(() {
+            _errorMessage = 'Invalid date. Please check the day and month.';
+          });
+          return;
+        }
+
+        // Check if date is in the future
+        if (parsedDate.isAfter(DateTime.now())) {
+          setState(() {
+            _errorMessage = 'Date cannot be in the future';
+          });
+          return;
+        }
+
+        // If all validations pass
+        setState(() {
+          _selectedDate = parsedDate;
+          _errorMessage = null;
+        });
+      } catch (e) {
+        setState(() {
+          _errorMessage = 'Invalid date format';
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: const Color(0xFF2D1F4A),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Select date',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _selectedDate != null
+                  ? DateFormat('EEE, MMM d').format(_selectedDate!)
+                  : 'No date selected',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Date Input Field
+            Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF3D2F54),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: _errorMessage != null
+                      ? Colors.red
+                      : const Color(0xFFE8B36A),
+                  width: 2,
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Enter Date',
+                    style: TextStyle(
+                      color: Color(0xFFE8B36A),
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  TextField(
+                    controller: _dateController,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    keyboardType: TextInputType.number,
+                    maxLength: 10,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      _DialogDateFormatter(),
+                    ],
+                    onChanged: _validateAndSetDate,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                      counterText: '',
+                      hintText: 'dd/mm/yyyy',
+                      hintStyle: TextStyle(
+                        color: Color(0xFF6B5A7F),
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (_errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  _errorMessage!,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 24),
+            // Buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(
+                      color: Color(0xFFE8B36A),
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                TextButton(
+                  onPressed: _selectedDate != null && _errorMessage == null
+                      ? () => Navigator.of(context).pop(_selectedDate)
+                      : null,
+                  child: Text(
+                    'OK',
+                    style: TextStyle(
+                      color: _selectedDate != null && _errorMessage == null
+                          ? const Color(0xFFE8B36A)
+                          : const Color(0xFF6B5A7F),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Simple date formatter for dialog input
+class _DialogDateFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    String digits = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
+    
+    if (digits.length > 8) {
+      digits = digits.substring(0, 8);
+    }
+    
+    String formatted = '';
+    for (int i = 0; i < digits.length; i++) {
+      if (i == 2 || i == 4) {
+        formatted += '/';
+      }
+      formatted += digits[i];
+    }
+    
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
