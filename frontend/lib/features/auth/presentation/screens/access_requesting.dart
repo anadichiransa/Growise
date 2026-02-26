@@ -258,3 +258,59 @@ class _PermissionCard extends StatelessWidget {
     );
   }
 }
+// ─────────────────────────────────────────────
+// Decorative wavy swirl lines (top-right)
+// ─────────────────────────────────────────────
+class _SwirlPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final colors = [
+      const Color(0xFF9B4FBF).withOpacity(0.55),
+      const Color(0xFFB565D8).withOpacity(0.45),
+      const Color(0xFF7E3AA0).withOpacity(0.50),
+      const Color(0xFFC070E0).withOpacity(0.35),
+      const Color(0xFF6B2E8F).withOpacity(0.40),
+      const Color(0xFFD885F0).withOpacity(0.28),
+    ];
+
+    for (int i = 0; i < colors.length; i++) {
+      final paint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2
+        ..strokeCap = StrokeCap.round
+        ..color = colors[i];
+
+      _drawCurve(canvas, size, paint, i.toDouble());
+    }
+  }
+
+  void _drawCurve(
+      Canvas canvas, Size size, Paint paint, double offset) {
+    final path = Path();
+    final sx = size.width * (0.15 + offset * 0.13);
+    const sy = 10.0;
+
+    path.moveTo(sx, sy);
+    path.cubicTo(
+      sx + 55 + offset * 5,
+      sy + 35,
+      sx + 15 + offset * 3,
+      sy + 90 + offset * 8,
+      sx - 25 + offset * 2,
+      sy + 140 + offset * 10,
+    );
+    path.cubicTo(
+      sx - 55 + offset * 3,
+      sy + 175 + offset * 5,
+      sx + 25 + offset * 4,
+      sy + 210 + offset * 6,
+      sx + 5 + offset * 2,
+      sy + 245 + offset * 3,
+    );
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
