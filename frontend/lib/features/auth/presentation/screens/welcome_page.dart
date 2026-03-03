@@ -32,6 +32,16 @@ class OnboradingScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(height: 20),
+            Text(
+              "Your digital companion for tracking development, health, and hapiness for every child",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white.withOpacity(0.7),
+              ),
+            ),
+
             Center(
               child: CircleAvatar(
                 radius: 60,
