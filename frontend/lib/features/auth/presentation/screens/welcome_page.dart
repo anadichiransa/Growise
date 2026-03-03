@@ -12,6 +12,15 @@ class OnboradingScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 40),
+            const Text(
+              "GROWISE",
+              style: TextStyle(
+                color: Color(0xFFE2A673),
+                letterSpacing: 2,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             Center(
               child: CircleAvatar(
                 radius: 60,
