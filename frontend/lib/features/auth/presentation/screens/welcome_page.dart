@@ -23,7 +23,7 @@ class OnboradingScreen extends StatelessWidget {
                 height: 1.1,
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 45),
             const Text(
               "GROWISE",
               style: TextStyle(
