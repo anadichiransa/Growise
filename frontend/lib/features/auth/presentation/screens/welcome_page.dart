@@ -38,7 +38,7 @@ class OnboradingScreen extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withOpacity(0.8),
               ),
             ),
             const SizedBox(height: 60),
