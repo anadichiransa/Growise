@@ -63,4 +63,21 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
+  Widget _buildLabel(String text) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: accentGold,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
 }
