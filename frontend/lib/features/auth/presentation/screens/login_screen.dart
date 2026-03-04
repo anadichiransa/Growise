@@ -95,6 +95,14 @@ class _LoginScreenState extends State<LoginScreen> {
         filled: true,
         fillColor: fieldBg,
         prefixIcon: Icon(icon, color: Colors.white54),
+
+        suffixIcon: isPassword
+        ? IconButton (
+          icon: Icon(_isPasswordVisible ? Icons.visibility_off, color: Colors.white54),
+          onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+        )
+        :null,
+        
         hintText: hint,
         hintStyle: const TextStyle(color: Colors.white30),
         border: OutlineInputBorder(
