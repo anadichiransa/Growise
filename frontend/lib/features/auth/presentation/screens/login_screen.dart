@@ -14,10 +14,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   static const Color PrimaryBg = Color(0xFF1E0E35);
   static const Color accentGold = Color(0xFFB88E4B);
-  static const Color fieldBg = Color(0xFF33244D);
+  static const Color fieldBg = Color.fromARGB(255, 14, 12, 18);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Container());
+    return Scaffold(
+      backgroundColor: PrimaryBg,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+          child: Column(children: [const SizedBox(height: 80)]),
+        ),
+      ),
+    );
   }
 }
