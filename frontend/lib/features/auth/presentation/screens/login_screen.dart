@@ -49,6 +49,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+
+              const SizedBox(height: 10),
+              const Text(
+                "Sign in to access your child development\ntools and resources",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white70, fontSize: 14),
+              ),
+              const SizedBox(height: 40),
             ],
           ),
         ),
