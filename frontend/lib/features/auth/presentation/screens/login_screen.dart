@@ -125,6 +125,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 30),
+              Row(
+                children: [
+                  Expanded(child: _socialButton("Google", Icons.g_mobiledata)),
+                  const SizedBox(width: 20),
+                  Expanded(child: _socialButton("Apple", Icons.apple)),
+                ],
+              ),
+              const SizedBox(height: 40),
             ],
           ),
         ),
