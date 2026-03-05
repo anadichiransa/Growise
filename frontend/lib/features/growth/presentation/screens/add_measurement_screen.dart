@@ -352,3 +352,88 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
       ),
     );
   }
+
+    Widget _inputField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    required String? Function(String?) validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      style: const TextStyle(color: Colors.white, fontSize: 16),
+      validator: validator,
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.white38),
+        prefixIcon: Icon(icon, color: const Color(0xFFD9A577), size: 22),
+        filled: true,
+        fillColor: const Color(0xFF3B1B45),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        errorStyle: const TextStyle(color: Color(0xFFFF7070)),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide:
+              const BorderSide(color: Color(0xFFD9A577), width: 1.5),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      ),
+    );
+  }
+
+  Widget _radioOption(String label, String value, IconData icon) {
+    final selected = _measuredAt == value;
+    return GestureDetector(
+      onTap: () => setState(() => _measuredAt = value),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+        decoration: BoxDecoration(
+          color: selected
+              ? const Color(0xFFD9A577).withOpacity(0.15)
+              : const Color(0xFF3B1B45),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: selected
+                ? const Color(0xFFD9A577)
+                : Colors.transparent,
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon,
+                color: selected ? const Color(0xFFD9A577) : Colors.white38,
+                size: 20),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: selected ? const Color(0xFFD9A577) : Colors.white54,
+                fontWeight:
+                    selected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _circularIconButton(
+      IconData icon, Color bgColor, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
+        child: Icon(icon, color: Colors.white, size: 24),
+      ),
+    );
+  }
+}
