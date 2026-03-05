@@ -57,6 +57,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(color: Colors.white70, fontSize: 14),
               ),
               const SizedBox(height: 40),
+
+              _buildLabel("EMAIL / USERNAME"),
+              _buildTextField(
+                controller: _emailController,
+                hint: "Enter username",
+                icon: Icons.person_2_outlined,
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -97,12 +105,16 @@ class _LoginScreenState extends State<LoginScreen> {
         prefixIcon: Icon(icon, color: Colors.white54),
 
         suffixIcon: isPassword
-        ? IconButton (
-          icon: Icon(_isPasswordVisible ? Icons.visibility_off, color: Colors.white54),
-          onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
-        )
-        :null,
-        
+            ? IconButton(
+                icon: Icon(
+                  _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.white54,
+                ),
+                onPressed: () =>
+                    setState(() => _isPasswordVisible = !_isPasswordVisible),
+              )
+            : null,
+
         hintText: hint,
         hintStyle: const TextStyle(color: Colors.white30),
         border: OutlineInputBorder(
