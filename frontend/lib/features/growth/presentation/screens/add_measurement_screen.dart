@@ -16,7 +16,7 @@ class AddMeasurementScreen extends StatefulWidget {
     required this.dateOfBirth,
   });
 
-    @override
+  @override
   State<AddMeasurementScreen> createState() => _AddMeasurementScreenState();
 }
 
@@ -353,7 +353,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
     );
   }
 
-    Widget _inputField({
+  Widget _inputField({
     required TextEditingController controller,
     required String hint,
     required IconData icon,
