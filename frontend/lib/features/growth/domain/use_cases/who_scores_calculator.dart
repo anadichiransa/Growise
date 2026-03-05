@@ -101,4 +101,81 @@ class WhoScoresCalculator {
     if (weightZ != null && weightZ > 2) return 'overweight';
     return 'healthy';
   }
+
+  String _buildSummary(
+    String category,
+    double? weightZ,
+    double? heightZ,
+    String childName,
+  ) {
+    switch (category) {
+      case 'healthy':
+        return 'Great news! $childName\'s growth is healthy. '
+            'Both weight and height are within the normal range '
+            'according to WHO standards.';
+      case 'stunting':
+        return '$childName\'s height is below expected for their age '
+            '(z-score: ${heightZ?.toStringAsFixed(1)}). '
+            'This may indicate chronic undernutrition. '
+            'Please consult your PHM for guidance.';
+      case 'severe_stunting':
+        return '⚠️ $childName\'s height is significantly below expected '
+            '(z-score: ${heightZ?.toStringAsFixed(1)}). '
+            'Please consult your doctor immediately.';
+      case 'wasting':
+        return '$childName\'s weight is below expected for their age '
+            '(z-score: ${weightZ?.toStringAsFixed(1)}). '
+            'This may indicate recent illness or acute malnutrition. '
+            'Please consult your PHM.';
+      case 'severe_wasting':
+        return '⚠️ $childName\'s weight is significantly below expected '
+            '(z-score: ${weightZ?.toStringAsFixed(1)}). '
+            'Please consult your doctor immediately.';
+      case 'overweight':
+        return '$childName\'s weight is above expected for their age '
+            '(z-score: ${weightZ?.toStringAsFixed(1)}). '
+            'Focus on healthy, balanced meals.';
+      default:
+        return 'Growth data analysed.';
+    }
+  }
+
+  List<String> _getRecommendations(String category) {
+    switch (category) {
+      case 'healthy':
+        return [
+          'Continue with current feeding routine',
+          'Maintain regular check-ups',
+          'Ensure balanced, nutritious meals',
+        ];
+      case 'stunting':
+      case 'severe_stunting':
+        return [
+          'Consult PHM or paediatrician within 48 hours',
+          'Increase meal frequency to 5–6 times daily',
+          'Focus on protein-rich foods (eggs, dhal, fish)',
+          'Use the meal planner for nutrient-dense recipes',
+          'Monitor growth weekly',
+        ];
+      case 'wasting':
+      case 'severe_wasting':
+        return [
+          'Consult doctor immediately',
+          'Increase calorie intake',
+          'Add energy-dense foods (coconut oil, nut pastes)',
+          'Monitor weight every 3 days',
+          'Rule out underlying illness',
+        ];
+      case 'overweight':
+        return [
+          'Reduce sugary drinks and snacks',
+          'Increase physical activity (age-appropriate)',
+          'Focus on whole foods (fruits, vegetables)',
+          'Avoid processed foods',
+          'Consult a nutritionist if it continues',
+        ];
+      default:
+        return [];
+    }
+  }
 }
