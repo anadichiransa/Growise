@@ -105,6 +105,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 20),
+              const Text("OR", style: TextStyle(color: Colors.white30)),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: OutlinedButton(
+                  onPressed: () {},
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: accentGold),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    "Sign up",
+                    style: TextStyle(color: accentGold, fontSize: 18),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
