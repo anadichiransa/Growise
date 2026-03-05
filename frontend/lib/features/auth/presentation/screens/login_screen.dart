@@ -65,6 +65,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 icon: Icons.person_2_outlined,
               ),
               const SizedBox(height: 20),
+
+              _buildLabel("PASSWORD"),
+              _buildTextField(
+                controller: _passwordController,
+                hint: "Enter Password",
+                icon: Icons.lock_outline,
+                isPassword: true,
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {},
+                  child: const Text(
+                    "Forgot Password?",
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
