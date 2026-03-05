@@ -21,7 +21,7 @@ class GrowthChartScreen extends StatefulWidget {
     required this.dateOfBirth,
   });
 
-    @override
+  @override
   State<GrowthChartScreen> createState() => _GrowthChartScreenState();
 }
 
