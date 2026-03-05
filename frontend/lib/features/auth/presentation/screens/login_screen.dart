@@ -184,4 +184,22 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
+  Widget _socialButton(String label, IconData icon) {
+    return Container(
+      height: 50,
+      decoration: BoxDecoration(
+        color: fieldBg,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color:Colors.white),
+          const SizedBox(width:8),
+          Text(label, style:const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+        ],
+      ),
+    );
+
 }
