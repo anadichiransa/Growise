@@ -1,21 +1,26 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 app = FastAPI(title="GROWISE Backend")
 
-# This allows your Flutter app to communicate with the FastAPI server
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# 1. Simple test to see if libraries are the problem
+try:
+    import firebase_admin
+    from firebase_admin import firestore
+    LIB_STATUS = "Libraries OK"
+except ImportError:
+    LIB_STATUS = "Libraries Missing"
 
-@app.get("/")
-def read_root():
-    return {"status": "Growise Server is Online", "version": "1.0.0"}
-
-@app.get("/health")
-def health_check():
-    return {"status": "healthy"}
+@app.get("/health/db")
+def health_check_db():
+    # We will try to import the db here inside the function 
+    # so the whole app doesn't crash on startup
+    try:
+        from app.core.database import db
+        if db is not None:
+            return {"status": "success", "database": "connected", "lib": LIB_STATUS}
+        else:
+            return {"status": "error", "message": "DB object is None. Check terminal logs."}
+    except Exception as e:
+        return {"status": "crash", "error_details": str(e)}
