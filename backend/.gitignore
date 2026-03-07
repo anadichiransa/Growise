@@ -1,0 +1,7 @@
+# Firebase & Secrets
+backend/firebase-admin-key.json
+backend/.env
+
+# Python artifacts
+backend/__pycache__/
+*.pyc
