@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
+from fastapi import FastAPI
+from app.api.v1.auth import router as auth_router
 
 app = FastAPI(title="GROWISE Backend")
 
@@ -11,6 +13,9 @@ try:
     LIB_STATUS = "Libraries OK"
 except ImportError:
     LIB_STATUS = "Libraries Missing"
+
+
+app.include_router(auth_router, prefix="/api/v1/auth", tags=["Authentication"])
 
 @app.get("/health/db")
 def health_check_db():
