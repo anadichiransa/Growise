@@ -114,7 +114,11 @@ class SupportCenterScreen extends StatefulWidget {
 
 class _SupportCenterScreenState extends State<SupportCenterScreen>
     with TickerProviderStateMixin {
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocus = FocusNode();
   late final AnimationController _entranceCtrl;
+
+  List<FaqItem> _filteredFaqs = _allFaqs;
 
   @override
   void initState() {
@@ -128,7 +132,21 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
   @override
   void dispose() {
     _entranceCtrl.dispose();
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    _searchFocus.dispose();
     super.dispose();
+  }
+
+  void _onSearchChanged() {
+    final query = _searchController.text.toLowerCase().trim();
+    setState(() {
+      _filteredFaqs = query.isEmpty
+          ? _allFaqs
+          : _allFaqs
+                .where((f) => f.title.toLowerCase().contains(query))
+                .toList();
+    });
   }
 
   Animation<double> _stagger(int index) {
@@ -149,24 +167,65 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
       body: Stack(
         children: [
           const _BackgroundGlow(),
-
           SafeArea(
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
               children: [
                 _FadeSlide(
                   animation: _stagger(0),
+                  child: const _SectionHeading(),
+                ),
+                const SizedBox(height: 14),
+
+                _FadeSlide(
+                  animation: _stagger(1),
+                  child: _SearchBar(
+                    controller: _searchController,
+                    focusNode: _searchFocus,
+                  ),
+                ),
+                const SizedBox(height: 28),
+
+                _FadeSlide(
+                  animation: _stagger(2),
+                  child: const _LabelRow(label: 'CONTACT US'),
+                ),
+                const SizedBox(height: 12),
+                _FadeSlide(
+                  animation: _stagger(3),
+                  child: const _ContactUsRow(),
+                ),
+                const SizedBox(height: 28),
+
+                _FadeSlide(
+                  animation: _stagger(4),
                   child: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 40),
+                    padding: EdgeInsets.symmetric(vertical: 16),
                     child: Text(
-                      'Sections coming in next commits…',
+                      'FAQ section',
                       style: TextStyle(
                         color: AppColors.textSecondary,
-                        fontSize: 14,
+                        fontSize: 13,
                       ),
                     ),
                   ),
                 ),
+                const SizedBox(height: 28),
+
+                _FadeSlide(
+                  animation: _stagger(5),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Text(
+                      'Community & Footer',
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -253,6 +312,377 @@ class _GrowiseAppBar extends StatelessWidget implements PreferredSizeWidget {
             colors: [AppColors.background, Colors.transparent],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _SectionHeading extends StatelessWidget {
+  const _SectionHeading();
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: const TextSpan(
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w800,
+          height: 1.25,
+        ),
+        children: [
+          TextSpan(
+            text: 'How can we ',
+            style: TextStyle(color: AppColors.textPrimary),
+          ),
+          TextSpan(
+            text: 'help?',
+            style: TextStyle(color: AppColors.accent),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchBar extends StatefulWidget {
+  final TextEditingController controller;
+  final FocusNode focusNode;
+
+  const _SearchBar({required this.controller, required this.focusNode});
+
+  @override
+  State<_SearchBar> createState() => _SearchBarState();
+}
+
+class _SearchBarState extends State<_SearchBar> {
+  bool _focused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.focusNode.addListener(() {
+      setState(() => _focused = widget.focusNode.hasFocus);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      height: 52,
+      decoration: BoxDecoration(
+        color: AppColors.inputBackground,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: _focused ? AppColors.inputBorderFocused : Colors.transparent,
+          width: 1.5,
+        ),
+        boxShadow: _focused
+            ? [
+                BoxShadow(
+                  color: AppColors.teal.withOpacity(0.25),
+                  blurRadius: 12,
+                  spreadRadius: 1,
+                ),
+              ]
+            : [],
+      ),
+      child: TextField(
+        controller: widget.controller,
+        focusNode: widget.focusNode,
+        style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 15),
+          prefixIcon: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: Icon(
+              Icons.search_rounded,
+              key: ValueKey(_focused),
+              color: _focused ? AppColors.teal : AppColors.textSecondary,
+              size: 22,
+            ),
+          ),
+          hintText: 'Search for help…',
+          hintStyle: const TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 14,
+          ),
+          suffixIcon: ValueListenableBuilder<TextEditingValue>(
+            valueListenable: widget.controller,
+            builder: (_, value, __) {
+              if (value.text.isEmpty) return const SizedBox.shrink();
+              return GestureDetector(
+                onTap: widget.controller.clear,
+                child: const Icon(
+                  Icons.close_rounded,
+                  color: AppColors.textSecondary,
+                  size: 18,
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LabelRow extends StatelessWidget {
+  final String label;
+  final String? trailing;
+  const _LabelRow({required this.label, this.trailing});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppColors.sectionLabel,
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1.4,
+          ),
+        ),
+        if (trailing != null)
+          GestureDetector(
+            onTap: () {},
+            child: Text(
+              trailing!,
+              style: const TextStyle(
+                color: AppColors.teal,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _ContactUsRow extends StatelessWidget {
+  const _ContactUsRow();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      children: [
+        Expanded(
+          child: _ContactTile(
+            icon: Icons.phone_rounded,
+            label: 'Helpline',
+            subtitle: '+94 11 234…',
+            iconColor: AppColors.accent,
+            isLive: false,
+          ),
+        ),
+        SizedBox(width: 10),
+        Expanded(
+          child: _ContactTile(
+            icon: Icons.email_outlined,
+            label: 'Email',
+            subtitle: 'support@…',
+            iconColor: AppColors.accent,
+            isLive: false,
+          ),
+        ),
+        SizedBox(width: 10),
+        Expanded(
+          child: _ContactTile(
+            icon: Icons.chat_bubble_outline_rounded,
+            label: 'Live Chat',
+            subtitle: 'Online',
+            iconColor: AppColors.teal,
+            isLive: true,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ContactTile extends StatefulWidget {
+  final IconData icon;
+  final String label;
+  final String subtitle;
+  final Color iconColor;
+  final bool isLive;
+
+  const _ContactTile({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+    required this.iconColor,
+    required this.isLive,
+  });
+
+  @override
+  State<_ContactTile> createState() => _ContactTileState();
+}
+
+class _ContactTileState extends State<_ContactTile>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _scaleCtrl;
+  late final Animation<double> _scaleAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+      reverseDuration: const Duration(milliseconds: 200),
+    );
+    _scaleAnim = Tween<double>(
+      begin: 1.0,
+      end: 0.94,
+    ).animate(CurvedAnimation(parent: _scaleCtrl, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _scaleCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) {
+        HapticFeedback.lightImpact();
+        _scaleCtrl.forward();
+      },
+      onTapUp: (_) => _scaleCtrl.reverse(),
+      onTapCancel: () => _scaleCtrl.reverse(),
+      onTap: () {},
+      child: ScaleTransition(
+        scale: _scaleAnim,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
+          decoration: BoxDecoration(
+            color: AppColors.tileSurface,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(widget.icon, color: widget.iconColor, size: 26),
+              const SizedBox(height: 10),
+              Text(
+                widget.label,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (widget.isLive) ...[
+                    const _PulseDot(),
+                    const SizedBox(width: 4),
+                  ],
+                  Text(
+                    widget.subtitle,
+                    style: TextStyle(
+                      color: widget.isLive
+                          ? AppColors.teal
+                          : AppColors.textSecondary,
+                      fontSize: 11,
+                      fontWeight: widget.isLive
+                          ? FontWeight.w600
+                          : FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PulseDot extends StatefulWidget {
+  const _PulseDot();
+
+  @override
+  State<_PulseDot> createState() => _PulseDotState();
+}
+
+class _PulseDotState extends State<_PulseDot>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _scaleAnim;
+  late final Animation<double> _opacityAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
+
+    _scaleAnim = Tween<double>(
+      begin: 1.0,
+      end: 2.0,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+
+    _opacityAnim = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 12,
+      height: 12,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          AnimatedBuilder(
+            animation: _ctrl,
+            builder: (_, __) => Opacity(
+              opacity: _opacityAnim.value,
+              child: Transform.scale(
+                scale: _scaleAnim.value,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.teal,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            width: 7,
+            height: 7,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.teal,
+            ),
+          ),
+        ],
       ),
     );
   }
