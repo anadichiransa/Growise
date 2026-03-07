@@ -40,9 +40,15 @@ class AuthService:
 
         db.collection("users").document(user_id).set(user_dict)
 
+        #remove hased_password before returning to the frontend for security
+
+        del user_dict["hashed_password"]
+        return user_dict
 
 
 
 
 
-        
+
+
+
