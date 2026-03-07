@@ -46,6 +46,15 @@ class AuthService:
         return user_dict
 
 
+    @staticmethod
+    def login_user(email, password):
+        user_query = db.collection("users").where("email", "==", email).get()
+
+        #checking the user by email
+        if not user_query:
+            return {"error": "Invalid email or password"}
+        
+
 
 
 
