@@ -117,6 +117,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocus = FocusNode();
   late final AnimationController _entranceCtrl;
+  int _selectedNavIndex = 3;
 
   bool _faqsLoading = true;
   List<FaqItem> _filteredFaqs = _allFaqs;
@@ -234,6 +235,11 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
             ),
           ),
         ],
+      ),
+
+      bottomNavigationBar: _GrowiseBottomNav(
+        selectedIndex: _selectedNavIndex,
+        onTap: (i) => setState(() => _selectedNavIndex = i),
       ),
     );
   }
@@ -1096,8 +1102,6 @@ class _CommunityCardState extends State<_CommunityCard>
   }
 }
 
-// ── _Footer ───────────────────────────────────────────────────
-// Horizontal divider, then Privacy · Terms · Safety links, then copyright.
 class _Footer extends StatelessWidget {
   const _Footer();
 
@@ -1148,4 +1152,114 @@ class _Footer extends StatelessWidget {
       style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
     ),
   );
+}
+
+const List<_NavMeta> _navItems = [
+  _NavMeta(Icons.home_rounded, Icons.home_outlined, 'Home'),
+  _NavMeta(
+    Icons.monitor_heart_rounded,
+    Icons.monitor_heart_outlined,
+    'Tracker',
+  ),
+  _NavMeta(Icons.school_rounded, Icons.school_outlined, 'Education'),
+  _NavMeta(
+    Icons.support_agent_rounded,
+    Icons.support_agent_outlined,
+    'Support',
+  ),
+];
+
+class _NavMeta {
+  final IconData activeIcon;
+  final IconData inactiveIcon;
+  final String label;
+  const _NavMeta(this.activeIcon, this.inactiveIcon, this.label);
+}
+
+class _GrowiseBottomNav extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onTap;
+  const _GrowiseBottomNav({required this.selectedIndex, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.navBackground,
+        border: Border(top: BorderSide(color: Color(0xFF2E1A72), width: 1)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 64,
+          child: Row(
+            children: List.generate(
+              _navItems.length,
+              (i) => Expanded(
+                child: _NavItem(
+                  meta: _navItems[i],
+                  isSelected: i == selectedIndex,
+                  onTap: () => onTap(i),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  final _NavMeta meta;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _NavItem({
+    required this.meta,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isSelected ? AppColors.teal : AppColors.textSecondary;
+
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutBack,
+            width: isSelected ? 48 : 0,
+            height: isSelected ? 32 : 0,
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.tealDim : Colors.transparent,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: isSelected
+                ? Icon(meta.activeIcon, color: AppColors.teal, size: 22)
+                : null,
+          ),
+          if (!isSelected) ...[Icon(meta.inactiveIcon, color: color, size: 22)],
+          const SizedBox(height: 3),
+          AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 200),
+            style: TextStyle(
+              color: color,
+              fontSize: 10,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+            ),
+            child: Text(meta.label),
+          ),
+        ],
+      ),
+    );
+  }
 }
