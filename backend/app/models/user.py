@@ -20,4 +20,7 @@ class UserResponse(BaseModel):
 class UserInDB(UserResponse):
     hashed_password: str
 
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
 
