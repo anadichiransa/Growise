@@ -54,7 +54,20 @@ class AuthService:
         if not user_query:
             return {"error": "Invalid email or password"}
         
+        #Getting user data from the document
+        user_doc = user_query[0]
+        user_data = user_doc.to_dict()
 
+        #Check whether the password matches to the hashed password in DB
+        is_valid = pwd_context.verify(password, user_data["hashed_password"])
+
+        if not is_valid:
+            return {"error" : "Invalid email or password"}
+        
+        #Remove the sensitive password before returning data to the API
+        del user_data["hashed_password"]
+        return user_data
+    
 
 
 
