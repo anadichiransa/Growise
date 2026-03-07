@@ -24,7 +24,21 @@ class AuthService:
         user_id = str(uuid.uuid4())
         hashed_pwd = AuthService.hash_password(user_data.password)
 
+        #Prepare data for firestore
         
+        user_dict = {
+            "uid": user_id,
+            "full_name" : user_data.full_name,
+            "email": user_data.email,
+            "phone_number": user_data.phone_number,
+            "language_preferences": user_data.language_preference,
+            "hashed_password": hashed_pwd,
+            "created_at": datetime.utcnow()
+        }
+
+        #save to firestore
+
+        db.collection("users").document(user_id).set(user_dict)
 
 
 
