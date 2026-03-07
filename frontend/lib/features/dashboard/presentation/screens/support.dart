@@ -118,6 +118,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
   final FocusNode _searchFocus = FocusNode();
   late final AnimationController _entranceCtrl;
 
+  bool _faqsLoading = true;
   List<FaqItem> _filteredFaqs = _allFaqs;
 
   @override
@@ -127,6 +128,12 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     )..forward();
+
+    Future.delayed(const Duration(milliseconds: 1100), () {
+      if (mounted) setState(() => _faqsLoading = false);
+    });
+
+    _searchController.addListener(_onSearchChanged);
   }
 
   @override
@@ -199,25 +206,23 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
 
                 _FadeSlide(
                   animation: _stagger(4),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    child: Text(
-                      'FAQ section',
-                      style: TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
+                  child: const _LabelRow(label: 'FAQS', trailing: 'View All'),
+                ),
+                const SizedBox(height: 12),
+                _FadeSlide(
+                  animation: _stagger(5),
+                  child: _faqsLoading
+                      ? const _FaqShimmer()
+                      : _FaqList(faqs: _filteredFaqs),
                 ),
                 const SizedBox(height: 28),
 
                 _FadeSlide(
-                  animation: _stagger(5),
+                  animation: _stagger(6),
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 16),
                     child: Text(
-                      'Community & Footer',
+                      'Community & Footer — coming in commit 5',
                       style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 13,
@@ -684,6 +689,261 @@ class _PulseDotState extends State<_PulseDot>
           ),
         ],
       ),
+    );
+  }
+}
+
+class _FaqList extends StatelessWidget {
+  final List<FaqItem> faqs;
+  const _FaqList({required this.faqs});
+
+  @override
+  Widget build(BuildContext context) {
+    if (faqs.isEmpty) {
+      return const _EmptySearchState();
+    }
+    return Column(
+      children: [
+        for (int i = 0; i < faqs.length; i++) ...[
+          _FaqTile(item: faqs[i]),
+          if (i < faqs.length - 1) const SizedBox(height: 10),
+        ],
+      ],
+    );
+  }
+}
+
+class _FaqTile extends StatefulWidget {
+  final FaqItem item;
+  const _FaqTile({required this.item});
+
+  @override
+  State<_FaqTile> createState() => _FaqTileState();
+}
+
+class _FaqTileState extends State<_FaqTile>
+    with SingleTickerProviderStateMixin {
+  bool _expanded = false;
+
+  late final AnimationController _arrowCtrl;
+  late final Animation<double> _arrowAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _arrowCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
+    _arrowAnim = Tween<double>(
+      begin: 0.0,
+      end: 0.5,
+    ).animate(CurvedAnimation(parent: _arrowCtrl, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _arrowCtrl.dispose();
+    super.dispose();
+  }
+
+  void _toggle() {
+    HapticFeedback.selectionClick();
+    setState(() => _expanded = !_expanded);
+    _expanded ? _arrowCtrl.forward() : _arrowCtrl.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: _toggle,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          color: _expanded
+              ? AppColors.tileSurfacePressed
+              : AppColors.tileSurface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: _expanded ? AppColors.tealDim : Colors.transparent,
+            width: 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: AppColors.accent.withOpacity(0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      widget.item.icon,
+                      color: AppColors.accent,
+                      size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      widget.item.title,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  RotationTransition(
+                    turns: _arrowAnim,
+                    child: const Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: AppColors.textSecondary,
+                      size: 22,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              child: _expanded
+                  ? Padding(
+                      padding: const EdgeInsets.only(
+                        left: 66,
+                        right: 16,
+                        bottom: 16,
+                      ),
+                      child: Text(
+                        widget.item.answer,
+                        style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 13,
+                          height: 1.55,
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptySearchState extends StatelessWidget {
+  const _EmptySearchState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 32),
+      decoration: BoxDecoration(
+        color: AppColors.tileSurface,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.search_off_rounded,
+            color: AppColors.textSecondary.withOpacity(0.5),
+            size: 40,
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'No results found',
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Try a different keyword',
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FaqShimmer extends StatefulWidget {
+  const _FaqShimmer();
+
+  @override
+  State<_FaqShimmer> createState() => _FaqShimmerState();
+}
+
+class _FaqShimmerState extends State<_FaqShimmer>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _shimmerAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
+    _shimmerAnim = Tween<double>(
+      begin: -1.0,
+      end: 2.0,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _shimmerAnim,
+      builder: (context, _) {
+        return Column(
+          children: List.generate(
+            3,
+            (i) => Padding(
+              padding: EdgeInsets.only(bottom: i < 2 ? 10 : 0),
+              child: Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: const [
+                      AppColors.shimmerBase,
+                      AppColors.shimmerHighlight,
+                      AppColors.shimmerBase,
+                    ],
+                    stops: [
+                      (_shimmerAnim.value - 0.3).clamp(0.0, 1.0),
+                      _shimmerAnim.value.clamp(0.0, 1.0),
+                      (_shimmerAnim.value + 0.3).clamp(0.0, 1.0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
