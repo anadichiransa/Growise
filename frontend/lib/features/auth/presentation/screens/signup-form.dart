@@ -3,8 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../../data/repositories/child_repository.dart';
-import '../../../data/models/child.dart';
+// Change line 6 to:
+import 'package:frontend/data/repositories/child_repository.dart';
+
+// Change line 7 to:
+import 'package:frontend/data/models/child.dart';
 
 void main() {
   runApp(const GrowiseApp());
@@ -31,23 +34,24 @@ class SignupFormScreen extends StatefulWidget {
   const SignupFormScreen({super.key});
 
   @override
-  State<SignupFormScreen> createState() =>
-      _SignupFormScreenState();
+  State<SignupFormScreen> createState() => _SignupFormScreenState();
 }
 
-class _SignupFormScreenState
-    extends State<SignupFormScreen> {
+class _SignupFormScreenState extends State<SignupFormScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dayController = TextEditingController();
   final TextEditingController _monthController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
-  
+
   final FocusNode _dayFocus = FocusNode();
   final FocusNode _monthFocus = FocusNode();
   final FocusNode _yearFocus = FocusNode();
-  
+
+  final ChildRepository _childRepository = ChildRepository();
+
   String? _selectedGender;
   DateTime? _selectedDate;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -122,8 +126,8 @@ class _SignupFormScreenState
   }
 
   void _validateDateFields() {
-    if (_dayController.text.isEmpty || 
-        _monthController.text.isEmpty || 
+    if (_dayController.text.isEmpty ||
+        _monthController.text.isEmpty ||
         _yearController.text.isEmpty) {
       return;
     }
@@ -154,7 +158,9 @@ class _SignupFormScreenState
       DateTime parsedDate = DateTime(year, month, day);
 
       // Check if date is valid
-      if (parsedDate.day != day || parsedDate.month != month || parsedDate.year != year) {
+      if (parsedDate.day != day ||
+          parsedDate.month != month ||
+          parsedDate.year != year) {
         _showSnackBar('Invalid date. Please check the day and month.');
         return;
       }
@@ -174,13 +180,15 @@ class _SignupFormScreenState
     }
   }
 
-  void _completeSetup() {
-    // Validate inputs
+  void _completeSetup() async {
+    // Existing validation
     if (_nameController.text.isEmpty) {
       _showSnackBar('Please enter child\'s name');
       return;
     }
-    if (_dayController.text.isEmpty || _monthController.text.isEmpty || _yearController.text.isEmpty) {
+    if (_dayController.text.isEmpty ||
+        _monthController.text.isEmpty ||
+        _yearController.text.isEmpty) {
       _showSnackBar('Please enter complete date of birth');
       return;
     }
@@ -191,14 +199,48 @@ class _SignupFormScreenState
 
     // Validate date one more time
     _validateDateFields();
-    
     if (_selectedDate == null) {
       _showSnackBar('Please enter a valid date');
       return;
     }
 
-    // TODO: Save data to Firebase
-    _showSnackBar('Setup completed successfully!');
+    // NEW: Show loading
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // NEW: Save to Firestore
+      final childId = await _childRepository.saveChild(
+        name: _nameController.text.trim(),
+        birthDate: _selectedDate!,
+        gender: _selectedGender!,
+      );
+
+      // Navigate to dashboard
+      if (mounted) {
+        // Show success message
+        _showSnackBar('Profile created successfully!');
+
+        // Wait a moment for user to see message
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Navigate to dashboard (replace this screen)
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      }
+    } catch (e) {
+      // Error handling
+      if (mounted) {
+        _showSnackBar('Error: ${e.toString()}');
+      }
+    } finally {
+      // Hide loading
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   void _showSnackBar(String message) {
@@ -227,10 +269,7 @@ class _SignupFormScreenState
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                      ),
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () {
                         // TODO: Navigate back
                       },
@@ -401,7 +440,9 @@ class _SignupFormScreenState
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: _completeSetup,
+                    onPressed: _isLoading
+                        ? null
+                        : _completeSetup, // ← Disable when loading
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE8B36A),
                       foregroundColor: const Color(0xFF1E1335),
@@ -410,20 +451,31 @@ class _SignupFormScreenState
                       ),
                       elevation: 0,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          'Complete Setup',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFF1E1335),
+                              ),
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Text(
+                                'Complete Setup',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Icon(Icons.check_circle_outline, size: 20),
+                            ],
                           ),
-                        ),
-                        SizedBox(width: 8),
-                        Icon(Icons.check_circle_outline, size: 20),
-                      ],
-                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -435,10 +487,7 @@ class _SignupFormScreenState
                     },
                     child: const Text(
                       'Skip for now',
-                      style: TextStyle(
-                        color: Color(0xFFB8B0C8),
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Color(0xFFB8B0C8), fontSize: 14),
                     ),
                   ),
                 ),
@@ -489,10 +538,7 @@ class _SignupFormScreenState
       decoration: BoxDecoration(
         color: const Color(0xFF2D1F4A),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFF3D2F54),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFF3D2F54), width: 1),
       ),
       child: TextField(
         controller: controller,
@@ -502,16 +548,10 @@ class _SignupFormScreenState
         keyboardType: keyboardType,
         inputFormatters: inputFormatters,
         onChanged: onChanged,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-        ),
+        style: const TextStyle(color: Colors.white, fontSize: 16),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: const TextStyle(
-            color: Color(0xFF6B5A7F),
-            fontSize: 16,
-          ),
+          hintStyle: const TextStyle(color: Color(0xFF6B5A7F), fontSize: 16),
           prefixIcon: Icon(
             prefixIcon,
             color: const Color(0xFF6B5A7F),
@@ -541,10 +581,7 @@ class _SignupFormScreenState
       decoration: BoxDecoration(
         color: const Color(0xFF2D1F4A),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFF3D2F54),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFF3D2F54), width: 1),
       ),
       child: TextField(
         controller: controller,
@@ -559,10 +596,7 @@ class _SignupFormScreenState
         ),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: const TextStyle(
-            color: Color(0xFF6B5A7F),
-            fontSize: 16,
-          ),
+          hintStyle: const TextStyle(color: Color(0xFF6B5A7F), fontSize: 16),
           border: InputBorder.none,
           counterText: '',
           contentPadding: const EdgeInsets.symmetric(
@@ -599,9 +633,7 @@ class _SignupFormScreenState
       child: Container(
         height: 56,
         decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFF4A3667)
-              : const Color(0xFF2D1F4A),
+          color: isSelected ? const Color(0xFF4A3667) : const Color(0xFF2D1F4A),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
@@ -638,12 +670,11 @@ class _SignupFormScreenState
 class _CustomDatePickerDialog extends StatefulWidget {
   final DateTime initialDate;
 
-  const _CustomDatePickerDialog({
-    required this.initialDate,
-  });
+  const _CustomDatePickerDialog({required this.initialDate});
 
   @override
-  State<_CustomDatePickerDialog> createState() => _CustomDatePickerDialogState();
+  State<_CustomDatePickerDialog> createState() =>
+      _CustomDatePickerDialogState();
 }
 
 class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
@@ -706,7 +737,9 @@ class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
         DateTime parsedDate = DateTime(year, month, day);
 
         // Check if the date is valid (e.g., not Feb 30)
-        if (parsedDate.day != day || parsedDate.month != month || parsedDate.year != year) {
+        if (parsedDate.day != day ||
+            parsedDate.month != month ||
+            parsedDate.year != year) {
           setState(() {
             _errorMessage = 'Invalid date. Please check the day and month.';
           });
@@ -738,9 +771,7 @@ class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: const Color(0xFF2D1F4A),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -785,10 +816,7 @@ class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
                 children: [
                   const Text(
                     'Enter Date',
-                    style: TextStyle(
-                      color: Color(0xFFE8B36A),
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Color(0xFFE8B36A), fontSize: 12),
                   ),
                   const SizedBox(height: 4),
                   TextField(
@@ -825,10 +853,7 @@ class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
                   _errorMessage!,
-                  style: const TextStyle(
-                    color: Colors.red,
-                    fontSize: 12,
-                  ),
+                  style: const TextStyle(color: Colors.red, fontSize: 12),
                 ),
               ),
             const SizedBox(height: 24),
@@ -840,10 +865,7 @@ class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
                   onPressed: () => Navigator.of(context).pop(),
                   child: const Text(
                     'Cancel',
-                    style: TextStyle(
-                      color: Color(0xFFE8B36A),
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(color: Color(0xFFE8B36A), fontSize: 16),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -879,11 +901,11 @@ class _DialogDateFormatter extends TextInputFormatter {
     TextEditingValue newValue,
   ) {
     String digits = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
-    
+
     if (digits.length > 8) {
       digits = digits.substring(0, 8);
     }
-    
+
     String formatted = '';
     for (int i = 0; i < digits.length; i++) {
       if (i == 2 || i == 4) {
@@ -891,12 +913,10 @@ class _DialogDateFormatter extends TextInputFormatter {
       }
       formatted += digits[i];
     }
-    
+
     return TextEditingValue(
       text: formatted,
       selection: TextSelection.collapsed(offset: formatted.length),
     );
-
-    
   }
 }
