@@ -18,6 +18,17 @@ class AuthService:
         user_ref = db.collection("users").where("email", "==", user_data.email).get()
         if len(user_ref) > 0:
             return {"error" : "Email already registered"}
+        
+        #Generate a unique ID and Hash the password
+
+        user_id = str(uuid.uuid4())
+        hashed_pwd = AuthService.hash_password(user_data.password)
 
         
+
+
+
+
+
+
         
