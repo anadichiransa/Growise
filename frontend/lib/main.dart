@@ -1,11 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
-void main() {
-  runApp(const MyApp());
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'core/config/firebase_config.dart';
+
+void main() async {
+  // Ensure Flutter is initialized
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // TO DO: Initialize Firebase method 
+  await Firebase.initializeApp();
+  
+  // Enable Firestore offline persistence
+  await FirebaseConfig.enableFirestoreOffline();
+  
+  runApp(const GrowiseApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class GrowiseApp extends StatelessWidget {
+  const GrowiseApp({super.key});
 
   // This widget is the root of your application.
   @override
