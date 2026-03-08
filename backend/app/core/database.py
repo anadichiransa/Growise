@@ -1,10 +1,10 @@
 import firebase_admin
-from firebase_admin import credentials, firestore
+
 import os
+from firebase_admin import credentials, firestore, initialize_app
 
 def initialize_db():
-    # Find the absolute path to the backend folder
-    # This ensures it works on Windows regardless of spaces in folder names
+
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     key_path = os.path.join(base_dir, "serviceAccountKey.json")
 

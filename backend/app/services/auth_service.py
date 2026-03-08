@@ -3,6 +3,7 @@ from app.core.database import db
 from app.models.user import UserCreate
 from datetime import datetime
 import uuid
+from google.cloud.firestore_v1.base_query import FieldFilter
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -48,7 +49,7 @@ class AuthService:
 
     @staticmethod
     def login_user(email, password):
-        user_query = db.collection("users").where("email", "==", email).get()
+        user_query = db.collection("users").where(filter=FieldFilter("email", "==", email)).get()
 
         #checking the user by email
         if not user_query:
