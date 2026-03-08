@@ -3,10 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
-// Change line 6 to:
 import 'package:frontend/data/repositories/child_repository.dart';
-
-// Change line 7 to:
 import 'package:frontend/data/models/child.dart';
 
 void main() {
