@@ -238,7 +238,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               style: TextStyle(color: Colors.white),
             ),
             TextButton(
-              onPressed: () {}, // Navigate to Login
+              onPressed: () {
+                Navigator.pop(context);
+              }, // Navigate to Login
               child: const Text(
                 "Login",
                 style: TextStyle(
