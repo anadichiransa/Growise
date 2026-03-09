@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:frontend/features/auth/presentation/controllers/auth_controller.dart'; 
+import 'package:frontend/features/auth/presentation/controllers/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -97,7 +97,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       _emailController.text.trim(),
                       _passwordController.text.trim(),
                     );
-
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: accentGold,
@@ -214,11 +213,17 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color:Colors.white),
-          const SizedBox(width:8),
-          Text(label, style:const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+          Icon(icon, color: Colors.white),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
-
+  }
 }
