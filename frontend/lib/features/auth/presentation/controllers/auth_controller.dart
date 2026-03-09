@@ -16,9 +16,34 @@ class AuthController {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        _showMessage(context, "Welcome back, ${data['full_name']}!");
       } else {
         final errorData = jsonDecode(response.body);
+        _showMessage(
+          context,
+          errorData["detail"] ?? "Login failed",
+          isError: true,
+        );
       }
-    } catch (e) {}
+    } catch (e) {
+      _showMessage(
+        context,
+        "Connection erro. Please check your internet",
+        isError: true,
+      );
+    }
+  }
+
+  void _showMessage(
+    BuildContext context,
+    String message, {
+    bool isError = false,
+  }) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : const Color(0xFFB88E4B),
+      ),
+    );
   }
 }
