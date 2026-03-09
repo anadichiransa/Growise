@@ -16,19 +16,14 @@ class ApiProvider {
     );
   }
 
-  Future<http.Response> register(String email, String password) async {
-    final url = Uri.parse('${ApiConfig.baseUrl}/auth/register');
+  // Register Method ()
+  Future<http.Response> register(Map<String, dynamic> userData) async {
+    final url = Uri.parse('$_authUrl/register');
 
     return await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'full_name': 'New User', // You can add a name controller later
-        'email': email,
-        'password': password,
-        'phone_number': '', // Optional fields for now
-        'language_preference': 'English',
-      }),
+      body: jsonEncode(userData),
     );
   }
 }
