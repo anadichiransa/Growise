@@ -34,6 +34,39 @@ class AuthController {
     }
   }
 
+  Future<void> signUp(
+    BuildContext context,
+    String email,
+    String password,
+  ) async {
+    try {
+      // Create the Map here to send all required fields
+      final Map<String, dynamic> userData = {
+        'full_name': 'New User',
+        'email': email,
+        'password': password,
+        'phone_number': '0000000000',
+        'language_preference': 'English',
+      };
+
+      final response = await _apiProvider.register(userData);
+
+      if (response.statusCode == 201) {
+        _showMessage(context, "Registration Successful! Please Login.");
+        Navigator.pop(context);
+      } else {
+        final errorData = jsonDecode(response.body);
+        _showMessage(
+          context,
+          errorData['detail'] ?? "Registration failed",
+          isError: true,
+        );
+      }
+    } catch (e) {
+      _showMessage(context, "Server connection failed", isError: true);
+    }
+  }
+
   void _showMessage(
     BuildContext context,
     String message, {
