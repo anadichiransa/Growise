@@ -32,6 +32,9 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+build/
+android/build/
+ios/Flutter/Generated.xcconfig
 
 # Symbolication related
 app.*.symbols
@@ -43,3 +46,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+#firebase related
+google-services.json
+firebase_options.dart
