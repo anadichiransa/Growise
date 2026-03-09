@@ -17,7 +17,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  @Preview()
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -258,5 +257,3 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 }
-
-void main() => runApp(MaterialApp(home: SignUpScreen()));
