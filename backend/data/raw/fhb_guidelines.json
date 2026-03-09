@@ -1,0 +1,91 @@
+{
+  "metadata": {
+    "source": "Sri Lanka Family Health Bureau (FHB)",
+    "last_updated": "2026-03-09",
+    "country": "Sri Lanka"
+  },
+  "general_habits": {
+    "environment": "Designated place, minimum distraction, no screens",
+    "engagement": ["eye contact", "storytelling", "naming colors/shapes"],
+    "hygiene": "Handwashing before feeding",
+    "self_feeding": true
+  },
+  "guidelines": [
+    {
+      "guideline_id": "FHB_6_MONTHS",
+      "age_range": "6 months",
+      "age_min_months": 6,
+      "age_max_months": 6,
+      "texture_requirements": {
+        "description": "Very smooth, semi-solid, well-mashed",
+        "tags": ["smooth", "semi-solid", "well-mashed"]
+      },
+      "frequency": "2-3 times per day",
+      "portion_size": "Start 2-3 teaspoons, increase to 1/4 cup",
+      "harmful_substances": ["honey", "raw egg"],
+      "omit_or_reduce": ["salt", "sugar", "chili"],
+      "allowed_foods": ["rice", "dhal", "sprats", "fish", "chicken", "pumpkin", "carrot", "sweet potato", "gotukola"],
+      "cooking_notes": "Use thick coconut milk, oil, or butter for energy density."
+    },
+    {
+      "guideline_id": "FHB_7_8_MONTHS",
+      "age_range": "7-8 months",
+      "age_min_months": 7,
+      "age_max_months": 8,
+      "texture_requirements": {
+        "description": "Gradually increasing consistency; coarsely chopped by 8 months",
+        "tags": ["coarsely_chopped", "finger_foods"]
+      },
+      "frequency": "2-3 times per day",
+      "portion_size": "1/2 cup to slightly more than 1/2 cup",
+      "harmful_substances": ["honey", "raw egg", "whole nuts"],
+      "omit_or_reduce": ["salt", "sugar", "excessive spices"],
+      "finger_foods": ["ripe avocado", "soft hopper center", "bread with butter"],
+      "fluids": "Sips of boiled cooled water after meals"
+    },
+    {
+      "guideline_id": "FHB_9_11_MONTHS",
+      "age_range": "9-11 months",
+      "age_min_months": 9,
+      "age_max_months": 11,
+      "texture_requirements": {
+        "description": "Coarsely chopped family foods",
+        "tags": ["coarsely_chopped"]
+      },
+      "frequency": "3-4 times per day",
+      "portion_size": "Bit more than 1/2 cup",
+      "snacks": "1-2 nutritious snacks (e.g., boiled egg, boiled potato)",
+      "harmful_substances": ["honey"],
+      "omit_or_reduce": ["salt", "sugar"]
+    },
+    {
+      "guideline_id": "FHB_12_24_MONTHS",
+      "age_range": "1-2 years",
+      "age_min_months": 12,
+      "age_max_months": 24,
+      "texture_requirements": {
+        "description": "Nutritious family foods",
+        "tags": ["family_pot"]
+      },
+      "frequency": "3 main meals + 1-2 snacks",
+      "portion_size": "Bit more than 1 cup per meal",
+      "daily_requirements_table": [
+        {"item": "Grains (Rice/String hoppers)", "amount": "2 cups"},
+        {"item": "Pulses (Dhal/Green gram)", "amount": "3-6 tbsp"},
+        {"item": "Vegetables", "amount": "3-6 tbsp"},
+        {"item": "Green Leaves", "amount": "1/2 cup"},
+        {"item": "Sprats", "amount": "6-8 pieces"},
+        {"item": "Meat/Fish/Liver", "amount": "Two match-box-size pieces"},
+        {"item": "Kunisso", "amount": "2 tbsp"},
+        {"item": "Egg", "amount": "1 piece"},
+        {"item": "Fruits", "amount": "2 servings"}
+      ],
+      "harmful_substances": [],
+      "omit_or_reduce": ["excessive sugar", "highly processed junk food"]
+    }
+  ],
+  "special_conditions": {
+    "illness": "Soft, easily digestible food in small frequent amounts. Add extra coconut milk.",
+    "recovery": "One extra meal a day for two weeks."
+  }
+}
