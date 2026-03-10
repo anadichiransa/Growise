@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:frontend/features/auth/presentation/screens/forgot-pw.dart';
-import 'firebase_options.dart';
+import 'core/config/firebase_config.dart';
+import 'features/auth/presentation/screens/signup-form.dart'; 
 
 void main() async {
+  // Ensure Flutter is initialized before interacting with native code
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  
+  // Initialize Firebase
+  await Firebase.initializeApp();
+  
+  // Enable Firestore offline persistence
+  await FirebaseConfig.enableFirestoreOffline();
+  
+  // Launch the app
   runApp(const GrowiseApp());
 }
 
@@ -18,11 +24,13 @@ class GrowiseApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Growise',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Poppins',
-        brightness: Brightness.dark,
+        fontFamily: 'Inter',
+        scaffoldBackgroundColor: const Color(0xFF1E1335),
       ),
-      home: const ForgotPasswordPage(),
+     
+      home: const SignupFormScreen(), 
     );
   }
 }
