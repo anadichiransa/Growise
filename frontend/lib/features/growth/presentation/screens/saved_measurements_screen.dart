@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../controllers/growth_controller.dart';
-import '../../models/growth_record_model.dart';
+import 'package:frontend/features/growth/presentation/controllers/growth_controller.dart';
+import 'package:frontend/data/models/growth_record.dart';
 import '../../components/common/bottom_nav.dart';
 
 class SavedMeasurementsScreen extends StatefulWidget {

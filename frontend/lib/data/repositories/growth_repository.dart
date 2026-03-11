@@ -68,7 +68,7 @@ class GrowthRepository {
   /// Called in background — does not affect the user if it fails.
   Future<void> _syncRecordToBackend(GrowthRecord record) async {
     try {
-      await _api.post('/growth/records', record.toJson());
+      await _api.syncGrowthRecord(record.toJson());
       // Mark as synced in Firestore
       await _firestore.markSyncedToBackend(record.id);
     } catch (e) {

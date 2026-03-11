@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../controllers/growth_controller.dart';
+import 'package:frontend/features/growth/presentation/controllers/growth_controller.dart';
 import '../../components/common/bottom_nav.dart';
 
 class AddMeasurementScreen extends StatefulWidget {
