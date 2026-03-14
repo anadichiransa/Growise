@@ -31,3 +31,28 @@ class GrowthRecord {
     required this.createdAt,
     this.isSyncedToBackend = false,
   });
+  factory GrowthRecord.fromFirestore(DocumentSnapshot doc) {
+    final d = doc.data() as Map<String, dynamic>;
+    return GrowthRecord(
+      id: doc.id,
+      childId: d['childId'] as String,
+      userId: d['userId'] as String,
+      date: (d['date'] as Timestamp).toDate(),
+      weight: (d['weight'] as num).toDouble(),
+      height: (d['height'] as num).toDouble(),
+      bmi: d['bmi'] != null ? (d['bmi'] as num).toDouble() : null,
+      weightForAgeZ: d['weightForAgeZ'] != null
+          ? (d['weightForAgeZ'] as num).toDouble()
+          : null,
+      heightForAgeZ: d['heightForAgeZ'] != null
+          ? (d['heightForAgeZ'] as num).toDouble()
+          : null,
+      category: d['category'] as String?,
+      recommendations: d['recommendations'] != null
+          ? List<String>.from(d['recommendations'] as List)
+          : [],
+      notes: d['notes'] as String?,
+      createdAt: (d['createdAt'] as Timestamp).toDate(),
+      isSyncedToBackend: d['isSyncedToBackend'] as bool? ?? false,
+    );
+  }
