@@ -138,3 +138,23 @@ def get_vaccine_schedule(child_id: str) -> dict:
         group["all_done"] = all(v["status"] == "done" for v in group["vaccines"])
 
     return {"schedule": list(grouped.values())}
+def mark_completed(child_id: str, vaccine_id: str, data: dict) -> dict:
+    ref = (
+        db.collection("children")
+        .document(child_id)
+        .collection("immunization_records")
+        .document(vaccine_id)
+    )
+    if not ref.get().exists:
+        return None
+
+    ref.update({
+        "status": VaccineStatus.DONE.value,
+        "administered_date": data["administered_date"],
+        "administered_by": data["administered_by"],
+        "batch_number": data.get("batch_number"),
+        "notes": data.get("notes", ""),
+        "marked_by_parent": True,
+        "updated_at": datetime.utcnow(),
+    })
+    return {"message": f"{vaccine_id} marked as done"}
