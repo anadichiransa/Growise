@@ -56,3 +56,21 @@ class GrowthRecord {
       isSyncedToBackend: d['isSyncedToBackend'] as bool? ?? false,
     );
   }
+  Map<String, dynamic> toFirestore() {
+    return {
+      'childId': childId,
+      'userId': userId,
+      'date': Timestamp.fromDate(date),
+      'weight': weight,
+      'height': height,
+      'bmi': bmi,
+      'weightForAgeZ': weightForAgeZ,
+      'heightForAgeZ': heightForAgeZ,
+      'category': category,
+      'recommendations': recommendations,
+      'notes': notes,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'isSyncedToBackend': isSyncedToBackend,
+    };
+  }
+  
