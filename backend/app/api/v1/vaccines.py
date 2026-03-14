@@ -45,3 +45,24 @@ async def mark_vaccine_done(
     if not result:
         raise HTTPException(status_code=404, detail="Vaccine record not found")
     return result
+@router.get("/supplements/{child_id}")
+async def get_supplements(child_id: str):
+    """Get supplement schedule for a child."""
+    from firebase_admin import firestore
+    from datetime import datetime
+    db = firestore.client()
+    today = datetime.utcnow()
+
+    records = (
+        db.collection("children")
+        .document(child_id)
+        .collection("supplement_records")
+        .order_by("scheduled_date")
+        .stream()
+    )
+    result = []
+    for doc in records:
+        r = doc.to_dict()
+        r["days_until_due"] = (r["scheduled_date"] - today).days
+        result.append(r)
+    return {"supplements": result}
