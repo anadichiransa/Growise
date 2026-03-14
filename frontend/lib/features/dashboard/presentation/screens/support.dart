@@ -471,11 +471,19 @@ class _LabelRow extends StatelessWidget {
 }
 
 class _ContactUsRow extends StatelessWidget {
-  const _ContactUsRow();
+  final VoidCallback? onHelplineTap;
+  final VoidCallback? onEmailTap;
+  final VoidCallback? onLiveChatTap;
+
+  const _ContactUsRow({
+    this.onHelplineTap,
+    this.onEmailTap,
+    this.onLiveChatTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Row(
       children: [
         Expanded(
           child: _ContactTile(
@@ -484,6 +492,7 @@ class _ContactUsRow extends StatelessWidget {
             subtitle: '+94 11 234…',
             iconColor: AppColors.accent,
             isLive: false,
+            onTap: onHelplineTap,
           ),
         ),
         SizedBox(width: 10),
@@ -494,6 +503,7 @@ class _ContactUsRow extends StatelessWidget {
             subtitle: 'support@…',
             iconColor: AppColors.accent,
             isLive: false,
+            onTap: onEmailTap,
           ),
         ),
         SizedBox(width: 10),
@@ -504,6 +514,7 @@ class _ContactUsRow extends StatelessWidget {
             subtitle: 'Online',
             iconColor: AppColors.teal,
             isLive: true,
+            onTap: onLiveChatTap,
           ),
         ),
       ],
@@ -517,6 +528,7 @@ class _ContactTile extends StatefulWidget {
   final String subtitle;
   final Color iconColor;
   final bool isLive;
+  final VoidCallback? onTap;
 
   const _ContactTile({
     required this.icon,
@@ -524,6 +536,7 @@ class _ContactTile extends StatefulWidget {
     required this.subtitle,
     required this.iconColor,
     required this.isLive,
+    this.onTap,
   });
 
   @override
