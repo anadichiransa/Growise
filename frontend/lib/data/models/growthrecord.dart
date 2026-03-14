@@ -73,4 +73,20 @@ class GrowthRecord {
       'isSyncedToBackend': isSyncedToBackend,
     };
   }
+  Map<String, dynamic> toJson() {
+    return {
+      'child_id': childId,
+      'user_id': userId,
+      'date': date.toIso8601String(),
+      'weight': weight,
+      'height': height,
+      'bmi': bmi,
+      'weight_for_age_z': weightForAgeZ,
+      'height_for_age_z': heightForAgeZ,
+      'category': category,
+      'recommendations': recommendations,
+      'notes': notes,
+      'created_at': createdAt.toIso8601String(),
+    };
+  }
   
