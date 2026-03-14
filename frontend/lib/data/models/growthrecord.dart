@@ -15,3 +15,19 @@ class GrowthRecord {
   final String? notes;
   final DateTime createdAt;
   final bool isSyncedToBackend;
+  const GrowthRecord({
+    required this.id,
+    required this.childId,
+    required this.userId,
+    required this.date,
+    required this.weight,
+    required this.height,
+    this.bmi,
+    this.weightForAgeZ,
+    this.heightForAgeZ,
+    this.category,
+    this.recommendations = const [],
+    this.notes,
+    required this.createdAt,
+    this.isSyncedToBackend = false,
+  });
