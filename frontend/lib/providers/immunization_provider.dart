@@ -39,6 +39,22 @@ class ImmunizationProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> _scheduleAllNotifications(String childName) async {
+  int idCounter = 1;
+  for (final group in _groupedSchedule) {
+    for (final vaccine in group.vaccines) {
+      if (vaccine.status != 'done') {
+        await NotificationService.scheduleVaccineReminder(
+          id: idCounter++,
+          childName: childName,
+          vaccineName: vaccine.vaccineName,
+          scheduledDate: vaccine.scheduledDate,
+        );
+      }
+    }
+  }
+}
+
   Future<void> markVaccineDone(
     String childId,
     String vaccineId,
