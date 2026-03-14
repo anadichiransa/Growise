@@ -104,3 +104,37 @@ def generate_supplement_schedule(
 
     batch.commit()
     return {"message": "Supplements scheduled", "count": len(records)}
+def get_vaccine_schedule(child_id: str) -> dict:
+    today = datetime.utcnow()
+    records_ref = (
+        db.collection("children")
+        .document(child_id)
+        .collection("immunization_records")
+        .order_by("age_months")
+        .stream()
+    )
+
+    grouped = {}
+    for doc in records_ref:
+        r = doc.to_dict()
+        scheduled = r["scheduled_date"]
+        days_until = (scheduled - today).days
+        r["days_until_due"] = days_until
+
+        if r["status"] == "pending" and days_until < -7:
+            r["status"] = VaccineStatus.OVERDUE.value
+
+        label = r["age_label"]
+        if label not in grouped:
+            grouped[label] = {
+                "age_label": label,
+                "age_months": r["age_months"],
+                "vaccines": [],
+                "all_done": False,
+            }
+        grouped[label]["vaccines"].append(r)
+
+    for group in grouped.values():
+        group["all_done"] = all(v["status"] == "done" for v in group["vaccines"])
+
+    return {"schedule": list(grouped.values())}
