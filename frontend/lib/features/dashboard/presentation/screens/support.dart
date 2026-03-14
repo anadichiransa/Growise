@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-void main() {
-  runApp(const GrowiseApp());
-}
-
-class GrowiseApp extends StatelessWidget {
-  const GrowiseApp({super.key});
+import 'package:get/get.dart';
+import '../controllers/support_controller.dart';
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +20,6 @@ class GrowiseApp extends StatelessWidget {
       home: const SupportCenterScreen(),
     );
   }
-}
 
 class AppColors {
   AppColors._();
