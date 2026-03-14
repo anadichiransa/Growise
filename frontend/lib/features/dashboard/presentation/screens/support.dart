@@ -1089,7 +1089,7 @@ class _CommunityCardState extends State<_CommunityCard>
               ),
               const SizedBox(width: 16),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () => Get.find<SupportController>().launchCommunity(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: AppColors.background,
