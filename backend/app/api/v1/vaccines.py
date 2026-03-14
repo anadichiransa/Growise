@@ -66,3 +66,10 @@ async def get_supplements(child_id: str):
         r["days_until_due"] = (r["scheduled_date"] - today).days
         result.append(r)
     return {"supplements": result}
+@router.get("/upcoming/{parent_uid}")
+async def get_upcoming_notifications(parent_uid: str):
+    """
+    Returns notification payloads for the Home page banner
+    and Notifications page — scoped to all children of a parent.
+    """
+    return schedule_reminders(parent_uid)
