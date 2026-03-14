@@ -89,4 +89,23 @@ class GrowthRecord {
       'created_at': createdAt.toIso8601String(),
     };
   }
+  GrowthRecord copyWith({bool? isSyncedToBackend}) {
+    return GrowthRecord(
+      id: id,
+      childId: childId,
+      userId: userId,
+      date: date,
+      weight: weight,
+      height: height,
+      bmi: bmi,
+      weightForAgeZ: weightForAgeZ,
+      heightForAgeZ: heightForAgeZ,
+      category: category,
+      recommendations: recommendations,
+      notes: notes,
+      createdAt: createdAt,
+      isSyncedToBackend: isSyncedToBackend ?? this.isSyncedToBackend,
+    );
+  }
+}
   
