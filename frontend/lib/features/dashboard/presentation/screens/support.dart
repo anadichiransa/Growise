@@ -3,23 +3,23 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../controllers/support_controller.dart';
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Growise',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: AppColors.background,
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        colorScheme: ColorScheme.dark(
-          primary: AppColors.accent,
-          surface: AppColors.cardSurface,
-        ),
+@override
+Widget build(BuildContext context) {
+  return MaterialApp(
+    title: 'Growise',
+    debugShowCheckedModeBanner: false,
+    theme: ThemeData(
+      scaffoldBackgroundColor: AppColors.background,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      colorScheme: ColorScheme.dark(
+        primary: AppColors.accent,
+        surface: AppColors.cardSurface,
       ),
-      home: const SupportCenterScreen(),
-    );
-  }
+    ),
+    home: const SupportCenterScreen(),
+  );
+}
 
 class AppColors {
   AppColors._();
@@ -111,6 +111,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocus = FocusNode();
   late final AnimationController _entranceCtrl;
+  late final SupportController _controller;
   int _selectedNavIndex = 3;
 
   bool _faqsLoading = true;
@@ -119,6 +120,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
   @override
   void initState() {
     super.initState();
+    _controller = Get.put(SupportController());
     _entranceCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
