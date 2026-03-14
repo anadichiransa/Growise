@@ -197,7 +197,11 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
                 const SizedBox(height: 12),
                 _FadeSlide(
                   animation: _stagger(3),
-                  child: const _ContactUsRow(),
+                  child: _ContactUsRow(
+                    onHelplineTap: () => _controller.launchHelpline(),
+                    onEmailTap: () => _controller.launchEmail(),
+                    onLiveChatTap: () => _controller.showLiveChatComingSoon(),
+                  ),
                 ),
                 const SizedBox(height: 28),
 
@@ -577,7 +581,7 @@ class _ContactTileState extends State<_ContactTile>
       },
       onTapUp: (_) => _scaleCtrl.reverse(),
       onTapCancel: () => _scaleCtrl.reverse(),
-      onTap: () {},
+      onTap: widget.onTap,
       child: ScaleTransition(
         scale: _scaleAnim,
         child: Container(
