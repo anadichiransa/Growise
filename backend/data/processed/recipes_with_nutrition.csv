@@ -1,4 +1,4 @@
-recipe_name,ingredients,category,preparation,texture_tags,ingredients_array,ingredient_count,serving_size_g,calories,protein_g,iron_mg
+recipe_name,ingredients,category,preparation,texture,ingredients_array,ingredient_count,serving_size_g,calories,protein_g,iron_mg
 Well-mashed Rice,"rice, expressed breast milk",Main,Boil and mash,smooth_puree,"['rice', 'breast_milk']",2,100.0,97.5,1.9,0.12
 Dhal Puree,"red lentils, turmeric, water",Main,Boil and blend,smooth_puree,"['red_lentils', 'turmeric', 'water']",3,100.0,142.7,6.2,14.9
 Mashed Pumpkin,"pumpkin, coconut milk",Vegetable,Steam and mash,smooth_puree,"['pumpkin', 'coconut_milk']",2,100.0,128.0,1.6,2.05
