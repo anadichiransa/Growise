@@ -34,4 +34,14 @@ async def generate_schedule(child_id: str):
 async def get_schedule(child_id: str):
     """Get grouped immunization schedule for a child."""
     return get_vaccine_schedule(child_id)
-
+@router.patch("/schedule/{child_id}/{vaccine_id}/mark-done")
+async def mark_vaccine_done(
+    child_id: str,
+    vaccine_id: str,
+    body: MarkVaccineDoneRequest
+):
+    """Mark a specific vaccine as administered."""
+    result = mark_completed(child_id, vaccine_id, body.dict())
+    if not result:
+        raise HTTPException(status_code=404, detail="Vaccine record not found")
+    return result
