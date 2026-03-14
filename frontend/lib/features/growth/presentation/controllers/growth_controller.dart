@@ -2,11 +2,11 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../data/models/growth_record.dart';
 import '../../../../data/repositories/growth_repository.dart';
-import '../../domain/use_cases/calculate_who_scores.dart';
+import '../../domain/use_cases/who_scores_calculator.dart';
 
 class GrowthController extends GetxController {
   final GrowthRepository _repository = GrowthRepository();
-  final CalculateWHOScores _whoCalculator = CalculateWHOScores();
+  final WhoScoresCalculator _whoCalculator = WhoScoresCalculator();
 
   // ─── Reactive state ───────────────────────────────────────────────────────────
   var growthRecords = <GrowthRecord>[].obs;
@@ -46,8 +46,8 @@ class GrowthController extends GetxController {
   Future<bool> addMeasurement({
     required String childId,
     required String childName,
-    required DateTime childBirthDate,
-    required String childGender,
+    required DateTime dateOfBirth,
+    required String gender,
     required DateTime date,
     required double weight,
     required double height,
@@ -58,14 +58,14 @@ class GrowthController extends GetxController {
       errorMessage.value = '';
 
       // Step 1: Calculate age
-      final ageMonths = _calculateAgeInMonths(childBirthDate, date);
+      final ageInMonths = _calculateAgeInMonths(dateOfBirth, date);
 
       // Step 2: WHO calculations (pure Dart, no network, always works)
       final result = _whoCalculator(
         weight: weight,
         height: height,
-        ageMonths: ageMonths,
-        gender: childGender,
+        ageInMonths: ageInMonths,
+        gender: gender,
         childName: childName,
       );
 
@@ -121,12 +121,12 @@ class GrowthController extends GetxController {
     if (latestRecord == null) {
       return 'No measurements recorded yet. Add your first measurement to start tracking.';
     }
-    // Summary was built by CalculateWHOScores and stored in the record
+    // Summary was built by WhoScoresCalculator and stored in the record
     // Re-generate from category for display (avoids storing long strings in Firestore)
     final result = _whoCalculator(
       weight: latestRecord!.weight,
       height: latestRecord!.height,
-      ageMonths: 0, // not used for summary regeneration — pass stored z-scores instead
+      ageInMonths: 0, // not used for summary regeneration — pass stored z-scores instead
       gender: 'male', // placeholder
       childName: childName,
     );
