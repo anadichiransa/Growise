@@ -240,7 +240,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               style: TextStyle(color: Colors.white),
             ),
             TextButton(
-              onPressed: () {}, // Navigate to Login
+              onPressed: () => Get.toNamed('/login'),
               child: const Text(
                 "Login",
                 style: TextStyle(
