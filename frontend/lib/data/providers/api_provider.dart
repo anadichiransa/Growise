@@ -33,6 +33,10 @@ class ApiProvider {
     }
   }
 
+  Future<Response> saveUserProfile(Map<String, dynamic> data) async {
+    return await _dio.post('/auth/profile', data: data);
+  }
+
   // ── Growth ────────────────────────────────────────────
   Future<Response> syncGrowthRecord(Map<String, dynamic> data) async {
     return await _dio.post('/growth/records', data: data);
