@@ -7,6 +7,7 @@ import '../../features/dashboard/presentation/screens/dashboard.dart';
 import '../../features/dashboard/presentation/screens/support.dart';
 import '../../features/dashboard/presentation/screens/activity_page.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AppRoutes {
   static const welcome = '/';
@@ -17,7 +18,6 @@ class AppRoutes {
   static const support = '/support';
   static const activity = '/activity';
   static const profile = '/profile';
-  final user = FirebaseAuth.instance.currentUser;
 
   static final pages = [
     GetPage(name: welcome, page: () => const OnboradingScreen()),
