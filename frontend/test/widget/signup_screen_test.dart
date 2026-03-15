@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:growise/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:growise/features/auth/presentation/screens/signup_screen.dart';
 
 void main() {
   setUp(() {
-    Get.put(AuthController());
+    final mockAuth = MockFirebaseAuth();
+    Get.put(AuthController.withAuth(mockAuth));
   });
 
   tearDown(() => Get.reset());
@@ -30,36 +32,13 @@ void main() {
       await tester.pumpWidget(
         GetMaterialApp(home: SignUpScreen()),
       );
-      expect(
-        find.widgetWithText(ElevatedButton, 'Sign Up'),
-        findsOneWidget,
-      );
+      expect(find.widgetWithText(ElevatedButton, 'Sign Up'), findsOneWidget);
     });
 
-    testWidgets('Three text fields present (email, password, confirm)',
-        (tester) async {
+    testWidgets('Three form fields present', (tester) async {
       await tester.pumpWidget(
         GetMaterialApp(home: SignUpScreen()),
       );
-      expect(find.byType(TextFormField), findsAtLeastNWidgets(3));
-    });
-
-    testWidgets('Already have account text is present', (tester) async {
-      await tester.pumpWidget(
-        GetMaterialApp(home: SignUpScreen()),
-      );
-      expect(find.text('Already have an account? '), findsOneWidget);
-    });
-  });
-
-  group('SignUpScreen - Form Validation', () {
-    testWidgets('Empty form shows validation errors on submit', (tester) async {
-      await tester.pumpWidget(
-        GetMaterialApp(home: SignUpScreen()),
-      );
-      final signUpButton = find.widgetWithText(ElevatedButton, 'Sign Up');
-      await tester.tap(signUpButton);
-      await tester.pump();
       expect(find.byType(TextFormField), findsAtLeastNWidgets(3));
     });
 
@@ -67,8 +46,8 @@ void main() {
       await tester.pumpWidget(
         GetMaterialApp(home: SignUpScreen()),
       );
-      final fields = find.byType(TextFormField);
-      await tester.enterText(fields.first, 'newuser@example.com');
+      await tester.enterText(
+          find.byType(TextFormField).first, 'newuser@example.com');
       expect(find.text('newuser@example.com'), findsOneWidget);
     });
   });

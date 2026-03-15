@@ -4,8 +4,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:growise/data/providers/api_provider.dart';
 
 class AuthController extends GetxController {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late final FirebaseAuth _authInstance;
+  FirebaseAuth get _auth => _authInstance;
   var isLoading = false.obs;
+
+  AuthController() {
+    _authInstance = FirebaseAuth.instance;
+  }
+
+  AuthController.withAuth(FirebaseAuth auth) {
+    _authInstance = auth;
+  }
 
   Future<void> login(String email, String password) async {
     try {
