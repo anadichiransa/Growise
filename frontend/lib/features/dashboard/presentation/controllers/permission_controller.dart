@@ -48,7 +48,3 @@ class PermissionController extends GetxController {
       notificationGranted.value &&
       cameraGranted.value;
 }
-```
-```
-git add lib/features/dashboard/presentation/controllers/permission_controller.dart
-git commit -m "feat: add PermissionController to handle storage, camera and notification requests"
