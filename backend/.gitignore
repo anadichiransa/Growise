@@ -1,5 +1,6 @@
 # Firebase & Secrets
 firebase-admin-key.json
+serviceAccountKey.json
 .env
 .venv/
 venv/
