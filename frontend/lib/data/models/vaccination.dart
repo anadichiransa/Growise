@@ -64,13 +64,12 @@ class AgeGroup {
   });
 
   factory AgeGroup.fromJson(Map<String, dynamic> json) {
-    final vaccines = (json['vaccines'] as List)
-        .map((v) => ImmunizationRecord.fromJson(v))
-        .toList();
     return AgeGroup(
       ageLabel: json['age_label'],
       ageMonths: json['age_months'],
-      vaccines: vaccines,
+      vaccines: (json['vaccines'] as List)
+          .map((v) => ImmunizationRecord.fromJson(v))
+          .toList(),
       allDone: json['all_done'] ?? false,
     );
   }

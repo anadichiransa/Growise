@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../models/vaccination.dart';
-import '../../../core/constants/api_endpoints.dart';
-
+import '../models/vaccination.dart';
+import '../../core/constants/api_endpoints.dart';
 class VaccineRepository {
   final String baseUrl = ApiEndpoints.baseUrl; // use your existing constant
 
