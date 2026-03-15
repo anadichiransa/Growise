@@ -1,5 +1,5 @@
-import '../data/models/growth_record_model.dart';
-import '../data/repositories/api_service.dart';
+import 'package:frontend/data/models/growth_record_model.dart';
+import 'package:frontend/data/repositories/api_service.dart';
 
 class GrowthController {
 
