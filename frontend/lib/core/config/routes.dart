@@ -17,6 +17,7 @@ class AppRoutes {
   static const support = '/support';
   static const activity = '/activity';
   static const profile = '/profile';
+  final user = FirebaseAuth.instance.currentUser;
 
   static final pages = [
     GetPage(name: welcome, page: () => const OnboradingScreen()),
