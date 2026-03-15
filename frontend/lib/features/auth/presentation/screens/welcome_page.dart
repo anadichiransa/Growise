@@ -68,9 +68,15 @@ class OnboradingScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              "Existing user? Log in",
-              style: TextStyle(color: Colors.white54),
+            GestureDetector(
+              onTap: () => Get.toNamed('/login'),
+              child: const Text(
+                "Existing user? Log in",
+                style: TextStyle(
+                  color: Colors.white54,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
             ),
             Center(
               child: CircleAvatar(
