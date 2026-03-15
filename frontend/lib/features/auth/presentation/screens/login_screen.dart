@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:get/get.dart';
+import 'package:growise/features/auth/presentation/controllers/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,6 +13,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isPasswordVisible = false;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthController _authController = Get.find<AuthController>();
 
   static const Color PrimaryBg = Color(0xFF1E0E35);
   static const Color accentGold = Color(0xFFB88E4B);
@@ -73,8 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () =>
-                      Get.toNamed('/forgot-password'), // Updated navigation
+                  onPressed: () => Get.toNamed('/forgot-password'),
                   child: const Text(
                     "Forgot Password?",
                     style: TextStyle(color: Colors.white70, fontSize: 12),
@@ -86,8 +87,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: () =>
-                      Get.offAllNamed('/dashboard'), // Updated navigation
+                  onPressed: () => _authController.login(
+                    _emailController.text,
+                    _passwordController.text,
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: accentGold,
                     shape: RoundedRectangleBorder(
@@ -111,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
                 height: 55,
                 child: OutlinedButton(
-                  onPressed: () => Get.toNamed('/signup'), // Updated navigation
+                  onPressed: () => Get.toNamed('/signup'),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: accentGold),
                     shape: RoundedRectangleBorder(
@@ -165,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }) {
     return TextField(
       controller: controller,
-      obscureText: isPassword && !_isPasswordVisible, // Fixed visibility logic
+      obscureText: isPassword && !_isPasswordVisible,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         filled: true,
