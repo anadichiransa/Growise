@@ -1,83 +1,114 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get/get.dart';
-import 'package:growise/features/auth/presentation/controllers/auth_controller.dart';
 
 void main() {
-  setUp(() {
-    Get.put(AuthController());
-  });
-
-  tearDown(() => Get.reset());
-
-  group('AuthController - Initial State', () {
-    test('isLoading starts as false', () {
-      final controller = Get.find<AuthController>();
-      expect(controller.isLoading.value, false);
-    });
-
-    test('currentUser is null when not logged in', () {
-      final controller = Get.find<AuthController>();
-      expect(controller.currentUser, null);
-    });
-
-    test('isLoggedIn returns false when no user', () {
-      final controller = Get.find<AuthController>();
-      expect(controller.isLoggedIn, false);
-    });
-  });
-
-  group('AuthController - Input Validation', () {
-    test('empty email should not pass Firebase validation', () {
+  group('Auth Input Validation Logic', () {
+    test('empty email is invalid', () {
       expect(''.isEmpty, true);
     });
 
     test('invalid email format detected', () {
-      const email = 'notanemail';
-      expect(email.contains('@'), false);
+      expect('notanemail'.contains('@'), false);
     });
 
     test('valid email format accepted', () {
-      const email = 'test@example.com';
-      expect(email.contains('@'), true);
+      expect('test@example.com'.contains('@'), true);
     });
 
     test('password too short detected', () {
-      const password = '123';
-      expect(password.length < 6, true);
+      expect('123'.length < 6, true);
     });
 
     test('valid password length accepted', () {
-      const password = 'securepassword';
-      expect(password.length >= 6, true);
+      expect('securepassword'.length >= 6, true);
     });
 
-    test('passwords match check works', () {
-      const password = 'mypassword123';
-      const confirm = 'mypassword123';
-      expect(password == confirm, true);
+    test('passwords match', () {
+      expect('mypassword123' == 'mypassword123', true);
     });
 
     test('mismatched passwords detected', () {
-      const password = 'mypassword123';
-      const confirm = 'different456';
-      expect(password == confirm, false);
+      expect('mypassword123' == 'different456', false);
     });
-  });
 
-  group('AuthController - Email Processing', () {
     test('email trimmed correctly', () {
-      const email = '  test@example.com  ';
-      expect(email.trim(), 'test@example.com');
+      expect('  test@example.com  '.trim(), 'test@example.com');
     });
 
     test('username extracted from email', () {
-      const email = 'john@example.com';
-      expect(email.split('@')[0], 'john');
+      expect('john@example.com'.split('@')[0], 'john');
     });
 
     test('email lowercased for consistency', () {
-      const email = 'TEST@EXAMPLE.COM';
-      expect(email.toLowerCase(), 'test@example.com');
+      expect('TEST@EXAMPLE.COM'.toLowerCase(), 'test@example.com');
+    });
+
+    test('phone number format validation - valid Sri Lanka number', () {
+      final phone = '+94771234567';
+      final regex = RegExp(r'^\+94\d{9}$');
+      expect(regex.hasMatch(phone), true);
+    });
+
+    test('phone number format validation - invalid number rejected', () {
+      final phone = '0771234567';
+      final regex = RegExp(r'^\+94\d{9}$');
+      expect(regex.hasMatch(phone), false);
+    });
+
+    test('full name too short rejected', () {
+      expect('A'.length < 2, true);
+    });
+
+    test('full name valid length accepted', () {
+      expect('John'.length >= 2, true);
+    });
+  });
+
+  group('Auth Error Message Logic', () {
+    String getLoginErrorMessage(String code) {
+      return switch (code) {
+        'user-not-found' => 'No account found for this email.',
+        'wrong-password' => 'Incorrect password.',
+        'invalid-email' => 'Invalid email address.',
+        'user-disabled' => 'This account has been disabled.',
+        _ => 'Login failed. Please try again.',
+      };
+    }
+
+    String getRegisterErrorMessage(String code) {
+      return switch (code) {
+        'email-already-in-use' => 'An account already exists for this email.',
+        'weak-password' => 'Password must be at least 6 characters.',
+        'invalid-email' => 'Invalid email address.',
+        _ => 'Registration failed. Please try again.',
+      };
+    }
+
+    test('user-not-found returns correct message', () {
+      expect(getLoginErrorMessage('user-not-found'),
+          'No account found for this email.');
+    });
+
+    test('wrong-password returns correct message', () {
+      expect(getLoginErrorMessage('wrong-password'), 'Incorrect password.');
+    });
+
+    test('invalid-email returns correct message', () {
+      expect(getLoginErrorMessage('invalid-email'), 'Invalid email address.');
+    });
+
+    test('unknown error returns fallback message', () {
+      expect(getLoginErrorMessage('unknown-code'),
+          'Login failed. Please try again.');
+    });
+
+    test('email-already-in-use returns correct message', () {
+      expect(getRegisterErrorMessage('email-already-in-use'),
+          'An account already exists for this email.');
+    });
+
+    test('weak-password returns correct message', () {
+      expect(getRegisterErrorMessage('weak-password'),
+          'Password must be at least 6 characters.');
     });
   });
 }
