@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -12,34 +13,28 @@ class NotificationService {
     );
   }
 
-  /// Schedule a vaccine reminder notification
   static Future<void> scheduleVaccineReminder({
     required int id,
     required String childName,
     required String vaccineName,
     required DateTime scheduledDate,
   }) async {
-    // 7 days before
     await _scheduleAt(
       id: id * 10 + 1,
-      title: '💉 Upcoming Vaccine',
-      body: '$vaccineName is due in 7 days for $childName',
+      title: 'Upcoming Vaccine',
+      body: ' is due in 7 days for ',
       scheduledDate: scheduledDate.subtract(const Duration(days: 7)),
     );
-
-    // 1 day before
     await _scheduleAt(
       id: id * 10 + 2,
-      title: '⚠️ Vaccine Tomorrow',
-      body: '$vaccineName is due TOMORROW for $childName',
+      title: 'Vaccine Tomorrow',
+      body: ' is due TOMORROW for ',
       scheduledDate: scheduledDate.subtract(const Duration(days: 1)),
     );
-
-    // Day of
     await _scheduleAt(
       id: id * 10 + 3,
-      title: '🔔 Vaccine Due Today',
-      body: '$childName\'s $vaccineName is due TODAY',
+      title: 'Vaccine Due Today',
+      body: '\'s  is due TODAY',
       scheduledDate: scheduledDate,
     );
   }
@@ -57,7 +52,7 @@ class NotificationService {
       title,
       body,
       tz.TZDateTime.from(scheduledDate, tz.local),
-      const NotificationDetails(
+      NotificationDetails(
         android: AndroidNotificationDetails(
           'vaccine_reminders',
           'Vaccine Reminders',

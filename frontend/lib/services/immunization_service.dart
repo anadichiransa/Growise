@@ -1,23 +1,22 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/immunization_record.dart';
+import '../data/models/vaccination.dart';
 
 class ImmunizationService {
-  static const String baseUrl = 'https://your-api-url.com'; // Replace with your URL
+  static const String baseUrl = 'https://your-api-url.com';
 
   Future<List<AgeGroup>> getSchedule(String childId) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/children/$childId/immunization-schedule'),
+      Uri.parse('/children//immunization-schedule'),
       headers: {'Content-Type': 'application/json'},
     );
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return (data['schedule'] as List)
           .map((g) => AgeGroup.fromJson(g))
           .toList();
     }
-    throw Exception('Failed to load schedule: ${response.statusCode}');
+    throw Exception('Failed to load schedule: ');
   }
 
   Future<void> markDone(
@@ -26,19 +25,18 @@ class ImmunizationService {
     Map<String, dynamic> body,
   ) async {
     final response = await http.patch(
-      Uri.parse('$baseUrl/children/$childId/immunization/$vaccineId/mark-done'),
+      Uri.parse('/children//immunization//mark-done'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(body),
     );
-
     if (response.statusCode != 200) {
-      throw Exception('Failed to mark done: ${response.statusCode}');
+      throw Exception('Failed to mark done: ');
     }
   }
 
   Future<List<Map<String, dynamic>>> getNotifications(String parentUid) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/notifications/upcoming-vaccines/$parentUid'),
+      Uri.parse('/notifications/upcoming-vaccines/'),
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
