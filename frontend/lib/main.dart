@@ -6,10 +6,22 @@ import 'features/auth/presentation/screens/signup-form.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  await Firebase.initializeApp();
-  
-  await FirebaseConfig.enableFirestoreOffline();
-  
+  try {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: 'YOUR_API_KEY',
+        appId: 'YOUR_APP_ID',
+        messagingSenderId: 'YOUR_SENDER_ID',
+        projectId: 'YOUR_PROJECT_ID',
+        storageBucket: 'YOUR_STORAGE_BUCKET',
+        authDomain: 'YOUR_AUTH_DOMAIN',
+      ),
+    );
+    await FirebaseConfig.enableFirestoreOffline();
+  } catch (e) {
+    print('Firebase init failed: ');
+  }
+
   runApp(const GrowiseApp());
 }
 
