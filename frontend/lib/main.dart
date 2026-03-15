@@ -24,11 +24,11 @@ class GrowIseApp extends StatelessWidget {
       ),
       // ── For testing: opens directly to growth chart ──
       // In your real app, replace this with your actual home/navigation screen
-      home: const GrowthChartScreen(
+      home: GrowthChartScreen(
         childId:     'test-child-001',
         childName:   'Baby',
         gender:      'male',
-        dateOfBirth: DateTime(2023, 8, 5),  // change to real DOB
+        dateOfBirth: DateTime.utc(2023, 8, 5),  // change to real DOB
       ),
     );
   }
