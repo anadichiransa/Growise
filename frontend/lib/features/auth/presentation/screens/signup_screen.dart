@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widget_previews.dart';
 
 class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
@@ -61,8 +62,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 hint: "name@example.com",
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value == null || !value.contains('@'))
+                  if (value == null || !value.contains('@')) {
                     return 'Enter a valid email';
+                  }
                   return null;
                 },
               ),
@@ -79,8 +81,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 onToggle: () =>
                     setState(() => _obscurePassword = !_obscurePassword),
                 validator: (value) {
-                  if (value == null || value.length < 6)
+                  if (value == null || value.length < 6) {
                     return 'Password too short';
+                  }
                   return null;
                 },
               ),
@@ -98,8 +101,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   () => _obscureConfirmPassword = !_obscureConfirmPassword,
                 ),
                 validator: (value) {
-                  if (value != _passwordController.text)
+                  if (value != _passwordController.text) {
                     return 'Passwords do not match';
+                  }
                   return null;
                 },
               ),

@@ -6,11 +6,9 @@ import '../../features/auth/presentation/screens/forgot-pw.dart';
 import '../../features/dashboard/presentation/screens/dashboard.dart';
 import '../../features/dashboard/presentation/screens/support.dart';
 import '../../features/dashboard/presentation/screens/activity_page.dart';
-import '../../features/growth/presentation/screens/growth_chart_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 
 class AppRoutes {
-  // Route name constants
   static const welcome = '/';
   static const login = '/login';
   static const signup = '/signup';
@@ -19,16 +17,21 @@ class AppRoutes {
   static const support = '/support';
   static const activity = '/activity';
   static const profile = '/profile';
-  static const growth = '/growth';
 
   static final pages = [
     GetPage(name: welcome, page: () => const OnboradingScreen()),
     GetPage(name: login, page: () => const LoginScreen()),
-    GetPage(name: signup, page: () => const SignUpScreen()),
+    GetPage(name: signup, page: () => SignUpScreen()),
     GetPage(name: forgotPw, page: () => const ForgotPasswordPage()),
     GetPage(name: dashboard, page: () => const BabyTrackerHome()),
-    GetPage(name: support, page: () => const SupportController()),
-    GetPage(name: activity, page: () => const ActivityPage()),
-    GetPage(name: profile, page: () => const ChildProfileSummary()),
+    GetPage(name: support, page: () => const SupportCenterScreen()),
+    GetPage(
+        name: activity,
+        page: () => ActivityPage(
+              title: 'Activities',
+              subtitle: 'Fun learning for your baby',
+              videoPath: '',
+            )),
+    GetPage(name: profile, page: () => const BabyTrackerHome()),
   ];
 }

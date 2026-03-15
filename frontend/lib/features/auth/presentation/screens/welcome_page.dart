@@ -44,10 +44,7 @@ class OnboradingScreen extends StatelessWidget {
             ),
             const SizedBox(height: 60),
             GestureDetector(
-              onTap: () {
-                onTap:
-                () => Get.toNamed('/login');
-              },
+              onTap: () => Get.toNamed('/login'),
               child: Container(
                 width: double.infinity,
                 height: 60,
