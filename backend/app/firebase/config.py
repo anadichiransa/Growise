@@ -1,4 +1,3 @@
-cat > firebase/config.py << 'EOF'
 import os
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
@@ -22,4 +21,3 @@ def get_db():
 def get_bucket():
     get_firebase_app()
     return storage.bucket()
-EOF
