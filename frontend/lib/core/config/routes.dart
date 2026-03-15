@@ -24,11 +24,11 @@ class AppRoutes {
   static final pages = [
     GetPage(name: welcome, page: () => const OnboradingScreen()),
     GetPage(name: login, page: () => const LoginScreen()),
-    GetPage(name: signup, page: () => const SignupScreen()),
-    GetPage(name: forgotPw, page: () => const ForgotPasswordScreen()),
-    GetPage(name: dashboard, page: () => const DashboardScreen()),
-    GetPage(name: support, page: () => const SupportScreen()),
+    GetPage(name: signup, page: () => const SignUpScreen()),
+    GetPage(name: forgotPw, page: () => const ForgotPasswordPage()),
+    GetPage(name: dashboard, page: () => const BabyTrackerHome()),
+    GetPage(name: support, page: () => const SupportController()),
     GetPage(name: activity, page: () => const ActivityPage()),
-    GetPage(name: profile, page: () => const ProfileScreen()),
+    GetPage(name: profile, page: () => const ChildProfileSummary()),
   ];
 }

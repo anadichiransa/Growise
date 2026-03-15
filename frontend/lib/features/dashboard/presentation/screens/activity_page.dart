@@ -13,7 +13,7 @@ class ActivityPage extends StatefulWidget {
     required this.videoPath,
   });
 
-    @override
+  @override
   State<ActivityPage> createState() => _ActivityPageState();
 }
 
@@ -45,7 +45,7 @@ class _ActivityPageState extends State<ActivityPage> {
     setState(() {
       _isMuted = !_isMuted;
       // Set volume to 0 for mute, or 1 for full sound
-      _controller.setVolume(_isMuted ? 0 : 1); 
+      _controller.setVolume(_isMuted ? 0 : 1);
     });
   }
 
@@ -67,10 +67,13 @@ class _ActivityPageState extends State<ActivityPage> {
                   }),
                   Text(
                     widget.title,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   _circularIconButton(
-                    _isMuted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
+                    _isMuted
+                        ? Icons.volume_off_rounded
+                        : Icons.volume_up_rounded,
                     const Color(0xFFD9A577),
                     _toggleMute,
                   ),
@@ -101,7 +104,8 @@ class _ActivityPageState extends State<ActivityPage> {
                           child: VideoPlayer(_controller),
                         )
                       : const Center(
-                          child: CircularProgressIndicator(color: Color(0xFFD9A577)),
+                          child: CircularProgressIndicator(
+                              color: Color(0xFFD9A577)),
                         ),
                 ),
               ),
@@ -143,7 +147,8 @@ class _ActivityPageState extends State<ActivityPage> {
                   children: const [
                     Text(
                       "I DID IT!",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
                     ),
                     SizedBox(width: 10),
                     Icon(Icons.arrow_forward),
