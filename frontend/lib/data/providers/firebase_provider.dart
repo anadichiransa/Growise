@@ -10,9 +10,7 @@ class FirebaseGrowthProvider {
 
   /// Save a new growth record. Works offline — SDK queues if no connection.
   Future<String> saveRecord(GrowthRecord record) async {
-    final docRef = await _db
-        .collection(_collection)
-        .add(record.toFirestore());
+    final docRef = await _db.collection(_collection).add(record.toFirestore());
     return docRef.id;
   }
 
@@ -32,21 +30,19 @@ class FirebaseGrowthProvider {
           const GetOptions(source: Source.serverAndCache),
         );
 
-    return snapshot.docs
-        .map((doc) => GrowthRecord.fromFirestore(doc))
-        .toList();
+    return snapshot.docs.map((doc) => GrowthRecord.fromFirestore(doc)).toList();
   }
 
   /// Delete a record. Works offline — SDK queues deletion.
   Future<void> deleteRecord(String recordId) async {
-    await _db.collection(_collection).document(recordId).delete();
+    await _db.collection(_collection).doc(recordId).delete();
   }
 
   /// Mark a record as synced to backend.
   Future<void> markSyncedToBackend(String recordId) async {
     await _db
         .collection(_collection)
-        .document(recordId)
+        .doc(recordId)
         .update({'isSyncedToBackend': true});
   }
 
@@ -60,9 +56,7 @@ class FirebaseGrowthProvider {
         .where('isSyncedToBackend', isEqualTo: false)
         .get();
 
-    return snapshot.docs
-        .map((doc) => GrowthRecord.fromFirestore(doc))
-        .toList();
+    return snapshot.docs.map((doc) => GrowthRecord.fromFirestore(doc)).toList();
   }
 
   /// Real-time stream of records .

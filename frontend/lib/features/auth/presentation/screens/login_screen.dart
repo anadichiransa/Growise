@@ -40,7 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 30),
-
               const Text(
                 "Welcome Back",
                 style: TextStyle(
@@ -49,7 +48,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
               const SizedBox(height: 10),
               const Text(
                 "Sign in to access your child development\ntools and resources",
@@ -57,7 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(color: Colors.white70, fontSize: 14),
               ),
               const SizedBox(height: 40),
-
               _buildLabel("EMAIL / USERNAME"),
               _buildTextField(
                 controller: _emailController,
@@ -65,7 +62,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 icon: Icons.person_2_outlined,
               ),
               const SizedBox(height: 20),
-
               _buildLabel("PASSWORD"),
               _buildTextField(
                 controller: _passwordController,
@@ -172,7 +168,6 @@ class _LoginScreenState extends State<LoginScreen> {
         filled: true,
         fillColor: fieldBg,
         prefixIcon: Icon(icon, color: Colors.white54),
-
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(
@@ -183,7 +178,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     setState(() => _isPasswordVisible = !_isPasswordVisible),
               )
             : null,
-
         hintText: hint,
         hintStyle: const TextStyle(color: Colors.white30),
         border: OutlineInputBorder(
@@ -204,11 +198,13 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color:Colors.white),
-          const SizedBox(width:8),
-          Text(label, style:const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+          Icon(icon, color: Colors.white),
+          const SizedBox(width: 8),
+          Text(label,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.w500)),
         ],
       ),
     );
-
+  }
 }

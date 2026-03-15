@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'core/config/firebase_config.dart';
-import 'features/auth/presentation/screens/signup-form.dart'; 
+import 'features/auth/presentation/screens/welcome_page.dart';
 
 void main() async {
-  // Ensure Flutter is initialized before interacting with native code
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Firebase
-  await Firebase.initializeApp();
-  
-  // Enable Firestore offline persistence
-  await FirebaseConfig.enableFirestoreOffline();
-  
-  // Launch the app
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform, // ← CHANGE THIS
+  );
+
+  await Get.putAsync(() => ConnectivityService().init());
   runApp(const GrowiseApp());
 }
 
@@ -22,15 +20,14 @@ class GrowiseApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Growise',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Inter',
-        scaffoldBackgroundColor: const Color(0xFF1E1335),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4CAF50)),
+        useMaterial3: true,
       ),
-     
-      home: const SignupFormScreen(), 
+      home: const OnboradingScreen(),
     );
   }
 }

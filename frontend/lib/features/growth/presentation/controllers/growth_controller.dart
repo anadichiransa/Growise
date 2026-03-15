@@ -25,14 +25,16 @@ class GrowthController extends GetxController {
   // ─── Actions ──────────────────────────────────────────────────────────────────
 
   /// Load records from Firestore (uses cache when offline).
-  Future<void> loadRecords(String childId) async {
+  Future<List<GrowthRecord>> loadRecords(String childId) async {
     try {
       isLoading.value = true;
       errorMessage.value = '';
       final records = await _repository.getRecords(childId);
       growthRecords.value = records;
+      return records;
     } catch (e) {
       errorMessage.value = 'Failed to load records: $e';
+      return [];
     } finally {
       isLoading.value = false;
     }
@@ -71,7 +73,7 @@ class GrowthController extends GetxController {
 
       // Step 3: Build record with full analysis already included
       final record = GrowthRecord(
-        id: '',  // Firestore will assign
+        id: '', // Firestore will assign
         childId: childId,
         userId: FirebaseAuth.instance.currentUser!.uid,
         date: date,
@@ -126,7 +128,8 @@ class GrowthController extends GetxController {
     final result = _whoCalculator(
       weight: latestRecord!.weight,
       height: latestRecord!.height,
-      ageInMonths: 0, // not used for summary regeneration — pass stored z-scores instead
+      ageInMonths:
+          0, // not used for summary regeneration — pass stored z-scores instead
       gender: 'male', // placeholder
       childName: childName,
     );
@@ -136,7 +139,7 @@ class GrowthController extends GetxController {
   }
 
   String _summaryFromCategory(
-    String category, String childName, double? weightZ, double? heightZ) {
+      String category, String childName, double? weightZ, double? heightZ) {
     switch (category) {
       case 'healthy':
         return 'Great news! $childName\'s growth is healthy according to WHO standards.';
@@ -162,5 +165,71 @@ class GrowthController extends GetxController {
     months += measurementDate.month - birthDate.month;
     if (measurementDate.day < birthDate.day) months--;
     return months;
+  }
+
+  /// Named-parameter version of getSummary used by growth_chart_screen
+  String generateSummary({
+    required String category,
+    required double? weightZ,
+    required double? heightZ,
+    required String childName,
+  }) {
+    return _summaryFromCategory(category, childName, weightZ, heightZ);
+  }
+
+  /// Returns recommendation list for a given category
+  List<String> getRecommendations(String category) {
+    switch (category) {
+      case 'healthy':
+        return [
+          'Continue current feeding practices.',
+          'Schedule regular check-ups with your PHM.',
+          'Ensure adequate sleep and physical activity.',
+        ];
+      case 'stunting':
+      case 'severe_stunting':
+        return [
+          'Consult your PHM or doctor as soon as possible.',
+          'Ensure a protein-rich, balanced diet.',
+          'Monitor growth monthly.',
+          'Check for underlying infections or illnesses.',
+        ];
+      case 'wasting':
+      case 'severe_wasting':
+        return [
+          'Increase calorie-dense foods (eggs, legumes, dairy).',
+          'Consult a nutritionist or doctor immediately.',
+          'Monitor weight weekly.',
+          'Check for illness or parasites.',
+        ];
+      case 'overweight':
+        return [
+          'Reduce sugary and processed foods.',
+          'Encourage active play daily.',
+          'Consult your PHM for a dietary plan.',
+        ];
+      default:
+        return ['Record more measurements to get recommendations.'];
+    }
+  }
+
+  /// Update an existing record (used by saved_measurements_screen)
+  Future<bool> updateRecord(GrowthRecord record) async {
+    try {
+      isLoading.value = true;
+      // Delete old and re-save with same ID approach
+      await _repository.deleteRecord(record.id);
+      final saved = await _repository.saveRecord(record);
+      final index = growthRecords.indexWhere((r) => r.id == record.id);
+      if (index != -1) {
+        growthRecords[index] = saved;
+      }
+      return true;
+    } catch (e) {
+      errorMessage.value = 'Failed to update record: $e';
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

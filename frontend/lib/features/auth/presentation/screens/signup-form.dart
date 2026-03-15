@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:frontend/data/repositories/child_repository.dart';
-import 'package:frontend/data/models/child.dart';
+import 'package:growise/data/repositories/child_repository.dart';
+import 'package:growise/data/models/child.dart';
 
 void main() {
   runApp(const GrowiseApp());
@@ -633,9 +632,8 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
           color: isSelected ? const Color(0xFF4A3667) : const Color(0xFF2D1F4A),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected
-                ? const Color(0xFF5D4882)
-                : const Color(0xFF3D2F54),
+            color:
+                isSelected ? const Color(0xFF5D4882) : const Color(0xFF3D2F54),
             width: 1.5,
           ),
         ),

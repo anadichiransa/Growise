@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/growth/presentation/controllers/growth_controller.dart';
-import 'package:frontend/data/models/growth_record.dart';
-import '../../components/common/bottom_nav.dart';
+import '../controllers/growth_controller.dart';
+import 'package:growise/data/models/growth_record.dart';
+import 'package:growise/shared/widgets/common/bottom_nav.dart';
 
 class SavedMeasurementsScreen extends StatefulWidget {
   final String childId;
@@ -18,7 +18,8 @@ class SavedMeasurementsScreen extends StatefulWidget {
   });
 
   @override
-  State<SavedMeasurementsScreen> createState() => _SavedMeasurementsScreenState();
+  State<SavedMeasurementsScreen> createState() =>
+      _SavedMeasurementsScreenState();
 }
 
 class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
@@ -48,7 +49,8 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF3B1B45),
-        title: const Text('Delete Measurement', style: TextStyle(color: Colors.white)),
+        title: const Text('Delete Measurement',
+            style: TextStyle(color: Colors.white)),
         content: Text(
           'Delete measurement from ${record.date.day}/${record.date.month}/${record.date.year}?',
           style: const TextStyle(color: Colors.white70),
@@ -56,18 +58,20 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            child:
+                const Text('Cancel', style: TextStyle(color: Colors.white54)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete', style: TextStyle(color: Color(0xFFEF5350))),
+            child: const Text('Delete',
+                style: TextStyle(color: Color(0xFFEF5350))),
           ),
         ],
       ),
     );
 
     if (confirm == true) {
-      await _controller.deleteRecord(record.id, widget.childId);
+      await _controller.deleteRecord(record.id);
       _loadRecords();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -80,8 +84,10 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
   }
 
   void _editRecord(GrowthRecord record) {
-    final weightController = TextEditingController(text: record.weight.toString());
-    final heightController = TextEditingController(text: record.height.toString());
+    final weightController =
+        TextEditingController(text: record.weight.toString());
+    final heightController =
+        TextEditingController(text: record.height.toString());
     final notesController = TextEditingController(text: record.notes ?? '');
 
     showModalBottomSheet(
@@ -93,7 +99,9 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
       ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
-          left: 20, right: 20, top: 20,
+          left: 20,
+          right: 20,
+          top: 20,
           bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
         ),
         child: Column(
@@ -103,26 +111,33 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
             // Handle
             Center(
               child: Container(
-                width: 40, height: 4,
+                width: 40,
+                height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.white24, borderRadius: BorderRadius.circular(2),
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
             const SizedBox(height: 20),
             const Text('Edit Measurement',
-                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold)),
             const SizedBox(height: 6),
             Text(
               '${record.date.day}/${record.date.month}/${record.date.year}',
               style: const TextStyle(color: Color(0xFFD9A577), fontSize: 13),
             ),
             const SizedBox(height: 20),
-            _editField('Weight (kg)', weightController, Icons.monitor_weight_outlined),
+            _editField(
+                'Weight (kg)', weightController, Icons.monitor_weight_outlined),
             const SizedBox(height: 14),
             _editField('Height (cm)', heightController, Icons.height),
             const SizedBox(height: 14),
-            _editField('Notes (optional)', notesController, Icons.notes, maxLines: 2),
+            _editField('Notes (optional)', notesController, Icons.notes,
+                maxLines: 2),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () async {
@@ -130,16 +145,24 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
                 final h = double.tryParse(heightController.text.trim());
                 if (w == null || h == null) return;
 
-                await _controller.updateRecord(
-                  recordId: record.id,
+                final updatedRecord = GrowthRecord(
+                  id: record.id,
                   childId: widget.childId,
-                  gender: widget.gender,
-                  dateOfBirth: widget.dateOfBirth,
+                  userId: record.userId,
                   date: record.date,
                   weight: w,
                   height: h,
-                  notes: notesController.text.trim().isEmpty ? null : notesController.text.trim(),
+                  bmi: record.bmi,
+                  weightForAgeZ: record.weightForAgeZ,
+                  heightForAgeZ: record.heightForAgeZ,
+                  category: record.category,
+                  recommendations: record.recommendations,
+                  notes: notesController.text.trim().isEmpty
+                      ? null
+                      : notesController.text.trim(),
+                  createdAt: record.createdAt,
                 );
+                await _controller.updateRecord(updatedRecord);
                 if (ctx.mounted) Navigator.pop(ctx);
                 _loadRecords();
                 if (mounted) {
@@ -151,9 +174,11 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange, foregroundColor: Colors.black,
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.black,
                 minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
               ),
               child: const Text('Save Changes',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
@@ -164,12 +189,14 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
     );
   }
 
-  Widget _editField(String label, TextEditingController controller, IconData icon,
+  Widget _editField(
+      String label, TextEditingController controller, IconData icon,
       {int maxLines = 1}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: Colors.white70, fontSize: 13)),
+        Text(label,
+            style: const TextStyle(color: Colors.white70, fontSize: 13)),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
@@ -210,40 +237,59 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
           children: [
             Center(
               child: Container(
-                width: 40, height: 4,
+                width: 40,
+                height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.white24, borderRadius: BorderRadius.circular(2),
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
             const SizedBox(height: 20),
             Text(
               '${record.date.day}/${record.date.month}/${record.date.year}',
-              style: const TextStyle(color: Color(0xFFD9A577), fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  color: Color(0xFFD9A577),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             Row(
               children: [
-                Expanded(child: _viewTile('Weight', '${record.weight.toStringAsFixed(1)} kg',
-                    Icons.monitor_weight_outlined)),
+                Expanded(
+                    child: _viewTile(
+                        'Weight',
+                        '${record.weight.toStringAsFixed(1)} kg',
+                        Icons.monitor_weight_outlined)),
                 const SizedBox(width: 12),
-                Expanded(child: _viewTile('Height', '${record.height.toStringAsFixed(0)} cm',
-                    Icons.height)),
+                Expanded(
+                    child: _viewTile(
+                        'Height',
+                        '${record.height.toStringAsFixed(0)} cm',
+                        Icons.height)),
               ],
             ),
             const SizedBox(height: 12),
             Row(
               children: [
-                Expanded(child: _viewTile('Weight Z-Score',
-                    record.weightForAgeZ?.toStringAsFixed(2) ?? 'N/A', Icons.analytics_outlined)),
+                Expanded(
+                    child: _viewTile(
+                        'Weight Z-Score',
+                        record.weightForAgeZ?.toStringAsFixed(2) ?? 'N/A',
+                        Icons.analytics_outlined)),
                 const SizedBox(width: 12),
-                Expanded(child: _viewTile('Height Z-Score',
-                    record.heightForAgeZ?.toStringAsFixed(2) ?? 'N/A', Icons.analytics_outlined)),
+                Expanded(
+                    child: _viewTile(
+                        'Height Z-Score',
+                        record.heightForAgeZ?.toStringAsFixed(2) ?? 'N/A',
+                        Icons.analytics_outlined)),
               ],
             ),
             if (record.category != null) ...[
               const SizedBox(height: 12),
-              _viewTile('Status', record.category!.replaceAll('_', ' ').toUpperCase(),
+              _viewTile(
+                  'Status',
+                  record.category!.replaceAll('_', ' ').toUpperCase(),
                   Icons.flag_outlined),
             ],
             if (record.notes != null && record.notes!.isNotEmpty) ...[
@@ -272,10 +318,15 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(color: Colors.white54, fontSize: 11)),
+                Text(label,
+                    style:
+                        const TextStyle(color: Colors.white54, fontSize: 11)),
                 const SizedBox(height: 2),
-                Text(value, style: const TextStyle(color: Colors.white,
-                    fontSize: 14, fontWeight: FontWeight.bold)),
+                Text(value,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -286,11 +337,18 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
 
   Color _statusColor(String? category) {
     switch (category) {
-      case 'healthy': return const Color(0xFF2E7D32);
-      case 'stunting': case 'wasting': return const Color(0xFFF57F17);
-      case 'severe_stunting': case 'severe_wasting': return const Color(0xFFC62828);
-      case 'overweight': return const Color(0xFFE65100);
-      default: return Colors.white24;
+      case 'healthy':
+        return const Color(0xFF2E7D32);
+      case 'stunting':
+      case 'wasting':
+        return const Color(0xFFF57F17);
+      case 'severe_stunting':
+      case 'severe_wasting':
+        return const Color(0xFFC62828);
+      case 'overweight':
+        return const Color(0xFFE65100);
+      default:
+        return Colors.white24;
     }
   }
 
@@ -311,17 +369,23 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
                     onTap: () => Navigator.pop(context),
                     child: Container(
                       padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(color: Colors.white12, shape: BoxShape.circle),
-                      child: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
+                      decoration: const BoxDecoration(
+                          color: Colors.white12, shape: BoxShape.circle),
+                      child: const Icon(Icons.arrow_back,
+                          color: Colors.white, size: 24),
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Text('${widget.childName}\'s Measurements',
-                        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white)),
+                        style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white)),
                   ),
                   Text('${_records.length} records',
-                      style: const TextStyle(color: Colors.white38, fontSize: 13)),
+                      style:
+                          const TextStyle(color: Colors.white38, fontSize: 13)),
                 ],
               ),
             ),
@@ -329,11 +393,14 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
             // List
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator(color: Color(0xFFD9A577)))
+                  ? const Center(
+                      child:
+                          CircularProgressIndicator(color: Color(0xFFD9A577)))
                   : _records.isEmpty
                       ? const Center(
                           child: Text('No saved measurements yet.',
-                              style: TextStyle(color: Colors.white54, fontSize: 15)),
+                              style: TextStyle(
+                                  color: Colors.white54, fontSize: 15)),
                         )
                       : ListView.builder(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -347,24 +414,32 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: ListTile(
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
                                 leading: Container(
-                                  width: 44, height: 44,
+                                  width: 44,
+                                  height: 44,
                                   decoration: BoxDecoration(
-                                    color: _statusColor(record.category).withOpacity(0.2),
+                                    color: _statusColor(record.category)
+                                        .withOpacity(0.2),
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: _statusColor(record.category)),
+                                    border: Border.all(
+                                        color: _statusColor(record.category)),
                                   ),
                                   child: Icon(Icons.show_chart,
-                                      color: _statusColor(record.category), size: 20),
+                                      color: _statusColor(record.category),
+                                      size: 20),
                                 ),
                                 title: Text(
                                   '${record.date.day}/${record.date.month}/${record.date.year}',
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 subtitle: Text(
                                   '${record.weight.toStringAsFixed(1)} kg  •  ${record.height.toStringAsFixed(0)} cm  •  ${record.category?.replaceAll('_', ' ') ?? ''}',
-                                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                                  style: const TextStyle(
+                                      color: Colors.white54, fontSize: 12),
                                 ),
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -376,10 +451,13 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
                                         padding: const EdgeInsets.all(8),
                                         decoration: BoxDecoration(
                                           color: Colors.white10,
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                         ),
-                                        child: const Icon(Icons.visibility_outlined,
-                                            color: Colors.white54, size: 18),
+                                        child: const Icon(
+                                            Icons.visibility_outlined,
+                                            color: Colors.white54,
+                                            size: 18),
                                       ),
                                     ),
                                     const SizedBox(width: 8),
@@ -389,8 +467,10 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
                                       child: Container(
                                         padding: const EdgeInsets.all(8),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFFD9A577).withOpacity(0.15),
-                                          borderRadius: BorderRadius.circular(10),
+                                          color: const Color(0xFFD9A577)
+                                              .withOpacity(0.15),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                         ),
                                         child: const Icon(Icons.edit_outlined,
                                             color: Color(0xFFD9A577), size: 18),
@@ -403,8 +483,10 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
                                       child: Container(
                                         padding: const EdgeInsets.all(8),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFFEF5350).withOpacity(0.15),
-                                          borderRadius: BorderRadius.circular(10),
+                                          color: const Color(0xFFEF5350)
+                                              .withOpacity(0.15),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                         ),
                                         child: const Icon(Icons.delete_outline,
                                             color: Color(0xFFEF5350), size: 18),

@@ -4,7 +4,7 @@ class OnboradingScreen extends StatelessWidget {
   const OnboradingScreen({super.key});
 
   @override
-  Widget build(BuildContext) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF210F37),
       body: Padding(
@@ -76,7 +76,8 @@ class OnboradingScreen extends StatelessWidget {
                 backgroundColor: const Color(0xFF3B1E54),
                 child: Padding(
                   padding: const EdgeInsets.only(top: 16.0),
-                  child: Image.assest("assests/images/icon1.png"),
+                  child: const Icon(Icons.child_care,
+                      size: 60, color: Colors.white),
                 ),
               ),
             ),
