@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -256,8 +257,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void _handleSignUp() {
     if (_formKey.currentState!.validate()) {
-      // Future Step: Call FastAPI /user/register
-      print("Registering: ${_emailController.text}");
+      // Navigate to child profile setup after signup
+      Get.offAllNamed('/dashboard');
     }
   }
 }
