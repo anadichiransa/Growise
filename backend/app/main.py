@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api import growth, learn, help_recovery
+from api import growth, who_standards
 
 app = FastAPI(
     title="GrowIse API",
-    description="Backend for the GrowIse Flutter app",
+    description="Backend for GrowIse Flutter app",
     version="1.0.0",
 )
 
@@ -17,10 +17,8 @@ app.add_middleware(
 )
 
 app.include_router(growth.router,        prefix="/growth", tags=["Growth Tracker"])
-app.include_router(learn.router,         prefix="/learn",  tags=["Play & Learn"])
-app.include_router(help_recovery.router, prefix="/help",   tags=["Help & Recovery"])
+app.include_router(who_standards.router, prefix="/who",    tags=["WHO Standards"])
 
-
-@app.get("/", tags=["Health"])
+@app.get("/")
 def root():
-    return {"status": "ok", "message": "GrowIse API is running 🌱"}
+    return {"status": "ok", "message": "GrowIse API is running"}

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../components/common/status_banner.dart';
-import '../../controllers/growth_controller.dart';
-import '../../models/growth_record_model.dart';
-import '../../models/who_standard_model.dart';
-import '../../services/api_service.dart';
-import '../../components/common/bottom_nav.dart';
+import '../../../core/constants/colors.dart';
+import '../../../data/models/growth_record_model.dart';
+import '../../../data/models/who_standard_model.dart';
+import '../../../data/repositories/api_service.dart';
+import '../controllers/growth_controller.dart';
 import 'add_measurement_screen.dart';
 import 'saved_measurements_screen.dart';
 
