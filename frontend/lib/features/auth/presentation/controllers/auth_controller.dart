@@ -1,46 +1,71 @@
 import 'package:flutter/material.dart';
-import 'package:growise/data/providers/api_provider.dart';
+import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class AuthController {
-  final ApiProvider _apiProvider = ApiProvider();
+class AuthController extends GetxController {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  var isLoading = false.obs;
 
-  Future<void> login(
-    BuildContext context,
-    String email,
-    String password,
-  ) async {
+  Future<void> login(String email, String password) async {
     try {
-      final response = await _apiProvider.login({
-        'email': email,
-        'password': password,
-      });
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        _showMessage(context, "Welcome back, ${data['full_name']}!");
-      } else {
-        _showMessage(
-          context,
-          response.data['detail'] ?? 'Login failed',
-          isError: true,
-        );
-      }
-    } catch (e) {
-      _showMessage(
-        context,
-        'Connection error. Please check your internet.',
-        isError: true,
+      isLoading.value = true;
+      await _auth.signInWithEmailAndPassword(
+        email: email.trim(),
+        password: password.trim(),
       );
+      Get.offAllNamed('/dashboard');
+    } on FirebaseAuthException catch (e) {
+      String message = switch (e.code) {
+        'user-not-found' => 'No account found for this email.',
+        'wrong-password' => 'Incorrect password.',
+        'invalid-email' => 'Invalid email address.',
+        'user-disabled' => 'This account has been disabled.',
+        _ => 'Login failed. Please try again.',
+      };
+      Get.snackbar(
+        'Login Failed',
+        message,
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  void _showMessage(BuildContext context, String message,
-      {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red : const Color(0xFFB88E4B),
-      ),
-    );
+  Future<void> register(String email, String password) async {
+    try {
+      isLoading.value = true;
+      await _auth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password.trim(),
+      );
+      Get.offAllNamed('/dashboard');
+    } on FirebaseAuthException catch (e) {
+      String message = switch (e.code) {
+        'email-already-in-use' => 'An account already exists for this email.',
+        'weak-password' => 'Password must be at least 6 characters.',
+        'invalid-email' => 'Invalid email address.',
+        _ => 'Registration failed. Please try again.',
+      };
+      Get.snackbar(
+        'Signup Failed',
+        message,
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
+
+  Future<void> logout() async {
+    await _auth.signOut();
+    Get.offAllNamed('/');
+  }
+
+  User? get currentUser => _auth.currentUser;
+  bool get isLoggedIn => _auth.currentUser != null;
 }
