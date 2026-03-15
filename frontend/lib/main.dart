@@ -6,6 +6,7 @@ import 'core/config/firebase_config.dart';
 import 'features/auth/presentation/screens/welcome_page.dart';
 import 'core/config/routes.dart';
 import 'shared/services/connectivity_service.dart';
+import 'features/auth/presentation/controllers/auth_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +15,7 @@ void main() async {
   );
   await FirebaseConfig.enableFirestoreOffline();
   await Get.putAsync(() => ConnectivityService().init());
+  Get.put(AuthController());
   runApp(const GrowiseApp());
 }
 
