@@ -148,11 +148,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.network(
-                      'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg',
-                      height: 24,
-                    ), // Placeholder for Google Icon
+                    const Icon(Icons.g_mobiledata,
+                        color: Color(0xFFC19454), size: 28),
                     const SizedBox(width: 12),
                     const Text(
                       "Sign Up with Google",
