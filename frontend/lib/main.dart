@@ -8,7 +8,7 @@ import 'features/auth/presentation/screens/welcome_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform, // ← CHANGE THIS
+    options: DefaultFirebaseOptions.currentPlatform,
   );
 
   await Get.putAsync(() => ConnectivityService().init());
