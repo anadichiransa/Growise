@@ -1,30 +1,28 @@
 from fastapi import APIRouter, HTTPException, status
-from app.models.user import UserCreate, UserResponse, UserLogin
+from app.models.user import UserCreate, UserResponse
 from app.services.auth_service import AuthService
 
 router = APIRouter()
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register_user(user_in: UserCreate):
- 
-    result = AuthService.create_user(user_in)
-    
+@router.post("/profile", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+async def save_profile(user_in: UserCreate):
+    """
+    Called from Flutter after Firebase Auth signup succeeds.
+    Saves user profile data to Firestore.
+    """
+    result = AuthService.save_user_profile(user_in.uid, user_in)
     if "error" in result:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=result["error"]
         )
-    
-    return result
+    return {"uid": result["uid"], "full_name": result["full_name"],
+            "email": result["email"]}
 
-@router.post("/login", response_model=UserResponse)
-async def login(user_in: UserLogin):
-    result = AuthService.login_user(user_in.email, user_in.password)
-    
+@router.get("/profile/{uid}", response_model=UserResponse)
+async def get_profile(uid: str):
+    """Get user profile from Firestore."""
+    result = AuthService.get_user_profile(uid)
     if "error" in result:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=result["error"]
-        )
-    
+        raise HTTPException(status_code=404, detail=result["error"])
     return result
