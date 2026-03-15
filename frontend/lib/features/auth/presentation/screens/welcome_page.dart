@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:get/get.dart';
 
 class OnboradingScreen extends StatelessWidget {
   const OnboradingScreen({super.key});
@@ -44,7 +45,8 @@ class OnboradingScreen extends StatelessWidget {
             const SizedBox(height: 60),
             GestureDetector(
               onTap: () {
-                //navigation logic
+                onTap:
+                () => Get.toNamed('/login');
               },
               child: Container(
                 width: double.infinity,
@@ -56,7 +58,7 @@ class OnboradingScreen extends StatelessWidget {
                 child: const Center(
                   child: Text(
                     "Get Started →",
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Color(0xFF130B2B),
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

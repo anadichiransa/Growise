@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'core/config/firebase_config.dart';
 import 'features/auth/presentation/screens/welcome_page.dart';
+import 'core/config/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,8 @@ class GrowiseApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Growise',
       debugShowCheckedModeBanner: false,
+      initialRoute: AppRoutes.welcome, // ← ADD
+      getPages: AppRoutes.pages, // ← ADD
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4CAF50)),
         useMaterial3: true,
