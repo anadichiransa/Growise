@@ -167,6 +167,29 @@ class SettingsScreen extends StatelessWidget {
   }
             ),
           ],
+
+          /// 🔹 Tile Widget
+  static Widget _buildTile(IconData icon, String title) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.cardDark,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: AppColors.accent),
+        ),
+        title: Text(title, style: const TextStyle(color: Colors.white)),
+        trailing: const Icon(Icons.chevron_right, color: Colors.white54),
+        onTap: () {},
+      ),
+    );
+  }
         ),
       ),
 
