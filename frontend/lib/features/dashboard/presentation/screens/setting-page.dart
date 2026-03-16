@@ -202,5 +202,25 @@ class SettingsScreen extends StatelessWidget {
         content: const Text(
           "Are you sure you want to logout?",
           style: TextStyle(color: Colors.white70),
-
+       ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                (route) => false,
+              );
+            },
+            child: const Text("Logout", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
