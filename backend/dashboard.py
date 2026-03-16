@@ -17,3 +17,12 @@ from app.services import dashboard_service
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
+# ── Health check ──────────────────────────────────────────────────────────────
+@router.get(
+    "/health",
+    response_model=MessageResponse,
+    summary="Dashboard health check",
+    description="No auth required. Used by uptime monitors.",
+)
+async def health_check():
+    return MessageResponse(message="Dashboard service is healthy")
