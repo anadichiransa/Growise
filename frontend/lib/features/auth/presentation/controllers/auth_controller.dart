@@ -14,7 +14,7 @@ class AuthController extends GetxController {
         email: email.trim(),
         password: password.trim(),
       );
-      Get.offAllNamed('/details');
+      Get.offAllNamed('/dashboard');
     } on FirebaseAuthException catch (e) {
       String message = switch (e.code) {
         'user-not-found' => 'No account found for this email.',
@@ -54,7 +54,7 @@ class AuthController extends GetxController {
         // Silent — user still registered in Firebase Auth
       }
 
-      Get.offAllNamed('/dashboard');
+      Get.offAllNamed('/details');
     } on FirebaseAuthException catch (e) {
       String message = switch (e.code) {
         'email-already-in-use' => 'An account already exists for this email.',
