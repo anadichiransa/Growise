@@ -167,7 +167,6 @@ class GrowthController extends GetxController {
     return months;
   }
 
-  /// Named-parameter version of getSummary used by growth_chart_screen
   String generateSummary({
     required String category,
     required double? weightZ,
@@ -177,7 +176,6 @@ class GrowthController extends GetxController {
     return _summaryFromCategory(category, childName, weightZ, heightZ);
   }
 
-  /// Returns recommendation list for a given category
   List<String> getRecommendations(String category) {
     switch (category) {
       case 'healthy':
@@ -192,38 +190,31 @@ class GrowthController extends GetxController {
           'Consult your PHM or doctor as soon as possible.',
           'Ensure a protein-rich, balanced diet.',
           'Monitor growth monthly.',
-          'Check for underlying infections or illnesses.',
         ];
       case 'wasting':
       case 'severe_wasting':
         return [
-          'Increase calorie-dense foods (eggs, legumes, dairy).',
+          'Increase calorie-dense foods.',
           'Consult a nutritionist or doctor immediately.',
           'Monitor weight weekly.',
-          'Check for illness or parasites.',
         ];
       case 'overweight':
         return [
           'Reduce sugary and processed foods.',
           'Encourage active play daily.',
-          'Consult your PHM for a dietary plan.',
         ];
       default:
         return ['Record more measurements to get recommendations.'];
     }
   }
 
-  /// Update an existing record (used by saved_measurements_screen)
   Future<bool> updateRecord(GrowthRecord record) async {
     try {
       isLoading.value = true;
-      // Delete old and re-save with same ID approach
       await _repository.deleteRecord(record.id);
       final saved = await _repository.saveRecord(record);
       final index = growthRecords.indexWhere((r) => r.id == record.id);
-      if (index != -1) {
-        growthRecords[index] = saved;
-      }
+      if (index != -1) growthRecords[index] = saved;
       return true;
     } catch (e) {
       errorMessage.value = 'Failed to update record: $e';

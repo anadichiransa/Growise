@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/growth/presentation/controllers/growth_controller.dart';
-import '../../components/common/bottom_nav.dart';
+import '../controllers/growth_controller.dart';
+import 'package:growise/shared/widgets/common/bottom_nav.dart';
 
 class AddMeasurementScreen extends StatefulWidget {
   final String childId;
@@ -76,12 +76,15 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
 
       final success = await _controller.addMeasurement(
         childId: widget.childId,
+        childName: widget.childName,
         gender: widget.gender,
         dateOfBirth: widget.dateOfBirth,
         date: _selectedDate,
         weight: weight,
         height: height,
-        notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        notes: _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
       );
 
       if (success && mounted) {
@@ -175,7 +178,8 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                       GestureDetector(
                         onTap: _pickDate,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 16),
                           decoration: BoxDecoration(
                             color: const Color(0xFF3B1B45),
                             borderRadius: BorderRadius.circular(16),
@@ -185,7 +189,8 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                             children: [
                               Text(
                                 '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                                style: const TextStyle(color: Colors.white, fontSize: 16),
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 16),
                               ),
                               const Icon(Icons.calendar_today,
                                   color: Color(0xFFD9A577), size: 20),
@@ -204,10 +209,13 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                         hint: 'e.g. 7.5',
                         icon: Icons.monitor_weight_outlined,
                         validator: (val) {
-                          if (val == null || val.isEmpty) return 'Please enter weight';
+                          if (val == null || val.isEmpty)
+                            return 'Please enter weight';
                           final w = double.tryParse(val);
-                          if (w == null || w <= 0) return 'Enter a valid number';
-                          if (w < 1 || w > 30) return 'Weight seems unusual — please check';
+                          if (w == null || w <= 0)
+                            return 'Enter a valid number';
+                          if (w < 1 || w > 30)
+                            return 'Weight seems unusual — please check';
                           return null;
                         },
                       ),
@@ -222,10 +230,13 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                         hint: 'e.g. 68',
                         icon: Icons.height,
                         validator: (val) {
-                          if (val == null || val.isEmpty) return 'Please enter height';
+                          if (val == null || val.isEmpty)
+                            return 'Please enter height';
                           final h = double.tryParse(val);
-                          if (h == null || h <= 0) return 'Enter a valid number';
-                          if (h < 40 || h > 150) return 'Height seems unusual — please check';
+                          if (h == null || h <= 0)
+                            return 'Enter a valid number';
+                          if (h < 40 || h > 150)
+                            return 'Height seems unusual — please check';
                           return null;
                         },
                       ),
@@ -238,11 +249,13 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                       Row(
                         children: [
                           Expanded(
-                            child: _radioOption('Home', 'home', Icons.home_outlined),
+                            child: _radioOption(
+                                'Home', 'home', Icons.home_outlined),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: _radioOption('Clinic', 'clinic', Icons.local_hospital_outlined),
+                            child: _radioOption('Clinic', 'clinic',
+                                Icons.local_hospital_outlined),
                           ),
                         ],
                       ),
@@ -282,13 +295,16 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                         ),
                         child: const Row(
                           children: [
-                            Icon(Icons.info_outline, color: Color(0xFFD9A577), size: 18),
+                            Icon(Icons.info_outline,
+                                color: Color(0xFFD9A577), size: 18),
                             SizedBox(width: 10),
                             Expanded(
                               child: Text(
                                 'Measurements are analysed using WHO Child Growth Standards (2006)',
                                 style: TextStyle(
-                                    color: Colors.white70, fontSize: 12, height: 1.4),
+                                    color: Colors.white70,
+                                    fontSize: 12,
+                                    height: 1.4),
                               ),
                             ),
                           ],
@@ -307,7 +323,8 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(35)),
                           elevation: 8,
-                          disabledBackgroundColor: Colors.orange.withOpacity(0.4),
+                          disabledBackgroundColor:
+                              Colors.orange.withOpacity(0.4),
                         ),
                         child: _isSaving
                             ? const SizedBox(
@@ -322,7 +339,8 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                                   Text(
                                     'Save Measurement',
                                     style: TextStyle(
-                                        fontSize: 18, fontWeight: FontWeight.w900),
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w900),
                                   ),
                                   SizedBox(width: 10),
                                   Icon(Icons.arrow_forward),
@@ -377,8 +395,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
         errorStyle: const TextStyle(color: Color(0xFFFF7070)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide:
-              const BorderSide(color: Color(0xFFD9A577), width: 1.5),
+          borderSide: const BorderSide(color: Color(0xFFD9A577), width: 1.5),
         ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -398,9 +415,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
               : const Color(0xFF3B1B45),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected
-                ? const Color(0xFFD9A577)
-                : Colors.transparent,
+            color: selected ? const Color(0xFFD9A577) : Colors.transparent,
             width: 1.5,
           ),
         ),
@@ -415,8 +430,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
               label,
               style: TextStyle(
                 color: selected ? const Color(0xFFD9A577) : Colors.white54,
-                fontWeight:
-                    selected ? FontWeight.bold : FontWeight.normal,
+                fontWeight: selected ? FontWeight.bold : FontWeight.normal,
               ),
             ),
           ],
@@ -425,8 +439,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
     );
   }
 
-  Widget _circularIconButton(
-      IconData icon, Color bgColor, VoidCallback onTap) {
+  Widget _circularIconButton(IconData icon, Color bgColor, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(

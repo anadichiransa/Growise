@@ -14,7 +14,7 @@ class AuthController extends GetxController {
         email: email.trim(),
         password: password.trim(),
       );
-      Get.offAllNamed('/dashboard');
+      Get.offAllNamed('/details');
     } on FirebaseAuthException catch (e) {
       String message = switch (e.code) {
         'user-not-found' => 'No account found for this email.',

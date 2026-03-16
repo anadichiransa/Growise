@@ -8,6 +8,9 @@ import '../../features/dashboard/presentation/screens/support.dart';
 import '../../features/dashboard/presentation/screens/activity_page.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../features/dashboard/presentation/screens/details.dart';
+import '../../features/auth/presentation/screens/signup-form.dart';
+import '../../features/auth/presentation/screens/access_requesting.dart';
 
 class AppRoutes {
   static const welcome = '/';
@@ -18,6 +21,9 @@ class AppRoutes {
   static const support = '/support';
   static const activity = '/activity';
   static const profile = '/profile';
+  static const details = '/details';
+  static const signupForm = '/signup-form';
+  static const accessRequest = '/access-requesting';
 
   static final pages = [
     GetPage(name: welcome, page: () => const OnboradingScreen()),
@@ -34,5 +40,8 @@ class AppRoutes {
               videoPath: '',
             )),
     GetPage(name: profile, page: () => const BabyTrackerHome()),
+    GetPage(name: details, page: () => const OnboardingDetailsPage()),
+    GetPage(name: signupForm, page: () => const SignupFormScreen()),
+    GetPage(name: accessRequest, page: () => const SetupExperienceScreen()),
   ];
 }
