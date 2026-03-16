@@ -6,6 +6,7 @@ __pycache__/
 
 # --- Sensitive Data---
 .env
+.env.example
 firebase-admin-key.json
 
 # --- Local Databases ---
