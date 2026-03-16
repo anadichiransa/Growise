@@ -115,5 +115,30 @@ class SettingsScreen extends StatelessWidget {
             _buildTile(Icons.help_outline, "Support Center"),
 
             const Spacer(),
+            /// 🔥 LOGOUT BUTTON (WORKING)
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: const Icon(Icons.logout),
+                label: const Text(
+                  "Logout",
+                  style: const TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  _showLogoutDialog(context);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+
 
 
