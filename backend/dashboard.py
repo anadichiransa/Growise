@@ -100,4 +100,46 @@ async def get_child(
             detail=f"Child '{child_id}' not found.",
         )
     return child
+    # ── Growth records ────────────────────────────────────────────────────────────
+@router.post(
+    "/growth/{child_id}",
+    response_model=GrowthRecordResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Add a growth measurement",
+    description=(
+        "Records a new height/weight measurement. "
+        "Both height_cm and weight_kg are optional — provide one or both."
+    ),
+)
+async def add_growth_record(
+    child_id: str,
+    payload: GrowthRecordCreate,
+    parent_uid: str = Depends(get_current_user_uid),
+    db=Depends(get_firestore_client),
+):
+    # Business rule: at least one measurement must be present
+    if payload.height_cm is None and payload.weight_kg is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="At least one of 'height_cm' or 'weight_kg' must be provided.",
+        )
+
+    # Ownership check before writing
+    child = dashboard_service.get_child_profile(db, child_id, parent_uid)
+    if child is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Child '{child_id}' not found.",
+        )
+
+    try:
+        return dashboard_service.add_growth_record(db, child_id, payload)
+    except Exception as exc:
+        logger.error("add_growth_record failed child=%s: %s", child_id, exc)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Could not save growth record.",
+        )
+
+
 
