@@ -1,54 +1,76 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 
-// Helper function to get the right local URL
-String getLocalApiUrl() {
-  if (kIsWeb) {
-    return 'http://localhost:8000/api/v1'; // Web browser testing
-  } else if (Platform.isAndroid) {
-    return 'http://10.0.2.2:8000/api/v1'; // Android Emulator
-  } else if (Platform.isIOS) {
-    return 'http://localhost:8000/api/v1'; // iOS Simulator
-  }
-  // Fallback (or change this to your computer's Wi-Fi IP for physical phones)
-  return 'http://localhost:8000/api/v1'; 
-}
-
-/// HTTP client for backend API
 class ApiProvider {
-  late final Dio _dio;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final Dio _dio;
 
-  ApiProvider() {
-    _dio = Dio(BaseOptions(
-      baseUrl: getLocalApiUrl(),  // Change for production
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
-    ));
+  static const String baseUrl =
+      'http://10.0.2.2:8000/api/v1'; // Android emulator
+  // Use 'http://localhost:8000/api/v1' for web/desktop
 
-    // Add authentication token to all requests
-    _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        final token = await _auth.currentUser?.getIdToken();
-        if (token != null) {
-          options.headers['Authorization'] = 'Bearer $token';
-        }
-        return handler.next(options);
-      },
-    ));
+  ApiProvider()
+      : _dio = Dio(BaseOptions(
+          baseUrl: baseUrl,
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+          headers: {'Content-Type': 'application/json'},
+        ));
+
+  // ── Auth ──────────────────────────────────────────────
+  Future<Response> login(Map<String, dynamic> data) async {
+    return await _dio.post('/auth/login', data: data);
   }
 
-  /// Sync child to backend
-  Future<bool> syncChild(Map<String, dynamic> childData) async {
+  Future<Response> register(Map<String, dynamic> data) async {
+    return await _dio.post('/auth/register', data: data);
+  }
+
+  Future<bool> syncChild(Map<String, dynamic> data) async {
     try {
-      await _dio.post('/children/', data: childData);
-      return true;
+      final response = await _dio.post('/children', data: data);
+      return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
-      print('Backend sync failed (will retry later): $e');
       return false;
     }
+  }
+
+  Future<Response> saveUserProfile(Map<String, dynamic> data) async {
+    return await _dio.post('/auth/profile', data: data);
+  }
+
+  // ── Growth ────────────────────────────────────────────
+  Future<Response> syncGrowthRecord(Map<String, dynamic> data) async {
+    return await _dio.post('/growth/records', data: data);
+  }
+
+  Future<Response> getGrowthRecords(String childId) async {
+    return await _dio.get('/growth/records/$childId');
+  }
+
+  // ── Children ──────────────────────────────────────────
+  Future<Response> createChild(Map<String, dynamic> data) async {
+    return await _dio.post('/children', data: data);
+  }
+
+  Future<Response> getChildren() async {
+    return await _dio.get('/children');
+  }
+
+  // ── Meals ─────────────────────────────────────────────
+  Future<Response> generateMealPlan(Map<String, dynamic> data) async {
+    return await _dio.post('/meals/generate', data: data);
+  }
+
+  // ── Vaccines ──────────────────────────────────────────
+  Future<Response> getVaccineSchedule(String childId) async {
+    return await _dio.get('/vaccines/schedule/$childId');
+  }
+
+  // ── Helper ────────────────────────────────────────────
+  void setAuthToken(String token) {
+    _dio.options.headers['Authorization'] = 'Bearer $token';
+  }
+
+  void clearAuthToken() {
+    _dio.options.headers.remove('Authorization');
   }
 }

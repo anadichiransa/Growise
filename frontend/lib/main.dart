@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'core/config/firebase_config.dart';
-import 'features/auth/presentation/screens/signup-form.dart';
+import 'features/auth/presentation/screens/welcome_page.dart';
+import 'core/config/routes.dart';
+import 'shared/services/connectivity_service.dart';
+import 'features/auth/presentation/controllers/auth_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  try {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: 'YOUR_API_KEY',
-        appId: 'YOUR_APP_ID',
-        messagingSenderId: 'YOUR_SENDER_ID',
-        projectId: 'YOUR_PROJECT_ID',
-        storageBucket: 'YOUR_STORAGE_BUCKET',
-        authDomain: 'YOUR_AUTH_DOMAIN',
-      ),
-    );
-    await FirebaseConfig.enableFirestoreOffline();
-  } catch (e) {
-    print('Firebase init failed: ');
-  }
-
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  final user = FirebaseAuth.instance.currentUser;
+  await FirebaseConfig.enableFirestoreOffline();
+  await Get.putAsync(() => ConnectivityService().init());
+  Get.put(AuthController());
   runApp(const GrowiseApp());
 }
 
@@ -30,14 +26,17 @@ class GrowiseApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Growise',
       debugShowCheckedModeBanner: false,
+      initialRoute: FirebaseAuth.instance.currentUser != null
+          ? AppRoutes.dashboard
+          : AppRoutes.welcome,
+      getPages: AppRoutes.pages,
       theme: ThemeData(
-        fontFamily: 'Inter',
-        scaffoldBackgroundColor: const Color(0xFF1E1335),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4CAF50)),
+        useMaterial3: true,
       ),
-      home: const SignupFormScreen(),
     );
   }
 }

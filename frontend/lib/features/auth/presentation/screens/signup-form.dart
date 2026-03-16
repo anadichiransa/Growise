@@ -1,31 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:frontend/data/repositories/child_repository.dart';
-import 'package:frontend/data/models/child.dart';
-
-void main() {
-  runApp(const GrowiseApp());
-}
-
-class GrowiseApp extends StatelessWidget {
-  const GrowiseApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Growise',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'Inter',
-        scaffoldBackgroundColor: const Color(0xFF1E1335),
-      ),
-      home: const SignupFormScreen(),
-    );
-  }
-}
+import 'package:get/get.dart';
+import 'package:growise/data/repositories/child_repository.dart';
 
 class SignupFormScreen extends StatefulWidget {
   const SignupFormScreen({super.key});
@@ -63,7 +40,6 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    // Show custom dialog with auto-formatting instead of default date picker
     final DateTime? picked = await showDialog<DateTime>(
       context: context,
       builder: (BuildContext context) {
@@ -84,7 +60,6 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
   }
 
   Future<void> _openNativeDatePicker(BuildContext context) async {
-    // Open Android/iOS native date picker
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
@@ -134,7 +109,6 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
       int month = int.parse(_monthController.text);
       int year = int.parse(_yearController.text);
 
-      // Validate ranges
       if (day < 1 || day > 31) {
         _showSnackBar('Day must be between 01 and 31');
         return;
@@ -151,10 +125,8 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
         return;
       }
 
-      // Try to create date
       DateTime parsedDate = DateTime(year, month, day);
 
-      // Check if date is valid
       if (parsedDate.day != day ||
           parsedDate.month != month ||
           parsedDate.year != year) {
@@ -162,13 +134,11 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
         return;
       }
 
-      // Check if date is in the future
       if (parsedDate.isAfter(DateTime.now())) {
         _showSnackBar('Date cannot be in the future');
         return;
       }
 
-      // Valid date
       setState(() {
         _selectedDate = parsedDate;
       });
@@ -178,7 +148,6 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
   }
 
   void _completeSetup() async {
-    // Existing validation
     if (_nameController.text.isEmpty) {
       _showSnackBar('Please enter child\'s name');
       return;
@@ -194,44 +163,33 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
       return;
     }
 
-    // Validate date one more time
     _validateDateFields();
     if (_selectedDate == null) {
       _showSnackBar('Please enter a valid date');
       return;
     }
 
-    // NEW: Show loading
     setState(() {
       _isLoading = true;
     });
 
     try {
-      // NEW: Save to Firestore
       final childId = await _childRepository.saveChild(
         name: _nameController.text.trim(),
         birthDate: _selectedDate!,
         gender: _selectedGender!,
       );
 
-      // Navigate to dashboard
       if (mounted) {
-        // Show success message
         _showSnackBar('Profile created successfully!');
-
-        // Wait a moment for user to see message
         await Future.delayed(const Duration(milliseconds: 500));
-
-        // Navigate to dashboard (replace this screen)
-        Navigator.pushReplacementNamed(context, '/dashboard');
+        Get.toNamed('/access-requesting');
       }
     } catch (e) {
-      // Error handling
       if (mounted) {
         _showSnackBar('Error: ${e.toString()}');
       }
     } finally {
-      // Hide loading
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -261,15 +219,12 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
-                // Back button and progress indicator
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () {
-                        // TODO: Navigate back
-                      },
+                      onPressed: () => Get.back(),
                     ),
                     Row(
                       children: [
@@ -280,11 +235,10 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
                         _buildProgressDot(false),
                       ],
                     ),
-                    const SizedBox(width: 48), // Balance for back button
+                    const SizedBox(width: 48),
                   ],
                 ),
                 const SizedBox(height: 40),
-                // Title
                 const Text(
                   'Personalize Your\nExperience',
                   style: TextStyle(
@@ -295,7 +249,6 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                // Description
                 const Text(
                   'Tell us a bit about your child so we can tailor the content specifically for their development stage.',
                   style: TextStyle(
@@ -305,7 +258,6 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
                   ),
                 ),
                 const SizedBox(height: 48),
-                // Child's Name Field
                 _buildLabel('CHILD\'S NAME'),
                 const SizedBox(height: 8),
                 _buildTextField(
@@ -314,12 +266,10 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
                   prefixIcon: Icons.emoji_emotions_outlined,
                 ),
                 const SizedBox(height: 24),
-                // Date of Birth Field
                 _buildLabel('DATE OF BIRTH'),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    // Day field
                     Expanded(
                       flex: 2,
                       child: _buildDateSegmentField(
@@ -341,7 +291,6 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
                         ),
                       ),
                     ),
-                    // Month field
                     Expanded(
                       flex: 2,
                       child: _buildDateSegmentField(
@@ -363,7 +312,6 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
                         ),
                       ),
                     ),
-                    // Year field
                     Expanded(
                       flex: 3,
                       child: _buildDateSegmentField(
@@ -375,7 +323,6 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    // Calendar picker button
                     Container(
                       height: 56,
                       width: 56,
@@ -399,7 +346,6 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
                   ],
                 ),
                 const SizedBox(height: 24),
-                // Gender Selection
                 _buildLabel('GENDER'),
                 const SizedBox(height: 12),
                 Row(
@@ -432,14 +378,11 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
                   ],
                 ),
                 const SizedBox(height: 40),
-                // Complete Setup Button
                 SizedBox(
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: _isLoading
-                        ? null
-                        : _completeSetup, // ← Disable when loading
+                    onPressed: _isLoading ? null : _completeSetup,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE8B36A),
                       foregroundColor: const Color(0xFF1E1335),
@@ -476,18 +419,6 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                // Skip for now
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      // TODO: Skip setup
-                    },
-                    child: const Text(
-                      'Skip for now',
-                      style: TextStyle(color: Color(0xFFB8B0C8), fontSize: 14),
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 24),
               ],
             ),
@@ -559,7 +490,7 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
             horizontal: 16,
             vertical: 16,
           ),
-          counterText: '', // Hide character counter
+          counterText: '',
         ),
       ),
     );
@@ -607,11 +538,9 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
         ],
         onChanged: (value) {
           if (value.length == maxLength && !isLast && nextFocus != null) {
-            // Auto-advance to next field
             FocusScope.of(context).requestFocus(nextFocus);
           }
           if (isLast || (value.length == maxLength && nextFocus == null)) {
-            // Validate when last field is complete
             _validateDateFields();
           }
         },
@@ -633,9 +562,8 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
           color: isSelected ? const Color(0xFF4A3667) : const Color(0xFF2D1F4A),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected
-                ? const Color(0xFF5D4882)
-                : const Color(0xFF3D2F54),
+            color:
+                isSelected ? const Color(0xFF5D4882) : const Color(0xFF3D2F54),
             width: 1.5,
           ),
         ),
@@ -663,7 +591,6 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
   }
 }
 
-// Custom Date Picker Dialog with Auto-Formatting
 class _CustomDatePickerDialog extends StatefulWidget {
   final DateTime initialDate;
 
@@ -705,7 +632,6 @@ class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
         int month = int.parse(digitsOnly.substring(2, 4));
         int year = int.parse(digitsOnly.substring(4, 8));
 
-        // Validate day
         if (day < 1 || day > 31) {
           setState(() {
             _errorMessage = 'Day must be between 01 and 31';
@@ -713,7 +639,6 @@ class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
           return;
         }
 
-        // Validate month
         if (month < 1 || month > 12) {
           setState(() {
             _errorMessage = 'Month must be between 01 and 12';
@@ -721,7 +646,6 @@ class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
           return;
         }
 
-        // Validate year
         int currentYear = DateTime.now().year;
         if (year < 2000 || year > currentYear) {
           setState(() {
@@ -730,10 +654,8 @@ class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
           return;
         }
 
-        // Try to create a valid date
         DateTime parsedDate = DateTime(year, month, day);
 
-        // Check if the date is valid (e.g., not Feb 30)
         if (parsedDate.day != day ||
             parsedDate.month != month ||
             parsedDate.year != year) {
@@ -743,7 +665,6 @@ class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
           return;
         }
 
-        // Check if date is in the future
         if (parsedDate.isAfter(DateTime.now())) {
           setState(() {
             _errorMessage = 'Date cannot be in the future';
@@ -751,7 +672,6 @@ class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
           return;
         }
 
-        // If all validations pass
         setState(() {
           _selectedDate = parsedDate;
           _errorMessage = null;
@@ -795,7 +715,6 @@ class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
               ),
             ),
             const SizedBox(height: 24),
-            // Date Input Field
             Container(
               decoration: BoxDecoration(
                 color: const Color(0xFF3D2F54),
@@ -854,7 +773,6 @@ class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
                 ),
               ),
             const SizedBox(height: 24),
-            // Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -890,7 +808,6 @@ class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
   }
 }
 
-// Simple date formatter for dialog input
 class _DialogDateFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
