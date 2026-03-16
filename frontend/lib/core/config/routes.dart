@@ -39,7 +39,21 @@ class AppRoutes {
               subtitle: 'Fun learning for your baby',
               videoPath: '',
             )),
-    GetPage(name: profile, page: () => const BabyTrackerHome()),
+    GetPage(
+      name: profile,
+      page: () => ProfileScreen(
+        initialName: 'My Child',
+        initialBirthdate: DateTime(2022, 1, 1),
+        initialGender: 'Male',
+        onSave: (data) {
+          Get.snackbar(
+            'Saved',
+            'Profile updated successfully',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        },
+      ),
+    ),
     GetPage(name: details, page: () => const OnboardingDetailsPage()),
     GetPage(name: signupForm, page: () => const SignupFormScreen()),
     GetPage(name: accessRequest, page: () => const SetupExperienceScreen()),
