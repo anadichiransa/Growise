@@ -38,3 +38,27 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+/// 🔐 LOGIN SCREEN
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.bg,
+      body: Center(
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            );
+          },
+          child: const Text("Login"),
+        ),
+      ),
+    );
+  }
+}
+
