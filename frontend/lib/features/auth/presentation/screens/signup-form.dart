@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:growise/data/repositories/child_repository.dart';
 import 'package:get/get.dart';
+import 'package:growise/data/repositories/child_repository.dart';
 
 class SignupFormScreen extends StatefulWidget {
   const SignupFormScreen({super.key});
@@ -183,7 +183,7 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
       if (mounted) {
         _showSnackBar('Profile created successfully!');
         await Future.delayed(const Duration(milliseconds: 500));
-        Get.offAllNamed('/dashboard'); // Updated to GetX
+        Get.toNamed('/access-requesting');
       }
     } catch (e) {
       if (mounted) {
@@ -224,7 +224,7 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => Get.back(), // Updated to GetX
+                      onPressed: () => Get.back(),
                     ),
                     Row(
                       children: [
@@ -419,16 +419,6 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Center(
-                  child: TextButton(
-                    onPressed: () =>
-                        Get.offAllNamed('/dashboard'), // Updated to GetX
-                    child: const Text(
-                      'Skip for now',
-                      style: TextStyle(color: Color(0xFFB8B0C8), fontSize: 14),
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 24),
               ],
             ),
