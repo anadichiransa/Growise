@@ -61,4 +61,59 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
+/// ⚙️ SETTINGS SCREEN
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Settings"),
+        leading: const Icon(Icons.arrow_back),
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// ACCOUNT
+            const Text(
+              "ACCOUNT MANAGEMENT",
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 12,
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            _buildTile(Icons.person_outline, "Edit Profile"),
+            const SizedBox(height: 10),
+            _buildTile(Icons.verified_user_outlined, "Access Requests"),
+
+            const SizedBox(height: 35),
+
+            /// SUPPORT
+            const Text(
+              "SUPPORT & SAFETY",
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 12,
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            _buildTile(Icons.shield_outlined, "Help & Recovery"),
+            const SizedBox(height: 10),
+            _buildTile(Icons.help_outline, "Support Center"),
+
+            const Spacer(),
+
 
