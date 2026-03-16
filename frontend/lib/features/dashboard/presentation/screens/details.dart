@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class GroWiseColors {
   GroWiseColors._();
-  
+
   static const Color backgroundDark = Color(0xFF1A0F2E);
   static const Color backgroundPurple = Color(0xFF2D1B4E);
   static const Color accentGold = Color(0xFFFFB84D);
@@ -14,28 +16,6 @@ class GroWiseColors {
   static const Color cardPurple3 = Color(0xFF5A3980);
 }
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'GroWise',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        // Using default font - no package needed!
-        fontFamily: 'Roboto', // Default Flutter font
-        colorScheme: ColorScheme.dark(
-          primary: GroWiseColors.primaryPurple,
-          secondary: GroWiseColors.accentGold,
-          background: GroWiseColors.backgroundDark,
-          surface: GroWiseColors.backgroundPurple,
-        ),
-      ),
-      home: const OnboardingDetailsPage(),
-    );
-  }
-
-
 class OnboardingDetailsPage extends StatefulWidget {
   const OnboardingDetailsPage({super.key});
 
@@ -45,7 +25,6 @@ class OnboardingDetailsPage extends StatefulWidget {
 
 class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
     with SingleTickerProviderStateMixin {
-  
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -53,7 +32,7 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
   @override
   void initState() {
     super.initState();
-    
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
@@ -456,49 +435,10 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
   }
 
   void _handleSkip() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text(
-          'Skipping to main app...',
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        backgroundColor: GroWiseColors.primaryPurple,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-    
-    _trackEvent('onboarding_skipped');
+    Get.toNamed('/signup-form');
   }
 
   void _handleContinue() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text(
-          'Proceeding to child profile setup...',
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            color: GroWiseColors.backgroundDark,
-          ),
-        ),
-        backgroundColor: GroWiseColors.accentGold,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-    
-    _trackEvent('onboarding_details_completed');
-  }
-
-  void _trackEvent(String eventName) {
-    print('📊 Analytics Event: $eventName');
+    Get.toNamed('/signup-form');
   }
 }
