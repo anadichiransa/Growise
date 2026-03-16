@@ -142,4 +142,10 @@ async def add_growth_record(
         )
 
 
+@router.get(
+    "/growth/{child_id}",
+    response_model=GrowthHistoryResponse,
+    summary="Get growth history",
+    description="Returns recent growth records for a child, newest first.",
+)
 
