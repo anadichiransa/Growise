@@ -149,3 +149,24 @@ async def add_growth_record(
     description="Returns recent growth records for a child, newest first.",
 )
 
+async def get_growth_history(
+    child_id: str,
+    limit: int = Query(default=10, ge=1, le=50, description="Max records (1-50)"),
+    parent_uid: str = Depends(get_current_user_uid),
+    db=Depends(get_firestore_client),
+):
+    child = dashboard_service.get_child_profile(db, child_id, parent_uid)
+    if child is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Child '{child_id}' not found.",
+        )
+
+    try:
+        return dashboard_service.get_growth_history(db, child_id, limit)
+    except Exception as exc:
+        logger.error("get_growth_history failed child=%s: %s", child_id, exc)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Could not fetch growth history.",
+        )
