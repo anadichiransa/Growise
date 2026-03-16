@@ -4,9 +4,11 @@ from app.models.child import ChildResponse, ChildSummary
 
 
 class ChildUpdateRequest(BaseModel):
-    full_name: Optional[str] = Field(None, min_length=1, max_length=100)
-    birthdate: Optional[str] = None
-    gender: Optional[str] = Field(None, pattern="^(Male|Female|Other)$")
+    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    birth_date: Optional[str] = None
+    gender: Optional[str] = Field(
+        None, pattern="^(Male|Female|Other|Boy|Girl)$"
+    )
 
 
 class ChildUpdateResponse(BaseModel):
