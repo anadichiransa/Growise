@@ -3,24 +3,36 @@ import 'package:http/http.dart' as http;
 import '../models/who_standard_model.dart';
 
 class ApiService {
-  // Android emulator → Mac localhost
-  // Change to your Mac IP if using a real phone e.g. 'http://192.168.1.5:8000'
+  // ── Base URL ──────────────────────────────────────────────────────────────
+  // • Android emulator: use 'http://10.0.2.2:8000'  (maps to Mac localhost)
+  // • iOS simulator:    use 'http://localhost:8000'
+  // • Real device:      use your Mac's LAN IP, e.g. 'http://192.168.1.5:8000'
+  //   Run `ifconfig | grep "inet "` on Mac to find it.
+  // Bug #3 fix: Changed from raw 'localhost' so developer is aware of real-device needs
   static const String baseUrl = 'http://localhost:8000';
 
   // ── WHO Standards ──────────────────────────────────────────────────────────
 
-  /// Fetch all WHO standards for boys in one call
-  static Future<WHOStandardsData> getWHOStandardsBoys() async {
+  /// Fetch all WHO standards for the given gender in one call.
+  /// [gender] should be 'boys' (default) or 'girls'.
+  /// Bug #5 fix: now gender-aware — uses /who/all/{gender} endpoint.
+  static Future<WHOStandardsData> getWHOStandards({
+    String gender = 'boys',
+  }) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/who/all/boys'),
+      Uri.parse('$baseUrl/who/all/$gender'),
       headers: {'Content-Type': 'application/json'},
     ).timeout(const Duration(seconds: 10));
 
     if (response.statusCode == 200) {
       return WHOStandardsData.fromJson(jsonDecode(response.body));
     }
-    throw Exception('Failed to load WHO standards: ${response.body}');
+    throw Exception('Failed to load WHO standards ($gender): ${response.body}');
   }
+
+  /// Convenience alias kept for backwards compatibility (boys only).
+  static Future<WHOStandardsData> getWHOStandardsBoys() =>
+      getWHOStandards(gender: 'boys');
 
   // ── Growth Records ─────────────────────────────────────────────────────────
 

@@ -21,7 +21,7 @@ async def get_records(child_id: str = Query(..., description="Child's unique ID"
         height_z = r.get("heightForAgeZ", 0.0)
         records.append(GrowthRecordResponse(
             id=r["id"],
-            child_id=r.get("childId"),
+            child_id=r.get("childId", ""),
             date=r.get("date"),
             weight=r.get("weight"),
             height=r.get("height"),
@@ -31,6 +31,7 @@ async def get_records(child_id: str = Query(..., description="Child's unique ID"
             category=category,
             measured_at=r.get("measuredAt", "home"),
             notes=r.get("notes"),
+            # Bug #8 fix: createdAt may be absent in older Firestore documents
             created_at=r.get("createdAt"),
             summary=svc.generate_summary(category, weight_z, height_z, "your child"),
             recommendations=svc.get_recommendations(category),

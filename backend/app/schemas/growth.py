@@ -37,15 +37,16 @@ class GrowthRecordResponse(BaseModel):
     date: datetime
     weight: float
     height: float
-    bmi: Optional[float]
-    weight_for_age_z: Optional[float]
-    height_for_age_z: Optional[float]
-    category: Optional[str]
-    measured_at: str
-    notes: Optional[str]
-    created_at: datetime
-    summary: str
-    recommendations: list[str]
+    bmi: Optional[float] = None
+    weight_for_age_z: Optional[float] = None
+    height_for_age_z: Optional[float] = None
+    category: Optional[str] = None
+    measured_at: str = "home"
+    notes: Optional[str] = None
+    # Optional: old Firestore documents may not have createdAt set (Bug #1 & #8)
+    created_at: Optional[datetime] = None
+    summary: str = ""
+    recommendations: list[str] = []
 
 
 class GrowthListResponse(BaseModel):

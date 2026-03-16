@@ -5,15 +5,14 @@ class GrowthController {
 
   // ── Load ───────────────────────────────────────────────────────────────────
 
+  /// Load all growth records for [childId].
+  /// Throws on network / API failure so the caller can show an error state
+  /// (Bug #6 fix: was silently returning [] on any error).
   Future<List<GrowthRecord>> loadRecords(String childId) async {
-    try {
-      final records = await ApiService.getGrowthRecords(childId);
-      return records.map((r) => GrowthRecord.fromJson(r)).toList();
-    } catch (e) {
-      print('Error loading records: $e');
-      return [];
-    }
+    final records = await ApiService.getGrowthRecords(childId);
+    return records.map((r) => GrowthRecord.fromJson(r)).toList();
   }
+
 
   // ── Add ────────────────────────────────────────────────────────────────────
 
@@ -40,7 +39,6 @@ class GrowthController {
       );
       return true;
     } catch (e) {
-      print('Error adding measurement: $e');
       return false;
     }
   }
@@ -72,7 +70,6 @@ class GrowthController {
       );
       return true;
     } catch (e) {
-      print('Error updating record: $e');
       return false;
     }
   }
@@ -84,7 +81,6 @@ class GrowthController {
       await ApiService.deleteMeasurement(recordId);
       return true;
     } catch (e) {
-      print('Error deleting record: $e');
       return false;
     }
   }

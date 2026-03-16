@@ -92,13 +92,15 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
         ));
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error: $e'),
-        backgroundColor: const Color(0xFFC62828),
-        behavior: SnackBarBehavior.floating,
-      ));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: const Color(0xFFC62828),
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
     } finally {
-      if (mounted) setState(() => _isSaving = false);
+      if (mounted) { setState(() => _isSaving = false); }
     }
   }
 
@@ -228,9 +230,9 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: AppColours.primaryGold.withOpacity(0.1),
+                    color: AppColours.primaryGold.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppColours.primaryGold.withOpacity(0.3)),
+                    border: Border.all(color: AppColours.primaryGold.withValues(alpha: 0.3)),
                   ),
                   child: const Row(children: [
                     Icon(Icons.info_outline, color: Color(0xFFD9A577), size: 18),
@@ -252,7 +254,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                     minimumSize: const Size(double.infinity, 62),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(35)),
-                    disabledBackgroundColor: Colors.orange.withOpacity(0.4),
+                    disabledBackgroundColor: Colors.orange.withValues(alpha: 0.4),
                   ),
                   child: _isSaving
                       ? const SizedBox(width: 24, height: 24,
@@ -319,7 +321,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
         decoration: BoxDecoration(
           color: selected
-              ? AppColours.primaryGold.withOpacity(0.15)
+              ? AppColours.primaryGold.withValues(alpha: 0.15)
               : AppColours.deepMagenta,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(

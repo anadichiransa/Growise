@@ -72,11 +72,13 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
     if (confirm == true) {
       await _controller.deleteRecord(record.id, widget.childId);
       _loadRecords();
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Measurement deleted'),
-        backgroundColor: Color(0xFFC62828),
-        behavior: SnackBarBehavior.floating,
-      ));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Measurement deleted'),
+          backgroundColor: Color(0xFFC62828),
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
     }
   }
 
@@ -91,61 +93,91 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          left: 20, right: 20, top: 20,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
-        ),
-        child: Column(mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Center(child: Container(width: 40, height: 4,
-              decoration: BoxDecoration(color: Colors.white24,
-                  borderRadius: BorderRadius.circular(2)))),
-          const SizedBox(height: 20),
-          const Text('Edit Measurement',
-              style: TextStyle(color: Colors.white, fontSize: 18,
-                  fontWeight: FontWeight.bold)),
-          const SizedBox(height: 6),
-          Text('${record.date.day}/${record.date.month}/${record.date.year}',
-              style: TextStyle(color: AppColours.primaryGold, fontSize: 13)),
-          const SizedBox(height: 20),
-          _editField('Weight (kg)', wCtrl, Icons.monitor_weight_outlined),
-          const SizedBox(height: 14),
-          _editField('Height (cm)', hCtrl, Icons.height),
-          const SizedBox(height: 14),
-          _editField('Notes (optional)', nCtrl, Icons.notes, maxLines: 2),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () async {
-              final w = double.tryParse(wCtrl.text.trim());
-              final h = double.tryParse(hCtrl.text.trim());
-              if (w == null || h == null) return;
-              await _controller.updateRecord(
-                recordId: record.id, childId: widget.childId,
-                gender: widget.gender, dateOfBirth: widget.dateOfBirth,
-                date: record.date, weight: w, height: h,
-                notes: nCtrl.text.trim().isEmpty ? null : nCtrl.text.trim(),
-              );
-              if (ctx.mounted) Navigator.pop(ctx);
-              _loadRecords();
-              if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('✅ Measurement updated!'),
-                    backgroundColor: Color(0xFF2E7D32),
-                    behavior: SnackBarBehavior.floating));
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange, foregroundColor: Colors.black,
-              minimumSize: const Size(double.infinity, 56),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
+      // Bug #7 fix: use StatefulBuilder so we can toggle a loading state inside
+      // the bottom sheet — prevents multiple taps on Save while the API call runs
+      builder: (ctx) {
+        // Declared outside the builder so it persists across setSheetState() rebuilds
+        bool isUpdating = false;
+        return StatefulBuilder(
+        builder: (ctx, setSheetState) {
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 20, right: 20, top: 20,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
             ),
-            child: const Text('Save Changes',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
-          ),
-        ]),
-      ),
+            child: Column(mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Center(child: Container(width: 40, height: 4,
+                  decoration: BoxDecoration(color: Colors.white24,
+                      borderRadius: BorderRadius.circular(2)))),
+              const SizedBox(height: 20),
+              const Text('Edit Measurement',
+                  style: TextStyle(color: Colors.white, fontSize: 18,
+                      fontWeight: FontWeight.bold)),
+              const SizedBox(height: 6),
+              Text('${record.date.day}/${record.date.month}/${record.date.year}',
+                  style: TextStyle(color: AppColours.primaryGold, fontSize: 13)),
+              const SizedBox(height: 20),
+              _editField('Weight (kg)', wCtrl, Icons.monitor_weight_outlined),
+              const SizedBox(height: 14),
+              _editField('Height (cm)', hCtrl, Icons.height),
+              const SizedBox(height: 14),
+              _editField('Notes (optional)', nCtrl, Icons.notes, maxLines: 2),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                // Disable button while update is in progress
+                onPressed: isUpdating ? null : () async {
+                  final w = double.tryParse(wCtrl.text.trim());
+                  final h = double.tryParse(hCtrl.text.trim());
+                  if (w == null || h == null) return;
+                  setSheetState(() => isUpdating = true);
+                  try {
+                    await _controller.updateRecord(
+                      recordId: record.id, childId: widget.childId,
+                      gender: widget.gender, dateOfBirth: widget.dateOfBirth,
+                      date: record.date, weight: w, height: h,
+                      notes: nCtrl.text.trim().isEmpty ? null : nCtrl.text.trim(),
+                    );
+                   if (ctx.mounted) { Navigator.pop(ctx); }
+                    _loadRecords();
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('✅ Measurement updated!'),
+                            backgroundColor: Color(0xFF2E7D32),
+                            behavior: SnackBarBehavior.floating));
+                    }
+                  } catch (_) {
+                    setSheetState(() => isUpdating = false);
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Failed to update. Try again.'),
+                            backgroundColor: Color(0xFFC62828),
+                            behavior: SnackBarBehavior.floating));
+                    }
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange, foregroundColor: Colors.black,
+                  minimumSize: const Size(double.infinity, 56),
+                  disabledBackgroundColor: Colors.orange.withValues(alpha: 0.4),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                ),
+                child: isUpdating
+                    ? const SizedBox(width: 22, height: 22,
+                        child: CircularProgressIndicator(
+                            color: Colors.black, strokeWidth: 2.5))
+                    : const Text('Save Changes',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+              ),
+            ]),
+          );
+        },
+        );
+      },
     );
   }
+
 
   Widget _editField(String label, TextEditingController ctrl, IconData icon,
       {int maxLines = 1}) {
@@ -236,7 +268,7 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
                                 width: 44, height: 44,
                                 decoration: BoxDecoration(
                                   color: _statusColor(r.category)
-                                      .withOpacity(0.2),
+                                      .withValues(alpha: 0.2),
                                   shape: BoxShape.circle,
                                   border: Border.all(
                                       color: _statusColor(r.category)),
@@ -259,12 +291,12 @@ class _SavedMeasurementsScreenState extends State<SavedMeasurementsScreen> {
                               trailing: Row(mainAxisSize: MainAxisSize.min,
                                   children: [
                                 _actionBtn(Icons.edit_outlined,
-                                    AppColours.primaryGold.withOpacity(0.15),
+                                    AppColours.primaryGold.withValues(alpha: 0.15),
                                     AppColours.primaryGold,
                                     () => _editRecord(r)),
                                 const SizedBox(width: 8),
                                 _actionBtn(Icons.delete_outline,
-                                    const Color(0xFFEF5350).withOpacity(0.15),
+                                    const Color(0xFFEF5350).withValues(alpha: 0.15),
                                     const Color(0xFFEF5350),
                                     () => _deleteRecord(r)),
                               ]),

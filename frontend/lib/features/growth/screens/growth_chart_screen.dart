@@ -340,14 +340,14 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.4)),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Row(children: [
         Container(padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-                color: color.withOpacity(0.2), shape: BoxShape.circle),
+                color: color.withValues(alpha: 0.2), shape: BoxShape.circle),
             child: Icon(Icons.child_care, color: color, size: 24)),
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
@@ -367,9 +367,9 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     margin: const EdgeInsets.only(bottom: 12),
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
-      color: const Color(0xFFC62828).withOpacity(0.2),
+      color: const Color(0xFFC62828).withValues(alpha: 0.2),
       borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: const Color(0xFFEF5350).withOpacity(0.5)),
+      border: Border.all(color: const Color(0xFFEF5350).withValues(alpha: 0.5)),
     ),
     child: Row(children: [
       const Icon(Icons.warning_amber_rounded,
@@ -410,7 +410,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           color: sel ? AppColours.primaryGold : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           boxShadow: sel ? [BoxShadow(
-            color: AppColours.primaryGold.withOpacity(0.35),
+            color: AppColours.primaryGold.withValues(alpha: 0.35),
             blurRadius: 12, spreadRadius: 2, offset: const Offset(0, 3),
           )] : [],
         ),
@@ -476,9 +476,9 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
-              color: AppColours.primaryGold.withOpacity(0.2),
+              color: AppColours.primaryGold.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColours.primaryGold.withOpacity(0.5)),
+              border: Border.all(color: AppColours.primaryGold.withValues(alpha: 0.5)),
             ),
             child: Text('WHO 2006', style: TextStyle(
                 color: AppColours.primaryGold, fontSize: 9,
@@ -496,9 +496,9 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           gridData: FlGridData(
             show: true, horizontalInterval: yInterval, verticalInterval: 3,
             getDrawingHorizontalLine: (_) =>
-                FlLine(color: Colors.white.withOpacity(0.07), strokeWidth: 0.8),
+                FlLine(color: Colors.white.withValues(alpha: 0.07), strokeWidth: 0.8),
             getDrawingVerticalLine: (_) =>
-                FlLine(color: Colors.white.withOpacity(0.07), strokeWidth: 0.8),
+                FlLine(color: Colors.white.withValues(alpha: 0.07), strokeWidth: 0.8),
           ),
           titlesData: FlTitlesData(
             leftTitles: AxisTitles(
@@ -541,9 +541,9 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
             // SD lines
             _line(m3,  const Color(0xFFEF5350), 1.5),
             _line(m2,  const Color(0xFFFF7043), 1.5),
-            _line(m1,  const Color(0xFFFFCA28).withOpacity(0.8), 1.0, dash: [4,3]),
+            _line(m1,  const Color(0xFFFFCA28).withValues(alpha: 0.8), 1.0, dash: [4,3]),
             _line(med, Colors.white, 1.5, dash: [8,4]),
-            _line(p1,  const Color(0xFF66BB6A).withOpacity(0.8), 1.0, dash: [4,3]),
+            _line(p1,  const Color(0xFF66BB6A).withValues(alpha: 0.8), 1.0, dash: [4,3]),
             _line(p2,  AppColours.primaryGold, 1.5),
             _line(p3,  const Color(0xFFFFB300), 1.5),
             // Baby line
@@ -552,7 +552,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
                 spots: babySpots, isCurved: true, curveSmoothness: 0.2,
                 color: Colors.white, barWidth: 2.5,
                 dotData: FlDotData(show: true,
-                  getDotPainter: (spot, _, __, i) => FlDotCirclePainter(
+                  getDotPainter: (spot, p, e, i) => FlDotCirclePainter(
                     radius: i == babySpots.length - 1 ? 6 : 4,
                     color: i == babySpots.length - 1
                         ? AppColours.primaryGold : Colors.white,
@@ -581,7 +581,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
   LineChartBarData _fill(List<FlSpot> s, Color c, double o) =>
       LineChartBarData(spots: s, isCurved: true, curveSmoothness: 0.3,
           color: Colors.transparent, barWidth: 0,
-          belowBarData: BarAreaData(show: true, color: c.withOpacity(o)),
+          belowBarData: BarAreaData(show: true, color: c.withValues(alpha: o)),
           dotData: FlDotData(show: false));
 
   LineChartBarData _line(List<FlSpot> s, Color c, double w,
@@ -643,8 +643,8 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: diff >= 0
-                ? const Color(0xFF2E7D32).withOpacity(0.3)
-                : const Color(0xFFC62828).withOpacity(0.3),
+                ? const Color(0xFF2E7D32).withValues(alpha: 0.3)
+                : const Color(0xFFC62828).withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: diff >= 0
                 ? const Color(0xFF4CAF50) : const Color(0xFFEF5350)),
@@ -687,7 +687,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColours.deepMagenta, borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColours.primaryGold.withOpacity(0.3)),
+        border: Border.all(color: AppColours.primaryGold.withValues(alpha: 0.3)),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
@@ -758,9 +758,9 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
               ? Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                   decoration: BoxDecoration(
-                    color: sc.withOpacity(0.15),
+                    color: sc.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: sc.withOpacity(0.5), width: 1),
+                    border: Border.all(color: sc.withValues(alpha: 0.5), width: 1),
                   ),
                   child: Text(t, textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 10,
@@ -810,7 +810,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
       color: AppColours.deepMagenta, borderRadius: BorderRadius.circular(24),
-      border: Border.all(color: AppColours.primaryGold.withOpacity(0.4)),
+      border: Border.all(color: AppColours.primaryGold.withValues(alpha: 0.4)),
     ),
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
@@ -855,7 +855,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
   Widget _lBox(String label, Color color) => Row(
     mainAxisSize: MainAxisSize.min, children: [
       Container(width: 10, height: 10,
-          decoration: BoxDecoration(color: color.withOpacity(0.7),
+          decoration: BoxDecoration(color: color.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(2))),
       const SizedBox(width: 4),
       Text(label, style: const TextStyle(color: Colors.white54, fontSize: 9)),

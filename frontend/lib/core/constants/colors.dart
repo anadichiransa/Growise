@@ -6,8 +6,6 @@ class AppColours {
   static const Color primaryGold  = Color(0xFFD9A577);
   static const Color deepMagenta  = Color(0xFF3B1B45);
   static const Color cardBg       = Color(0xFF2A1040);
-  static const Color mintGreen    = Color(0xFF4CAF50);
-  static const Color white        = Color(0xFFFFFFFF);
 
   // Status colours
   static const Color healthy      = Color(0xFF4CAF50);
@@ -24,6 +22,6 @@ class AppColours {
   static const Color whoOverwt    = Color(0xFFF57F17);   // +2SD to +3SD
 
   static Color getWhiteMix(Color color, double opacity) {
-    return Color.alphaBlend(Colors.white.withOpacity(opacity), color);
+    return Color.alphaBlend(Colors.white.withValues(alpha: opacity), color);
   }
 }

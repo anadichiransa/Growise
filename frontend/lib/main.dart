@@ -22,13 +22,24 @@ class GrowIseApp extends StatelessWidget {
         ),
         fontFamily: 'Roboto',
       ),
-      // ── For testing: opens directly to growth chart ──
-      // In your real app, replace this with your actual home/navigation screen
+      // ─────────────────────────────────────────────────────────────────────
+      // ⚠️  DEVELOPMENT / TEST MODE  (Bug #4)
+      // This screen is hardcoded for local development only.
+      // Before release, replace `home:` with your real authentication /
+      // onboarding navigator (e.g. AuthGate or a SplashScreen that reads
+      // the logged-in user and their child profile from Firestore).
+      //
+      // Replace the values below with real child data from your auth flow:
+      //   childId     → from Firestore child document ID
+      //   childName   → from user profile
+      //   gender      → from child profile ('male' or 'female')
+      //   dateOfBirth → from child profile
+      // ─────────────────────────────────────────────────────────────────────
       home: GrowthChartScreen(
         childId:     'test-child-001',
         childName:   'Baby',
         gender:      'male',
-        dateOfBirth: DateTime.utc(2023, 8, 5),  // change to real DOB
+        dateOfBirth: DateTime.utc(2023, 8, 5), // ← change to real DOB
       ),
     );
   }

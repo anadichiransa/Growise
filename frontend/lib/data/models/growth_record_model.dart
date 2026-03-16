@@ -10,7 +10,8 @@ class GrowthRecord {
   final String? category;
   final String? notes;
   final String? measuredAt;
-  final DateTime createdAt;
+  // Nullable: older Firestore documents may not have the createdAt field (Bug #8 fix)
+  final DateTime? createdAt;
   final String? summary;
   final List<String>? recommendations;
 
@@ -26,7 +27,8 @@ class GrowthRecord {
     this.category,
     this.notes,
     this.measuredAt,
-    required this.createdAt,
+    // createdAt is now optional — backend may return null for old records
+    this.createdAt,
     this.summary,
     this.recommendations,
   });
@@ -53,7 +55,9 @@ class GrowthRecord {
       category:       json['category'],
       notes:          json['notes'],
       measuredAt:     json['measured_at'],
-      createdAt:      DateTime.parse(json['created_at']),
+      // Bug #8 fix: createdAt may be null for old Firestore records
+      createdAt:      json['created_at'] != null
+                        ? DateTime.parse(json['created_at']) : null,
       summary:        json['summary'],
       recommendations: json['recommendations'] != null
                         ? List<String>.from(json['recommendations']) : null,
