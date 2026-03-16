@@ -135,6 +135,36 @@ class SettingsScreen extends StatelessWidget {
                   _showLogoutDialog(context);
                 },
               ),
+
+              /// 🔻 Bottom Nav
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: AppColors.bg,
+        selectedItemColor: AppColors.accent,
+        unselectedItemColor: Colors.white60,
+        currentIndex: 4,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.show_chart),
+            label: "Tracker",
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.school), label: "Education"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.support_agent),
+            label: "Support",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: "Settings",
+          ),
+        ],
+      ),
+    );
+  }
             ),
           ],
         ),
