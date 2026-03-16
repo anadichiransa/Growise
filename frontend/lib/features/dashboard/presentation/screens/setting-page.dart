@@ -192,6 +192,15 @@ class SettingsScreen extends StatelessWidget {
   }
         ),
       ),
-
+/// 🚪 Logout Dialog
+  static void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.card,
+        title: const Text("Logout", style: TextStyle(color: Colors.white)),
+        content: const Text(
+          "Are you sure you want to logout?",
+          style: TextStyle(color: Colors.white70),
 
 
