@@ -3,46 +3,28 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../controllers/support_controller.dart';
 
-@override
-Widget build(BuildContext context) {
-  return MaterialApp(
-    title: 'Growise',
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      scaffoldBackgroundColor: AppColors.background,
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      colorScheme: ColorScheme.dark(
-        primary: AppColors.accent,
-        surface: AppColors.cardSurface,
-      ),
-    ),
-    home: const SupportCenterScreen(),
-  );
-}
-
 class AppColors {
   AppColors._();
 
-  static const Color background = Color(0xFF160D38);
-  static const Color backgroundGlow = Color(0xFF2A1060);
-  static const Color cardSurface = Color(0xFF2E1A72);
-  static const Color tileSurface = Color(0xFF3A2280);
-  static const Color tileSurfacePressed = Color(0xFF4A2E9A);
-  static const Color communityGradientStart = Color(0xFF4A2A9A);
-  static const Color communityGradientEnd = Color(0xFF2E1A72);
-  static const Color accent = Color(0xFFFFD600);
-  static const Color teal = Color(0xFF00D9C0);
-  static const Color tealDim = Color(0x3000D9C0);
-  static const Color inputBackground = Color(0xFF3D258A);
-  static const Color inputBorderFocused = Color(0xFF00D9C0);
-  static const Color shimmerBase = Color(0xFF2E1A72);
-  static const Color shimmerHighlight = Color(0xFF4A30A0);
+  static const Color background = Color(0xFF1A0B2E);
+  static const Color backgroundGlow = Color(0xFF2A1268);
+  static const Color cardSurface = Color(0xFF2E1558);
+  static const Color tileSurface = Color(0xFF3D1C65);
+  static const Color tileSurfacePressed = Color(0xFF4E2A80);
+  static const Color communityGradientStart = Color(0xFF4C2080);
+  static const Color communityGradientEnd = Color(0xFF2E1558);
+  static const Color accent = Color(0xFFFFCA00);
+  static const Color teal = Color(0xFF04E8C0);
+  static const Color tealDim = Color(0x3004E8C0);
+  static const Color inputBackground = Color(0xFF3D1C65);
+  static const Color inputBorderFocused = Color(0xFF04E8C0);
+  static const Color shimmerBase = Color(0xFF2E1558);
+  static const Color shimmerHighlight = Color(0xFF4E2A80);
   static const Color textPrimary = Colors.white;
-  static const Color textSecondary = Color(0xFFB8A8E0);
-  static const Color sectionLabel = Color(0xFFD0C0F0);
-  static const Color navBackground = Color(0xFF1A0F4A);
-  static const Color navPill = Color(0xFF3A2280);
+  static const Color textSecondary = Color(0xFFB0A0CC);
+  static const Color sectionLabel = Color(0xFFC8B8E0);
+  static const Color navBackground = Color(0xFF120828);
+  static const Color navPill = Color(0xFF3D1C65);
 }
 
 class FaqItem {
