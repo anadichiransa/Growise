@@ -1,15 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-/// Reusable chip selector for ingredient and preference selection.
-///
-/// Shows a wrap of tappable chips. Selected chips show a different
-/// background/border color. Tapping toggles selection.
-///
-/// Used for:
-///   - Liked foods (green tones)
-///   - Disliked foods (red tones)
-///   - Cooking methods (blue tones)
 class IngredientSelector extends StatelessWidget {
   final List<String>     options;
   final RxList<String>   selectedItems;
@@ -17,6 +8,8 @@ class IngredientSelector extends StatelessWidget {
   final Color selectedColor;
   final Color selectedBorder;
   final Color selectedText;
+  final Color unselectedColor;
+  final Color unselectedText;
 
   const IngredientSelector({
     super.key,
@@ -26,6 +19,8 @@ class IngredientSelector extends StatelessWidget {
     required this.selectedColor,
     required this.selectedBorder,
     required this.selectedText,
+    this.unselectedColor = const Color(0xFFF9FAFB),
+    this.unselectedText  = const Color(0xFF4B5563),
   });
 
   @override
@@ -42,17 +37,17 @@ class IngredientSelector extends StatelessWidget {
             curve: Curves.easeInOut,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
             decoration: BoxDecoration(
-              color:        isSelected ? selectedColor : const Color(0xFFF9FAFB),
+              color: isSelected ? selectedColor : unselectedColor,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: isSelected ? selectedBorder : const Color(0xFFD1D5DB),
+                color: isSelected ? selectedBorder : unselectedColor,
                 width: isSelected ? 1.5 : 1.0,
               ),
             ),
             child: Text(
               option,
               style: TextStyle(
-                color:      isSelected ? selectedText : const Color(0xFF4B5563),
+                color:      isSelected ? selectedText : unselectedText,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 fontSize:   13,
               ),
