@@ -16,3 +16,12 @@ chroma_data/
 # --- Data Preparation Artifacts ---
 data/processed/*.csv
 !data/processed/.gitkeep
+# Firebase & Secrets
+firebase-admin-key.json
+.env
+.venv/
+venv/
+
+# Python artifacts
+__pycache__/
+*.pyc
