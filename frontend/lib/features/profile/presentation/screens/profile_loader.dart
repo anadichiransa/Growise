@@ -93,6 +93,19 @@ class _ProfileLoaderState extends State<ProfileLoader> {
       selectedProfileId: _child!['id'],
       onBack: () => Get.back(),
       onAddProfile: () => Get.toNamed('/signup-form'),
+      onSwitchProfile: (profileId) async {
+        // ← ADD THIS
+        final selected = _allChildren.firstWhere(
+          (c) => c['id'] == profileId,
+          orElse: () => {},
+        );
+        if (selected.isNotEmpty && mounted) {
+          setState(() {
+            _child = selected;
+            _loading = false;
+          });
+        }
+      },
       onSave: (data) async {
         final success = await ChildService.updateChild(
           childId: _child!['id'],

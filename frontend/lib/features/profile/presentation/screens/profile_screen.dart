@@ -61,7 +61,7 @@ class ProfileScreen extends StatefulWidget {
 
   /// Called when the user taps "Save Changes".
   /// Receives the current form values as [ProfileFormData].
-  final void Function(ProfileFormData data) onSave;
+  final Future<void> Function(ProfileFormData data) onSave;
 
   // ── Optional display ─────────────────────────────────────────────────────
 
@@ -147,8 +147,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
-  void _handleSave() {
-    widget.onSave(
+  Future<void> _handleSave() async {
+    await widget.onSave(
       ProfileFormData(
         fullName: _nameController.text.trim(),
         birthdate: _selectedDate,
@@ -368,7 +368,7 @@ class _FormCard extends StatelessWidget {
   final String selectedGender;
   final List<String> genderOptions;
   final void Function(String) onGenderChanged;
-  final VoidCallback onSave;
+  final Future<void> Function() onSave;
 
   const _FormCard({
     required this.nameController,
@@ -545,7 +545,7 @@ class _GenderToggle extends StatelessWidget {
 }
 
 class _SaveButton extends StatelessWidget {
-  final VoidCallback onTap;
+  final Future<void> Function() onTap;
   const _SaveButton({required this.onTap});
 
   @override
