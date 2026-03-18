@@ -55,3 +55,29 @@ class BabyTrackerHome extends StatelessWidget {
               ),
             ),
           ),
+           /// ✨ GLOW EFFECTS
+          Positioned(
+            top: -60,
+            right: -40,
+            child: Container(
+              height: 200,
+              width: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.purple.withOpacity(0.25),
+              ),
+            ),
+          ),
+
+          Positioned(
+            bottom: -80,
+            left: -40,
+            child: Container(
+              height: 220,
+              width: 220,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.green.withOpacity(0.15),
+              ),
+            ),
+          ),
