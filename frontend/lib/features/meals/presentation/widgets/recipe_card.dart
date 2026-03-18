@@ -3,14 +3,15 @@ import 'package:get/get.dart';
 import '../../../../data/models/meal_plan.dart';
 import '../screens/recipe_detail_screen.dart';
 
-/// Displays a generated meal plan result.
-///
-/// Shows: recipe name, modification warning (if needed),
-/// nutrition summary, ingredients list, AI explanation.
 class RecipeCard extends StatelessWidget {
   final MealPlan mealPlan;
-
   const RecipeCard({super.key, required this.mealPlan});
+
+  static const _bg      = Color(0xFF2D1B4E);
+  static const _accent  = Color(0xFFD4A017);
+  static const _purple  = Color(0xFF7C3AED);
+  static const _textSub = Color(0xFFB39DDB);
+  static const _soft    = Color(0xFF3D2069);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,28 @@ class RecipeCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
 
-        // ── Recipe Name Banner ─────────────────────────────────────
+        // ── Chat bubble label ────────────────────────────────────────
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF4C1D95), Color(0xFF7C3AED)]),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.smart_toy_rounded,
+                color: Colors.white, size: 16),
+            ),
+            const SizedBox(width: 8),
+            const Text('Nutrition Bot',
+              style: TextStyle(color: Colors.white70,
+                fontWeight: FontWeight.bold, fontSize: 13)),
+          ],
+        ),
+        const SizedBox(height: 10),
+
+        // ── Recipe name card ─────────────────────────────────────────
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(18),
@@ -28,179 +50,140 @@ class RecipeCard extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                '🍽️ Your Meal Plan',
-                style: TextStyle(
-                  color: Color(0xFFDDD6FE),
-                  fontSize: 12,
-                  letterSpacing: 0.5,
-                ),
-              ),
+              const Text('🍽️ Your Meal Plan',
+                style: TextStyle(color: Color(0xFFDDD6FE),
+                  fontSize: 11, letterSpacing: 0.5)),
               const SizedBox(height: 6),
-              Text(
-                mealPlan.recipeName,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
+              Text(mealPlan.recipeName,
+                style: const TextStyle(color: Colors.white,
+                  fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
                 children: [
-                  _badge(mealPlan.texture.replaceAll('_', ' ').toUpperCase()),
-                  const SizedBox(width: 8),
-                  _badge(mealPlan.fhbGuidelineId.replaceAll('_', ' ')),
+                  _darkBadge(mealPlan.texture.replaceAll('_', ' ').toUpperCase()),
+                  _darkBadge(mealPlan.fhbGuidelineId.replaceAll('_', ' ')),
                 ],
               ),
             ],
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 12),
 
-        // ── Modification Warning ───────────────────────────────────
+        // ── Modification warning ─────────────────────────────────────
         if (mealPlan.modificationRequired) ...[
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: const Color(0xFFFEF3C7),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFFF59E0B), width: 1.5),
+              color: const Color(0xFF3B2000),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: _accent),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '⚠️ MODIFICATION REQUIRED',
-                  style: TextStyle(
-                    color: Color(0xFF92400E),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
-                ),
+                const Text('⚠️ MODIFICATION REQUIRED',
+                  style: TextStyle(color: Color(0xFFD4A017),
+                    fontWeight: FontWeight.bold, fontSize: 13)),
                 const SizedBox(height: 6),
                 Text(
-                  'Omit or reduce for baby\'s portion: '
+                  'Omit for baby\'s portion: '
                   '${mealPlan.omitOrReduce.map((s) => s.toUpperCase()).join(', ')}',
-                  style: const TextStyle(
-                    color: Color(0xFF78350F),
-                    fontSize: 13,
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'The AI explanation below explains exactly how to do this.',
-                  style: TextStyle(
-                    color: Color(0xFF92400E),
-                    fontSize: 11,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
+                  style: const TextStyle(color: Colors.white70,
+                    fontSize: 13, height: 1.4)),
               ],
             ),
           ),
           const SizedBox(height: 12),
         ],
 
-        // ── Nutrition Card ─────────────────────────────────────────
-        _InfoCard(
+        // ── Nutrition card ───────────────────────────────────────────
+        _DarkCard(
           title: '📊 Nutrition per serving',
+          accentColor: _accent,
           children: [
-            _NutritionRow('Calories', '${mealPlan.nutrition.calories.toStringAsFixed(0)} kcal'),
-            _NutritionRow('Protein',  '${mealPlan.nutrition.proteinG.toStringAsFixed(1)} g'),
-            _NutritionRow('Iron',     '${mealPlan.nutrition.ironMg.toStringAsFixed(2)} mg'),
-            _NutritionRow('Serving',  '${mealPlan.nutrition.servingSizeG.toStringAsFixed(0)} g'),
-            const Divider(height: 16),
-            Text(
-              '📌 Source: ${mealPlan.nutrition.source}',
-              style: const TextStyle(
-                fontSize: 10,
-                color: Color(0xFF6B7280),
-                fontStyle: FontStyle.italic,
-              ),
-            ),
+            _NRow('Calories', '${mealPlan.nutrition.calories.toStringAsFixed(0)} kcal'),
+            _NRow('Protein',  '${mealPlan.nutrition.proteinG.toStringAsFixed(1)} g'),
+            _NRow('Iron',     '${mealPlan.nutrition.ironMg.toStringAsFixed(2)} mg'),
+            _NRow('Serving',  '${mealPlan.nutrition.servingSizeG.toStringAsFixed(0)} g'),
+            const Divider(color: Color(0xFF3D2069), height: 16),
+            Text('📌 ${mealPlan.nutrition.source}',
+              style: const TextStyle(color: _textSub,
+                fontSize: 10, fontStyle: FontStyle.italic)),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
 
-        // ── Ingredients ────────────────────────────────────────────
-        _InfoCard(
+        // ── Ingredients ──────────────────────────────────────────────
+        _DarkCard(
           title: '🥘 Ingredients',
+          accentColor: _accent,
           children: mealPlan.ingredients.map((ing) => Padding(
             padding: const EdgeInsets.only(bottom: 5),
             child: Row(
               children: [
-                const Text('• ', style: TextStyle(color: Color(0xFF7C3AED), fontSize: 16)),
+                Container(width: 6, height: 6,
+                  decoration: const BoxDecoration(
+                    color: _accent, shape: BoxShape.circle)),
+                const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    ing.replaceAll('_', ' '),
-                    style: const TextStyle(fontSize: 14),
-                  ),
+                  child: Text(ing.replaceAll('_', ' '),
+                    style: const TextStyle(color: Colors.white70, fontSize: 14)),
                 ),
               ],
             ),
           )).toList(),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
 
-        // ── AI Explanation ─────────────────────────────────────────
+        // ── AI Explanation (chat bubble style) ───────────────────────
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFFEDE9FE),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF8B5CF6)),
+            color: _bg,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: _purple.withOpacity(0.4)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
-                children: [
-                  Text('🤖 ', style: TextStyle(fontSize: 18)),
-                  Text(
-                    'AI Nutritionist Says',
-                    style: TextStyle(
-                      color: Color(0xFF5B21B6),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
+              Row(
+                children: const [
+                  Text('🤖 ', style: TextStyle(fontSize: 16)),
+                  Text('AI Nutritionist Says',
+                    style: TextStyle(color: Color(0xFFB39DDB),
+                      fontWeight: FontWeight.bold, fontSize: 14)),
                 ],
               ),
-              const SizedBox(height: 12),
-              Text(
-                mealPlan.aiExplanation,
-                style: const TextStyle(
-                  fontSize: 14,
-                  height: 1.6,
-                  color: Color(0xFF1F2937),
-                ),
-              ),
+              const SizedBox(height: 10),
+              Text(mealPlan.aiExplanation,
+                style: const TextStyle(color: Colors.white,
+                  fontSize: 13, height: 1.7)),
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
 
-        // ── View Full Recipe Button ────────────────────────────────
+        // ── View Full Recipe button ──────────────────────────────────
         SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(
             onPressed: () => Get.to(() => RecipeDetailScreen(mealPlan: mealPlan)),
-            icon: const Icon(Icons.open_in_new, size: 16),
-            label: const Text('View Full Recipe'),
+            icon: const Icon(Icons.open_in_new, size: 15),
+            label: const Text('View Full Recipe →'),
             style: OutlinedButton.styleFrom(
-              foregroundColor: const Color(0xFF5B21B6),
-              side: const BorderSide(color: Color(0xFF5B21B6)),
+              foregroundColor: _accent,
+              side: const BorderSide(color: Color(0xFFD4A017)),
               padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)),
             ),
           ),
         ),
@@ -208,27 +191,27 @@ class RecipeCard extends StatelessWidget {
     );
   }
 
-  Widget _badge(String label) {
+  Widget _darkBadge(String label) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withOpacity(0.15),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Text(
-        label,
-        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w600),
-      ),
+      child: Text(label,
+        style: const TextStyle(color: Colors.white,
+          fontSize: 10, fontWeight: FontWeight.w600)),
     );
   }
 }
 
 
-class _InfoCard extends StatelessWidget {
+class _DarkCard extends StatelessWidget {
   final String title;
+  final Color accentColor;
   final List<Widget> children;
-
-  const _InfoCard({required this.title, required this.children});
+  const _DarkCard({required this.title, required this.accentColor,
+    required this.children});
 
   @override
   Widget build(BuildContext context) {
@@ -236,28 +219,16 @@ class _InfoCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF2D1B4E),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(color: const Color(0xFF3D2069)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: Color(0xFF5B21B6),
-            ),
-          ),
+          Text(title,
+            style: TextStyle(color: accentColor,
+              fontWeight: FontWeight.bold, fontSize: 13)),
           const SizedBox(height: 10),
           ...children,
         ],
@@ -267,11 +238,9 @@ class _InfoCard extends StatelessWidget {
 }
 
 
-class _NutritionRow extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _NutritionRow(this.label, this.value);
+class _NRow extends StatelessWidget {
+  final String label, value;
+  const _NRow(this.label, this.value);
 
   @override
   Widget build(BuildContext context) {
@@ -280,8 +249,10 @@ class _NutritionRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13)),
-          Text(value, style: const TextStyle(fontSize: 13, color: Color(0xFF374151))),
+          Text(label, style: const TextStyle(
+            color: Color(0xFFB39DDB), fontWeight: FontWeight.w500, fontSize: 13)),
+          Text(value, style: const TextStyle(
+            color: Colors.white, fontSize: 13)),
         ],
       ),
     );
