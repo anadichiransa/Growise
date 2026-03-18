@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 /// 🔐 LOGIN SCREEN
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -61,6 +62,7 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
+
 /// ⚙️ SETTINGS SCREEN
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -115,6 +117,7 @@ class SettingsScreen extends StatelessWidget {
             _buildTile(Icons.help_outline, "Support Center"),
 
             const Spacer(),
+
             /// 🔥 LOGOUT BUTTON (WORKING)
             SizedBox(
               width: double.infinity,
@@ -135,8 +138,12 @@ class SettingsScreen extends StatelessWidget {
                   _showLogoutDialog(context);
                 },
               ),
+            ),
+          ],
+        ),
+      ),
 
-              /// 🔻 Bottom Nav
+      /// 🔻 Bottom Nav
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: AppColors.bg,
         selectedItemColor: AppColors.accent,
@@ -165,10 +172,8 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
-            ),
-          ],
 
-          /// 🔹 Tile Widget
+  /// 🔹 Tile Widget
   static Widget _buildTile(IconData icon, String title) {
     return Container(
       decoration: BoxDecoration(
@@ -190,9 +195,8 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
-        ),
-      ),
-/// 🚪 Logout Dialog
+
+  /// 🚪 Logout Dialog
   static void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -202,7 +206,7 @@ class SettingsScreen extends StatelessWidget {
         content: const Text(
           "Are you sure you want to logout?",
           style: TextStyle(color: Colors.white70),
-       ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -223,4 +227,3 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 }
-
