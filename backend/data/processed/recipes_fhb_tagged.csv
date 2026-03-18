@@ -1,0 +1,51 @@
+recipe_name,ingredients,category,preparation,texture,ingredients_array,ingredient_count,serving_size_g,calories,protein_g,iron_mg,texture_raw,texture_tag_aligned,min_age_months,max_age_months,omit_or_reduce_items,modification_required,fhb_safe,fhb_guideline_id
+Well-mashed Rice,"rice, expressed breast milk",Main,Boil and mash,smooth_puree,"['rice', 'breast_milk']",2,100.0,97.5,1.9,0.12,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Dhal Puree,"red lentils, turmeric, water",Main,Boil and blend,smooth_puree,"['red_lentils', 'turmeric', 'water']",3,100.0,142.7,6.2,14.9,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Mashed Pumpkin,"pumpkin, coconut milk",Vegetable,Steam and mash,smooth_puree,"['pumpkin', 'coconut_milk']",2,100.0,128.0,1.6,2.05,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Carrot Mash,"carrot, water",Vegetable,Boil and mash,smooth_puree,"['carrot', 'water']",2,100.0,17.5,0.4,0.15,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Papaya Puree,ripe papaya,Fruit,Mash with fork,smooth_puree,['papaya'],1,100.0,43.0,0.5,0.25,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Banana Mash,ripe ambul banana,Fruit,Mash with fork,smooth_puree,['ripe ambul banana'],1,100.0,89.0,1.1,0.3,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Avocado Cream,"ripe avocado, breast milk",Fruit,Mash,smooth_puree,"['avocado', 'breast_milk']",2,100.0,112.5,1.5,0.29,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Rice and Dhal Mix,"rice, red lentils, carrot",Main,Boil together and mash,well_mashed,"['rice', 'red_lentils', 'carrot']",3,100.0,93.7,4.2,1.27,well_mashed,well_mashed,6,9,[],False,True,FHB_6_MONTHS
+Sprats Powder Rice,"rice, dried sprats powder, pumpkin",Main,Boil and mash,well_mashed,"['rice', 'dried sprats powder', 'pumpkin']",3,100.0,78.0,1.9,0.5,well_mashed,well_mashed,6,9,[],False,True,FHB_6_MONTHS
+Fish and Rice Mash,"rice, thalapath fish, gotukola",Main,Boil and mash,well_mashed,"['rice', 'fish', 'gotukola']",3,100.0,83.7,8.4,1.37,well_mashed,well_mashed,6,9,[],False,True,FHB_6_MONTHS
+Sweet Potato Mash,"sweet potato, coconut milk",Vegetable,Boil and mash,well_mashed,"['sweet_potato', 'coconut_milk']",2,100.0,160.0,2.1,2.0,well_mashed,well_mashed,6,9,[],False,True,FHB_6_MONTHS
+Gotukola Rice,"rice, gotukola, coconut milk",Main,Boil and finely chop,well_mashed,"['rice', 'gotukola', 'coconut_milk']",3,100.0,128.3,2.5,2.33,well_mashed,well_mashed,6,9,[],False,True,FHB_6_MONTHS
+Chicken Puree,"chicken breast, potato, carrot",Main,Boil and blend,smooth_puree,"['chicken', 'potato', 'carrot']",3,100.0,95.7,11.3,0.5,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Egg Yolk Mash,"boiled egg yolk, rice",Main,Mash with rice,well_mashed,"['egg_yolk', 'rice']",2,100.0,226.0,9.3,1.45,well_mashed,well_mashed,6,9,[],False,True,FHB_6_MONTHS
+Mashed Jak,"ripe jakfruit, coconut milk",Main,Boil and mash,coarsely_chopped,"['jakfruit', 'coconut_milk']",2,100.0,162.5,2.0,1.95,coarsely_chopped,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Breadfruit Mash,"breadfruit, turmeric, coconut milk",Main,Boil and mash,coarsely_chopped,"['breadfruit', 'turmeric', 'coconut_milk']",3,100.0,215.0,4.4,15.07,coarsely_chopped,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Soft Hopper Center,"rice flour, coconut milk",Snack,Steam,finger_food,"['rice_flour', 'coconut_milk']",2,100.0,169.5,2.1,1.82,finger_food,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Bread and Butter,"white bread, unsalted butter",Snack,Remove crusts,finger_food,"['bread', 'butter']",2,100.0,491.0,5.0,1.81,finger_food,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Boiled Potato Cubes,"potato, turmeric",Snack,Boil and cube,finger_food,"['potato', 'turmeric']",2,100.0,199.5,5.8,20.85,finger_food,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Vegetable Soup,"carrot, leeks, potato, beans",Soup,Boil and strain,liquid,"['carrot', 'leeks', 'potato', 'beans']",4,100.0,46.0,1.4,0.92,liquid,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Kanda (Rice Porridge),"rice, red rice, coconut milk",Main,Boil until soft,smooth_puree,"['rice', 'red_rice', 'coconut_milk']",3,100.0,157.0,2.5,1.43,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Mung Bean Mash,"green gram, rice",Main,Boil and mash,well_mashed,"['mung_beans', 'rice']",2,100.0,117.5,4.8,0.8,well_mashed,well_mashed,6,9,[],False,True,FHB_6_MONTHS
+Thabbila (King Coconut),king coconut water,Drink,Fresh,liquid,['king_coconut_water'],1,100.0,19.0,0.7,0.29,liquid,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Steamed Apple,"apple, cinnamon",Fruit,Steam and puree,smooth_puree,"['apple', 'cinnamon']",2,100.0,149.5,2.1,4.22,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Beetroot Mash,"beetroot, potato",Vegetable,Boil and mash,well_mashed,"['beetroot', 'potato']",2,100.0,65.5,1.9,0.55,well_mashed,well_mashed,6,9,[],False,True,FHB_6_MONTHS
+Liver and Rice,"chicken liver, rice, pumpkin",Main,Boil and mash,well_mashed,"['chicken_liver', 'rice', 'pumpkin']",3,100.0,109.3,9.9,4.2,well_mashed,well_mashed,6,9,[],False,True,FHB_6_MONTHS
+Curd and Banana,"curd, ripe banana",Snack,Mix and mash,well_mashed,"['curd', 'banana']",2,100.0,93.5,6.0,0.18,well_mashed,well_mashed,6,9,[],False,True,FHB_6_MONTHS
+Yoghurt,plain yoghurt,Snack,Serve chilled,smooth_puree,['yoghurt'],1,100.0,59.0,10.0,0.1,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Scrambled Egg,"egg, coconut milk",Main,Soft scramble,well_mashed,"['egg', 'coconut_milk']",2,100.0,192.5,7.7,2.55,well_mashed,well_mashed,6,9,[],False,True,FHB_6_MONTHS
+Milk Rice (Kiribath),"white rice, coconut milk",Main,Boil soft,well_mashed,"['white rice', 'coconut_milk']",2,100.0,230.0,2.3,3.3,well_mashed,well_mashed,6,9,[],False,True,FHB_6_MONTHS
+Vegetable Omelet,"egg, finely chopped carrots, leeks",Main,Pan fry soft,coarsely_chopped,"['egg', 'finely chopped carrots', 'leeks']",3,100.0,93.0,6.9,1.95,coarsely_chopped,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Red Rice and Fish,"red rice, tuna, beans",Main,Boil and chop,coarsely_chopped,"['red_rice', 'tuna', 'beans']",3,100.0,71.0,2.2,0.9,coarsely_chopped,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Dhal and Spinach,"red lentils, spinach, coconut milk",Vegetable,Boil,coarsely_chopped,"['red_lentils', 'spinach', 'coconut_milk']",3,100.0,173.0,5.7,3.3,coarsely_chopped,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Beef and Potato Stew,"beef mince, potato, carrot",Main,Slow cook and mash,coarsely_chopped,"['beef mince', 'potato', 'carrot']",3,100.0,61.0,1.4,0.3,coarsely_chopped,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Chickpea Mash,"boiled chickpeas, coconut",Snack,Mash well,coarsely_chopped,"['boiled chickpeas', 'coconut']",2,100.0,354.0,3.3,2.4,coarsely_chopped,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Semolina Porridge,"semolina, milk, cardamom",Main,Boil,smooth_puree,"['semolina', 'milk', 'cardamom']",3,100.0,157.3,5.8,5.1,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Oats and Banana,"oats, milk, banana",Main,Boil,smooth_puree,"['oats', 'milk', 'banana']",3,100.0,75.0,2.2,0.18,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Stewed Pears,"pears, water",Fruit,Simmer,smooth_puree,"['pears', 'water']",2,100.0,19.5,0.1,0.1,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Minced Chicken Pasta,"pasta, chicken mince, tomato",Main,Boil soft,coarsely_chopped,"['pasta', 'chicken mince', 'tomato']",3,100.0,74.5,3.0,0.65,coarsely_chopped,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Tofu and Veggie Mix,"soft tofu, beans, carrot",Main,Steam,coarsely_chopped,"['soft tofu', 'beans', 'carrot']",3,100.0,33.0,1.3,0.65,coarsely_chopped,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+String Hopper Mash,"rice string hoppers, dhal curry",Main,Mash together,well_mashed,"['rice string hoppers', 'dhal curry']",2,100.0,131.0,3.0,1.7,well_mashed,well_mashed,6,9,[],False,True,FHB_6_MONTHS
+Mashed Beans,"green beans, coconut milk",Vegetable,Boil and mash,well_mashed,"['beans', 'coconut_milk']",2,100.0,130.5,2.0,2.15,well_mashed,well_mashed,6,9,[],False,True,FHB_6_MONTHS
+Sago Pudding,"sago, coconut milk",Snack,Boil,smooth_puree,"['sago', 'coconut_milk']",2,100.0,230.0,2.3,3.3,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Fish Cutlet (Baked),"fish, potato, breadcrumbs",Snack,Bake soft,finger_food,"['fish', 'potato', 'breadcrumbs']",3,100.0,91.5,11.0,0.35,finger_food,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Scraped Coconut Rice,"rice, fresh coconut",Main,Mix,coarsely_chopped,"['rice', 'fresh coconut']",2,100.0,130.0,2.7,0.2,coarsely_chopped,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Pumpkin Soup,"pumpkin, onion, garlic",Soup,Blend,smooth_puree,"['pumpkin', 'onion', 'garlic']",3,100.0,26.0,1.0,0.8,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Papaya Cubes,ripe papaya,Fruit,Slice,finger_food,['papaya'],1,100.0,43.0,0.5,0.25,finger_food,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Mango Puree,ripe mango,Fruit,Blend,smooth_puree,['ripe mango'],1,100.0,60.0,0.4,0.2,smooth_puree,smooth_puree,6,7,[],False,True,FHB_6_MONTHS
+Soft Roti Pieces,"wheat flour, coconut, water",Main,Tear into bits,finger_food,"['wheat flour', 'coconut', 'water']",3,100.0,177.0,1.6,1.2,finger_food,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
+Cheese and Bread,"bread, cheddar cheese",Snack,Melt lightly,finger_food,"['bread', 'cheddar cheese']",2,100.0,265.0,9.0,3.6,finger_food,soft_pieces,12,24,[],False,True,FHB_12_24_MONTHS
