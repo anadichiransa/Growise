@@ -81,4 +81,34 @@ class BabyTrackerHome extends StatelessWidget {
               ),
             ),
           ),
-          
+          /// 📱 MAIN CONTENT
+          SafeArea(
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+
+                /// HEADER SECTION
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      /// Profile Avatar
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundColor: AppColors.bgLight,
+                        backgroundImage: const NetworkImage(
+                          'https://i.pravatar.cc/150?img=32',
+                        ),
+                        onBackgroundImageError: (_, __) {},
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.orange.withOpacity(0.3),
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+
