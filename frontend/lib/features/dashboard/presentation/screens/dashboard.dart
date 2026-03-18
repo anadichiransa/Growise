@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class BabyTrackerHome extends StatelessWidget {
   const BabyTrackerHome({super.key});
@@ -17,10 +18,13 @@ class BabyTrackerHome extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  const CircleAvatar(
-                    radius: 24,
-                    backgroundColor: Color(0xFF2A1245),
-                    child: Icon(Icons.person_outline, color: Colors.white),
+                  GestureDetector(
+                    onTap: () => Get.toNamed('/profile'),
+                    child: const CircleAvatar(
+                      radius: 24,
+                      backgroundColor: Color(0xFF2A1245),
+                      child: Icon(Icons.person_outline, color: Colors.white),
+                    ),
                   ),
                   const SizedBox(width: 14),
                   const Expanded(
@@ -69,7 +73,7 @@ class BabyTrackerHome extends StatelessWidget {
                             icon: Icons.bar_chart_rounded,
                             title: "Growth\nMonitoring",
                             subtitle: "WHO Standards",
-                            onTap: () {/* Navigate to Growth Module */},
+                            onTap: () => Get.toNamed('/growth'),
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -78,7 +82,7 @@ class BabyTrackerHome extends StatelessWidget {
                             icon: Icons.vaccines_outlined,
                             title: "Vaccination\nSchedule",
                             subtitle: "Due Reminders",
-                            onTap: () {/* Navigate to Vaccine Module */},
+                            onTap: () => Get.toNamed('/vaccines'),
                           ),
                         ),
                       ],
@@ -93,7 +97,7 @@ class BabyTrackerHome extends StatelessWidget {
                             icon: Icons.restaurant_menu,
                             title: "Meal Planner",
                             subtitle: "Nutrition AI",
-                            onTap: () {/* Navigate to Meal Module */},
+                            onTap: () => Get.toNamed('/meals'),
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -102,7 +106,7 @@ class BabyTrackerHome extends StatelessWidget {
                             icon: Icons.school_outlined,
                             title: "Education Hub",
                             subtitle: "Child Milestones",
-                            onTap: () {/* Navigate to Education Module */},
+                            onTap: () => Get.toNamed('/activity'),
                           ),
                         ),
                       ],

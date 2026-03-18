@@ -11,6 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../features/dashboard/presentation/screens/details.dart';
 import '../../features/auth/presentation/screens/signup-form.dart';
 import '../../features/auth/presentation/screens/access_requesting.dart';
+import '../../features/profile/presentation/screens/profile_loader.dart';
 
 class AppRoutes {
   static const welcome = '/';
@@ -39,7 +40,7 @@ class AppRoutes {
               subtitle: 'Fun learning for your baby',
               videoPath: '',
             )),
-    GetPage(name: profile, page: () => const BabyTrackerHome()),
+    GetPage(name: profile, page: () => const ProfileLoader()),
     GetPage(name: details, page: () => const OnboardingDetailsPage()),
     GetPage(name: signupForm, page: () => const SignupFormScreen()),
     GetPage(name: accessRequest, page: () => const SetupExperienceScreen()),

@@ -212,6 +212,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               _AvatarSection(
                 image: widget.avatarImage,
                 name: _nameController.text,
+                gender: _selectedGender,
                 lastWeightCheckLabel: widget.lastWeightCheckLabel,
                 onAvatarTap: widget.onAvatarTap,
               ),
@@ -313,9 +314,11 @@ class _AvatarSection extends StatelessWidget {
   final String name;
   final String? lastWeightCheckLabel;
   final VoidCallback? onAvatarTap;
+  final String gender;
 
   const _AvatarSection({
     required this.name,
+    required this.gender,
     this.image,
     this.lastWeightCheckLabel,
     this.onAvatarTap,
@@ -323,77 +326,35 @@ class _AvatarSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isGirl =
+        gender.toLowerCase() == 'girl' || gender.toLowerCase() == 'female';
     return Column(
       children: [
-        GestureDetector(
-          onTap: onAvatarTap,
-          child: Stack(
-            children: [
-              Container(
-                width: 96,
-                height: 96,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: _ProfileScreenTheme.accent,
-                    width: 3,
-                  ),
-                  color: _ProfileScreenTheme.cardBg,
-                  image: image != null
-                      ? DecorationImage(image: image!, fit: BoxFit.cover)
-                      : null,
-                ),
-                child: image == null
-                    ? const Icon(
-                        Icons.person,
-                        size: 52,
-                        color: _ProfileScreenTheme.textSecondary,
-                      )
-                    : null,
-              ),
-              if (onAvatarTap != null)
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      color: _ProfileScreenTheme.accent,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: _ProfileScreenTheme.bgDark,
-                        width: 2,
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.camera_alt_rounded,
-                      size: 14,
-                      color: _ProfileScreenTheme.bgDark,
-                    ),
-                  ),
-                ),
-            ],
+        Container(
+          width: 96,
+          height: 96,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: _ProfileScreenTheme.accent, width: 3),
+            color: _ProfileScreenTheme.cardBg,
+          ),
+          child: Icon(
+            isGirl ? Icons.face_2 : Icons.face,
+            size: 52,
+            color: _ProfileScreenTheme.accent,
           ),
         ),
         const SizedBox(height: 12),
-        Text(
-          name,
-          style: const TextStyle(
-            color: _ProfileScreenTheme.textPrimary,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        Text(name,
+            style: const TextStyle(
+                color: _ProfileScreenTheme.textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.w700)),
         if (lastWeightCheckLabel != null) ...[
           const SizedBox(height: 4),
-          Text(
-            'Last weight check: $lastWeightCheckLabel',
-            style: const TextStyle(
-              color: _ProfileScreenTheme.textSecondary,
-              fontSize: 12.5,
-            ),
-          ),
+          Text('Last weight check: $lastWeightCheckLabel',
+              style: const TextStyle(
+                  color: _ProfileScreenTheme.textSecondary, fontSize: 12.5)),
         ],
       ],
     );
