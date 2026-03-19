@@ -22,6 +22,8 @@ class ChildController extends GetxController {
     isLoading.value = true;
     final first = await ChildService.getFirstChild();
     final all = await ChildService.getAllChildren();
+    print(
+        'DEBUG ChildController: first=$first, all count=${all.length}'); // ADD
     _child.value = first;
     _allChildren.value = all;
     isLoading.value = false;
