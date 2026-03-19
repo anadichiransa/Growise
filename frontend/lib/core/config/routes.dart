@@ -14,6 +14,9 @@ import '../../features/auth/presentation/screens/access_requesting.dart';
 import '../../features/profile/presentation/screens/profile_loader.dart';
 import '../../features/growth/presentation/screens/growth_chart_screen.dart';
 import '../../features/vaccines/presentation/screens/vaccine_schedule_screen.dart';
+import 'package:provider/provider.dart';
+import '../../features/vaccines/presentation/controllers/vaccine_controller.dart';
+import '../../features/education/presentation/screens/education_hub_screen.dart';
 
 class AppRoutes {
   static const welcome = '/';
@@ -29,6 +32,7 @@ class AppRoutes {
   static const accessRequest = '/access-requesting';
   static const growth = '/growth';
   static const vaccines = '/vaccines';
+  static const education = '/education';
 
   static final pages = [
     GetPage(name: welcome, page: () => const OnboradingScreen()),
@@ -50,6 +54,13 @@ class AppRoutes {
     GetPage(name: signupForm, page: () => const SignupFormScreen()),
     GetPage(name: accessRequest, page: () => const SetupExperienceScreen()),
     GetPage(name: growth, page: () => const GrowthChartScreen()),
-    GetPage(name: vaccines, page: () => const VaccineScheduleScreen()),
+    GetPage(name: education, page: () => const EducationHubScreen()),
+    GetPage(
+      name: vaccines,
+      page: () => ChangeNotifierProvider(
+        create: (_) => VaccineController(),
+        child: const VaccineScheduleScreen(),
+      ),
+    ),
   ];
 }
