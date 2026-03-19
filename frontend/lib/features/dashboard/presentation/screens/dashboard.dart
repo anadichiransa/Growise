@@ -127,7 +127,7 @@ class _BabyTrackerHomeState extends State<BabyTrackerHome> {
                             icon: Icons.school_outlined,
                             title: "Education Hub",
                             subtitle: "Child Milestones",
-                            onTap: () => Get.toNamed('/activity'),
+                            onTap: () => Get.toNamed('/education'),
                           ),
                         ),
                       ],

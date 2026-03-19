@@ -7,7 +7,6 @@ import '../../core/config/api_config.dart';
 ///
 /// Uses the standard http package (not Dio) for simplicity.
 class MealRepository {
-
   /// Calls POST /api/v1/meals/generate and returns a MealPlan.
   ///
   /// Throws an [Exception] if:
@@ -24,9 +23,9 @@ class MealRepository {
 
     final requestBody = jsonEncode({
       'child_age_months': childAgeMonths,
-      'liked_foods':      likedFoods,
-      'disliked_foods':   dislikedFoods,
-      'prep_methods':     prepMethods,    // ← carries cooking preference to backend
+      'liked_foods': likedFoods,
+      'disliked_foods': dislikedFoods,
+      'prep_methods': prepMethods, // ← carries cooking preference to backend
     });
 
     late http.Response response;
@@ -54,7 +53,8 @@ class MealRepository {
     }
 
     // Non-200 response — extract the error message from the backend JSON
-    String errorMessage = 'Failed to generate meal plan (${response.statusCode})';
+    String errorMessage =
+        'Failed to generate meal plan (${response.statusCode})';
     try {
       final errorJson = jsonDecode(response.body) as Map<String, dynamic>;
       final detail = errorJson['detail'];
