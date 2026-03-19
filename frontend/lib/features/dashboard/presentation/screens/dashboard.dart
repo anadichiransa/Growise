@@ -1,8 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get.dart';
+import 'package:growise/features/profile/presentation/controllers/child_controller.dart';
 
-class BabyTrackerHome extends StatelessWidget {
+class BabyTrackerHome extends StatefulWidget {
   const BabyTrackerHome({super.key});
+
+  @override
+  State<BabyTrackerHome> createState() => _BabyTrackerHomeState();
+}
+
+class _BabyTrackerHomeState extends State<BabyTrackerHome> {
+  @override
+  void initState() {
+    super.initState();
+    // Refresh child data when dashboard opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Get.find<ChildController>().loadChildren();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +43,11 @@ class BabyTrackerHome extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 14),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           "Welcome Back,",
                           style: TextStyle(
                             color: Colors.white,
@@ -39,10 +55,15 @@ class BabyTrackerHome extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        SizedBox(height: 2),
-                        Text(
-                          "User Profile", // Placeholder for actual name
-                          style: TextStyle(color: Colors.white60, fontSize: 13),
+                        const SizedBox(height: 2),
+                        Obx(
+                          () => Text(
+                            Get.find<ChildController>().childName,
+                            style: const TextStyle(
+                              color: Colors.white60,
+                              fontSize: 13,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -195,7 +216,10 @@ class BabyTrackerHome extends StatelessWidget {
           _NavItem(icon: Icons.show_chart, label: "Tracker", active: false),
           _NavItem(icon: Icons.school_outlined, label: "Learn", active: false),
           _NavItem(
-              icon: Icons.settings_outlined, label: "Settings", active: false),
+            icon: Icons.settings_outlined,
+            label: "Settings",
+            active: false,
+          ),
         ],
       ),
     );
@@ -240,14 +264,19 @@ class _FeatureCard extends StatelessWidget {
               child: Icon(icon, color: const Color(0xFFF6A960), size: 20),
             ),
             const Spacer(),
-            Text(title,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold)),
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(subtitle,
-                style: const TextStyle(color: Colors.white54, fontSize: 11)),
+            Text(
+              subtitle,
+              style: const TextStyle(color: Colors.white54, fontSize: 11),
+            ),
           ],
         ),
       ),
@@ -259,8 +288,11 @@ class _NavItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool active;
-  const _NavItem(
-      {required this.icon, required this.label, required this.active});
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.active,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -268,10 +300,13 @@ class _NavItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, color: active ? const Color(0xFF26D07C) : Colors.white54),
-        Text(label,
-            style: TextStyle(
-                color: active ? const Color(0xFF26D07C) : Colors.white54,
-                fontSize: 10)),
+        Text(
+          label,
+          style: TextStyle(
+            color: active ? const Color(0xFF26D07C) : Colors.white54,
+            fontSize: 10,
+          ),
+        ),
       ],
     );
   }
