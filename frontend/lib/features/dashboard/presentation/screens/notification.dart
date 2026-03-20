@@ -157,7 +157,116 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       bottomNavigationBar: _GrowWiseBottomNav(currentIndex: _currentNavIndex, onTap: _onNavTap),
     );
   }
-  Widget _buildHeader(double topPadding) => const SizedBox.shrink();
+
+  Widget _buildHeader(double topPadding) {
+    return Container(
+      padding: EdgeInsets.only(
+        top: topPadding + 12,
+        left: 20,
+        right: 20,
+        bottom: 16,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            GrowWiseColors.scaffoldBg,
+            GrowWiseColors.scaffoldBg.withOpacity(0.95),
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () => Navigator.maybePop(context),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: GrowWiseColors.iconBg,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: GrowWiseColors.textPrimary,
+                      size: 18,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Notifications',
+                    style: TextStyle(
+                      color: GrowWiseColors.textPrimary,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.3,
+                    ),
+                  ),
+                  if (_unreadCount > 0)
+                    Text(
+                      '$_unreadCount unread',
+                      style: const TextStyle(
+                        color: GrowWiseColors.textMuted,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: _notifications.isNotEmpty
+                ? GestureDetector(
+                    key: const ValueKey('clear'),
+                    onTap: _clearAll,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: GrowWiseColors.amber.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: GrowWiseColors.amber.withOpacity(0.4),
+                          width: 1,
+                        ),
+                      ),
+                      child: const Text(
+                        'Clear All',
+                        style: TextStyle(
+                          color: GrowWiseColors.amber,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink(key: ValueKey('empty')),
+          ),
+        ],
+      ),
+    );
+  }
   Widget _buildBody() => const SizedBox.shrink();
 }
 
@@ -314,6 +423,8 @@ class _EmptyStateState extends State<_EmptyState> with SingleTickerProviderState
     );
   }
 }
+
+// ─── CUSTOM PAINTER ──────────────────────────────────────────────────────────
 
 class _RingsPainter extends CustomPainter {
   final Color color;
