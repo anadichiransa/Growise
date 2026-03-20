@@ -267,7 +267,48 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       ),
     );
   }
-  Widget _buildBody() => const SizedBox.shrink();
+
+  Widget _buildBody() {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 400),
+      switchInCurve: Curves.easeOutCubic,
+      child: _notifications.isEmpty
+          ? const _EmptyState(key: ValueKey('empty'))
+          : _buildList(),
+    );
+  }
+
+  Widget _buildList() {
+    return ListView.builder(
+      key: const ValueKey('list'),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      itemCount: _notifications.length,
+      itemBuilder: (context, index) {
+        final notif = _notifications[index];
+        final staggerStart = (index * 0.1).clamp(0.0, 0.6);
+        final staggerEnd = (staggerStart + 0.7).clamp(0.0, 1.0);
+        final entranceAnim = CurvedAnimation(
+          parent: _listEntranceCtrl,
+          curve: Interval(staggerStart, staggerEnd, curve: Curves.easeOutCubic),
+        );
+        final slideAnim = Tween<Offset>(
+          begin: const Offset(0, 0.15),
+          end: Offset.zero,
+        ).animate(entranceAnim);
+        return FadeTransition(
+          opacity: entranceAnim,
+          child: SlideTransition(
+            position: slideAnim,
+            child: _NotificationCard(
+              notification: notif,
+              onDismiss: () => _dismissNotification(notif.id),
+              onTap: () => _markAsRead(notif.id),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
 class _NotificationCard extends StatelessWidget {
@@ -423,8 +464,6 @@ class _EmptyStateState extends State<_EmptyState> with SingleTickerProviderState
     );
   }
 }
-
-// ─── CUSTOM PAINTER ──────────────────────────────────────────────────────────
 
 class _RingsPainter extends CustomPainter {
   final Color color;
