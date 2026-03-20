@@ -5,6 +5,7 @@ class VaccineRepository {
   final _db = FirebaseFirestore.instance;
 
   Future<List<AgeGroup>> getImmunizationSchedule(String childId) async {
+    if (childId.isEmpty) return [];
     final existing = await _db
         .collection('children')
         .doc(childId)
