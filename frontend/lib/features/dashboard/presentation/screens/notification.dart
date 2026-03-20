@@ -73,27 +73,20 @@ class GrowWiseApp extends StatelessWidget {
       theme: _buildTheme(),
       home: const Scaffold(
         backgroundColor: GrowWiseColors.scaffoldBg,
-        body: Center(
-          child: Text('GrowWise', style: TextStyle(color: GrowWiseColors.textPrimary)),
-        ),
+        body: Center(child: Text('GrowWise', style: TextStyle(color: GrowWiseColors.textPrimary))),
       ),
     );
   }
 
   ThemeData _buildTheme() {
     return ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: GrowWiseColors.primaryPurple,
-        brightness: Brightness.dark,
-      ),
+      colorScheme: ColorScheme.fromSeed(seedColor: GrowWiseColors.primaryPurple, brightness: Brightness.dark),
       useMaterial3: true,
       scaffoldBackgroundColor: GrowWiseColors.scaffoldBg,
-      pageTransitionsTheme: const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.iOS:     CupertinoPageTransitionsBuilder(),
-        },
-      ),
+      pageTransitionsTheme: const PageTransitionsTheme(builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      }),
     );
   }
 }
@@ -103,11 +96,7 @@ class _NotificationCard extends StatelessWidget {
   final VoidCallback onDismiss;
   final VoidCallback onTap;
 
-  const _NotificationCard({
-    required this.notification,
-    required this.onDismiss,
-    required this.onTap,
-  });
+  const _NotificationCard({required this.notification, required this.onDismiss, required this.onTap});
 
   static const Map<NotificationType, (IconData, Color, String)> _typeConfig = {
     NotificationType.appointment: (Icons.calendar_today_rounded, GrowWiseColors.accentAppointment, 'Appointment'),
@@ -138,14 +127,11 @@ class _NotificationCard extends StatelessWidget {
       ),
       alignment: Alignment.centerRight,
       padding: const EdgeInsets.only(right: 24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.delete_sweep_rounded, color: Colors.white, size: 28),
-          SizedBox(height: 4),
-          Text('Delete', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
-        ],
-      ),
+      child: Column(mainAxisSize: MainAxisSize.min, children: const [
+        Icon(Icons.delete_sweep_rounded, color: Colors.white, size: 28),
+        SizedBox(height: 4),
+        Text('Delete', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+      ]),
     );
   }
 
@@ -170,46 +156,32 @@ class _NotificationCard extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildIconChip(iconData, accentColor),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTypeBadge(typeLabel, accentColor),
-                      const SizedBox(height: 6),
-                      Text(notification.title, style: TextStyle(color: notification.isRead ? GrowWiseColors.textMuted : GrowWiseColors.textPrimary, fontSize: 14, fontWeight: notification.isRead ? FontWeight.w400 : FontWeight.w700, height: 1.45)),
-                    ],
-                  ),
-                ),
-                if (!notification.isRead) ...[
-                  const SizedBox(width: 10),
-                  Container(width: 9, height: 9, decoration: BoxDecoration(color: accentColor, shape: BoxShape.circle, boxShadow: [BoxShadow(color: accentColor.withOpacity(0.6), blurRadius: 6)])),
-                ],
-              ],
-            ),
-            const SizedBox(height: 12),
-            Divider(color: GrowWiseColors.violet.withOpacity(0.2), height: 1, thickness: 1),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Swipe left to dismiss', style: TextStyle(color: GrowWiseColors.textDim.withOpacity(0.6), fontSize: 10, fontStyle: FontStyle.italic)),
-                Row(children: [
-                  Icon(Icons.access_time_rounded, size: 11, color: GrowWiseColors.amber.withOpacity(0.8)),
-                  const SizedBox(width: 4),
-                  Text(notification.timestamp, style: TextStyle(color: GrowWiseColors.amber.withOpacity(0.9), fontSize: 11, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic)),
-                ]),
-              ],
-            ),
-          ],
-        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            _buildIconChip(iconData, accentColor),
+            const SizedBox(width: 14),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              _buildTypeBadge(typeLabel, accentColor),
+              const SizedBox(height: 6),
+              Text(notification.title, style: TextStyle(color: notification.isRead ? GrowWiseColors.textMuted : GrowWiseColors.textPrimary, fontSize: 14, fontWeight: notification.isRead ? FontWeight.w400 : FontWeight.w700, height: 1.45)),
+            ])),
+            if (!notification.isRead) ...[
+              const SizedBox(width: 10),
+              Container(width: 9, height: 9, decoration: BoxDecoration(color: accentColor, shape: BoxShape.circle, boxShadow: [BoxShadow(color: accentColor.withOpacity(0.6), blurRadius: 6)])),
+            ],
+          ]),
+          const SizedBox(height: 12),
+          Divider(color: GrowWiseColors.violet.withOpacity(0.2), height: 1, thickness: 1),
+          const SizedBox(height: 10),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text('Swipe left to dismiss', style: TextStyle(color: GrowWiseColors.textDim.withOpacity(0.6), fontSize: 10, fontStyle: FontStyle.italic)),
+            Row(children: [
+              Icon(Icons.access_time_rounded, size: 11, color: GrowWiseColors.amber.withOpacity(0.8)),
+              const SizedBox(width: 4),
+              Text(notification.timestamp, style: TextStyle(color: GrowWiseColors.amber.withOpacity(0.9), fontSize: 11, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic)),
+            ]),
+          ]),
+        ]),
       ),
     );
   }
@@ -244,13 +216,8 @@ class _EmptyState extends StatefulWidget {
 
 class _EmptyStateState extends State<_EmptyState> with SingleTickerProviderStateMixin {
   late final AnimationController _pulseCtrl;
-
   @override
-  void initState() {
-    super.initState();
-    _pulseCtrl = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(reverse: true);
-  }
-
+  void initState() { super.initState(); _pulseCtrl = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(reverse: true); }
   @override
   void dispose() { _pulseCtrl.dispose(); super.dispose(); }
 
@@ -261,32 +228,24 @@ class _EmptyStateState extends State<_EmptyState> with SingleTickerProviderState
         animation: _pulseCtrl,
         builder: (context, child) {
           final pulseOpacity = 0.3 + (_pulseCtrl.value * 0.4);
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 140, height: 140,
-                child: CustomPaint(
-                  painter: _RingsPainter(color: GrowWiseColors.primaryPurple, pulseOpacity: pulseOpacity),
-                  child: Center(
-                    child: Container(
-                      width: 64, height: 64,
-                      decoration: BoxDecoration(
-                        gradient: RadialGradient(colors: [GrowWiseColors.violet.withOpacity(0.4), GrowWiseColors.iconBg]),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: GrowWiseColors.violet.withOpacity(0.5), width: 1.5),
-                      ),
-                      child: Icon(Icons.notifications_off_outlined, size: 30, color: GrowWiseColors.textMuted.withOpacity(0.5 + pulseOpacity * 0.5)),
-                    ),
-                  ),
+          return Column(mainAxisSize: MainAxisSize.min, children: [
+            SizedBox(width: 140, height: 140, child: CustomPaint(
+              painter: _RingsPainter(color: GrowWiseColors.primaryPurple, pulseOpacity: pulseOpacity),
+              child: Center(child: Container(
+                width: 64, height: 64,
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(colors: [GrowWiseColors.violet.withOpacity(0.4), GrowWiseColors.iconBg]),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: GrowWiseColors.violet.withOpacity(0.5), width: 1.5),
                 ),
-              ),
-              const SizedBox(height: 24),
-              const Text("You're all caught up!", style: TextStyle(color: GrowWiseColors.textPrimary, fontSize: 18, fontWeight: FontWeight.w700)),
-              const SizedBox(height: 8),
-              Text('No new notifications right now.\nCheck back later.', textAlign: TextAlign.center, style: TextStyle(color: GrowWiseColors.textMuted.withOpacity(0.7), fontSize: 13, height: 1.6)),
-            ],
-          );
+                child: Icon(Icons.notifications_off_outlined, size: 30, color: GrowWiseColors.textMuted.withOpacity(0.5 + pulseOpacity * 0.5)),
+              )),
+            )),
+            const SizedBox(height: 24),
+            const Text("You're all caught up!", style: TextStyle(color: GrowWiseColors.textPrimary, fontSize: 18, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            Text('No new notifications right now.\nCheck back later.', textAlign: TextAlign.center, style: TextStyle(color: GrowWiseColors.textMuted.withOpacity(0.7), fontSize: 13, height: 1.6)),
+          ]);
         },
       ),
     );
@@ -304,13 +263,46 @@ class _RingsPainter extends CustomPainter {
     for (int i = 0; i < 3; i++) {
       final radius = 35.0 + i * 15;
       final opacity = (pulseOpacity - i * 0.1).clamp(0.0, 1.0);
-      final paint = Paint()..color = color.withOpacity(opacity)..style = PaintingStyle.stroke..strokeWidth = 1.5;
-      canvas.drawCircle(center, radius, paint);
+      canvas.drawCircle(center, radius, Paint()..color = color.withOpacity(opacity)..style = PaintingStyle.stroke..strokeWidth = 1.5);
     }
   }
 
   @override
   bool shouldRepaint(_RingsPainter old) => old.pulseOpacity != pulseOpacity;
+}
+
+class _GrowWiseBottomNav extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+
+  const _GrowWiseBottomNav({required this.currentIndex, required this.onTap});
+
+  static const _items = [
+    (Icons.home_rounded,        Icons.home_outlined,        'Home'),
+    (Icons.bar_chart_rounded,   Icons.bar_chart_outlined,   'Tracker'),
+    (Icons.school_rounded,      Icons.school_outlined,      'Education'),
+    (Icons.headset_mic_rounded, Icons.headset_mic_outlined, 'Support'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    return Container(
+      decoration: BoxDecoration(
+        color: GrowWiseColors.navBg,
+        border: Border(top: BorderSide(color: GrowWiseColors.primaryPurple.withOpacity(0.35), width: 1)),
+        boxShadow: [BoxShadow(color: GrowWiseColors.primaryPurple.withOpacity(0.15), blurRadius: 24, offset: const Offset(0, -8))],
+      ),
+      padding: EdgeInsets.only(top: 10, bottom: bottomPadding + 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: List.generate(_items.length, (i) => _NavButton(
+          activeIcon: _items[i].$1, inactiveIcon: _items[i].$2, label: _items[i].$3,
+          isActive: currentIndex == i, onTap: () => onTap(i),
+        )),
+      ),
+    );
+  }
 }
 
 class _NavButton extends StatelessWidget {
@@ -320,13 +312,7 @@ class _NavButton extends StatelessWidget {
   final bool isActive;
   final VoidCallback onTap;
 
-  const _NavButton({
-    required this.activeIcon,
-    required this.inactiveIcon,
-    required this.label,
-    required this.isActive,
-    required this.onTap,
-  });
+  const _NavButton({required this.activeIcon, required this.inactiveIcon, required this.label, required this.isActive, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -335,49 +321,29 @@ class _NavButton extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
         width: 68,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeOutCubic,
-              width: isActive ? 48 : 40,
-              height: 32,
-              decoration: BoxDecoration(
-                color: isActive ? GrowWiseColors.amber.withOpacity(0.15) : Colors.transparent,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Icon(
-                  isActive ? activeIcon : inactiveIcon,
-                  color: isActive ? GrowWiseColors.navIconActive : GrowWiseColors.navIconInactive,
-                  size: 24,
-                ),
-              ),
-            ),
-            const SizedBox(height: 3),
-            AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 250),
-              style: TextStyle(
-                color: isActive ? GrowWiseColors.navIconActive : GrowWiseColors.navIconInactive,
-                fontSize: 10,
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
-              ),
-              child: Text(label),
-            ),
-            const SizedBox(height: 4),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              width: isActive ? 4 : 0,
-              height: isActive ? 4 : 0,
-              decoration: BoxDecoration(
-                color: GrowWiseColors.amber,
-                shape: BoxShape.circle,
-                boxShadow: isActive ? [BoxShadow(color: GrowWiseColors.amber.withOpacity(0.6), blurRadius: 6)] : null,
-              ),
-            ),
-          ],
-        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOutCubic,
+            width: isActive ? 48 : 40,
+            height: 32,
+            decoration: BoxDecoration(color: isActive ? GrowWiseColors.amber.withOpacity(0.15) : Colors.transparent, borderRadius: BorderRadius.circular(10)),
+            child: Center(child: Icon(isActive ? activeIcon : inactiveIcon, color: isActive ? GrowWiseColors.navIconActive : GrowWiseColors.navIconInactive, size: 24)),
+          ),
+          const SizedBox(height: 3),
+          AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 250),
+            style: TextStyle(color: isActive ? GrowWiseColors.navIconActive : GrowWiseColors.navIconInactive, fontSize: 10, fontWeight: isActive ? FontWeight.w700 : FontWeight.w400),
+            child: Text(label),
+          ),
+          const SizedBox(height: 4),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            width: isActive ? 4 : 0,
+            height: isActive ? 4 : 0,
+            decoration: BoxDecoration(color: GrowWiseColors.amber, shape: BoxShape.circle, boxShadow: isActive ? [BoxShadow(color: GrowWiseColors.amber.withOpacity(0.6), blurRadius: 6)] : null),
+          ),
+        ]),
       ),
     );
   }
