@@ -23,3 +23,29 @@ abstract class GrowWiseColors {
   static const Color accentVaccination = Color(0xFFDC2626);
   static const Color accentGrowth      = Color(0xFFC88A28);
 }
+
+enum NotificationType { appointment, vitamin, vaccination, growth }
+ 
+class AppNotification {
+  final String id;
+  final NotificationType type;
+  final String title;
+  final String timestamp;
+  final bool isRead;
+ 
+  const AppNotification({
+    required this.id,
+    required this.type,
+    required this.title,
+    required this.timestamp,
+    this.isRead = false,
+  });
+ 
+  AppNotification copyWith({bool? isRead}) => AppNotification(
+        id: id,
+        type: type,
+        title: title,
+        timestamp: timestamp,
+        isRead: isRead ?? this.isRead,
+      );
+}
