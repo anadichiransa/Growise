@@ -5,6 +5,17 @@ class VaccineRepository {
   final _db = FirebaseFirestore.instance;
 
   Future<List<AgeGroup>> getImmunizationSchedule(String childId) async {
+    final existing = await _db
+        .collection('children')
+        .doc(childId)
+        .collection('immunization_records')
+        .limit(1)
+        .get();
+
+    if (existing.docs.isEmpty) {
+      await _generateScheduleForChild(childId);
+    }
+
     final snapshot = await _db
         .collection('children')
         .doc(childId)
@@ -64,6 +75,68 @@ class VaccineRepository {
     }).toList();
   }
 
+  Future<void> _generateScheduleForChild(String childId) async {
+    final childDoc = await _db.collection('children').doc(childId).get();
+    if (!childDoc.exists) return;
+
+    final child = childDoc.data()!;
+
+    // Handle birthDate field (not dob)
+    final dobRaw = child['birthDate'];
+    if (dobRaw == null) return;
+    final dob = (dobRaw as Timestamp).toDate();
+
+    // Handle "Boy"/"Girl" gender values
+    final genderRaw = (child['gender'] ?? 'Boy').toString().toLowerCase();
+    final gender = (genderRaw == 'girl' || genderRaw == 'female') ? 'female' : 'male';
+
+    final templates = await _db.collection('vaccination_schedule').get();
+    final batch = _db.batch();
+
+    for (final template in templates.docs) {
+      final v = template.data();
+
+      if (v['gender_restriction'] != null && v['gender_restriction'] != gender) {
+        continue;
+      }
+
+      final ageMonths = v['age_months'] as int;
+      final scheduledDate = DateTime(
+        dob.year,
+        dob.month + ageMonths,
+        dob.day,
+      );
+
+      final daysUntilDue = scheduledDate.difference(DateTime.now()).inDays;
+      final status = daysUntilDue < -30 ? 'overdue' : 'pending';
+
+      final ref = _db
+          .collection('children')
+          .doc(childId)
+          .collection('immunization_records')
+          .doc(v['vaccine_id']);
+
+      batch.set(ref, {
+        'vaccine_id': v['vaccine_id'],
+        'vaccine_name': v['vaccine_name'],
+        'age_label': v['age_label'],
+        'age_months': ageMonths,
+        'diseases_prevented': v['diseases_prevented'],
+        'status': status,
+        'scheduled_date': Timestamp.fromDate(scheduledDate),
+        'administered_date': null,
+        'administered_by': null,
+        'batch_number': null,
+        'is_booster': v['is_booster'],
+        'notes': v['notes'] ?? '',
+        'marked_by_parent': false,
+        'created_at': Timestamp.now(),
+      });
+    }
+
+    await batch.commit();
+  }
+
   Future<void> markVaccineDone(
     String childId,
     String vaccineId,
@@ -88,7 +161,7 @@ class VaccineRepository {
   Future<List<Map<String, dynamic>>> getUpcomingNotifications(String parentUid) async {
     final childrenSnapshot = await _db
         .collection('children')
-        .where('parent_uid', isEqualTo: parentUid)
+        .where('parentId', isEqualTo: parentUid)
         .get();
 
     final notifications = <Map<String, dynamic>>[];
