@@ -25,14 +25,14 @@ abstract class GrowWiseColors {
 }
 
 enum NotificationType { appointment, vitamin, vaccination, growth }
- 
+
 class AppNotification {
   final String id;
   final NotificationType type;
   final String title;
   final String timestamp;
   final bool isRead;
- 
+
   const AppNotification({
     required this.id,
     required this.type,
@@ -40,7 +40,7 @@ class AppNotification {
     required this.timestamp,
     this.isRead = false,
   });
- 
+
   AppNotification copyWith({bool? isRead}) => AppNotification(
         id: id,
         type: type,
@@ -61,10 +61,10 @@ void main() {
   );
   runApp(const GrowWiseApp());
 }
- 
+
 class GrowWiseApp extends StatelessWidget {
   const GrowWiseApp({super.key});
- 
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -79,7 +79,7 @@ class GrowWiseApp extends StatelessWidget {
       ),
     );
   }
- 
+
   ThemeData _buildTheme() {
     return ThemeData(
       colorScheme: ColorScheme.fromSeed(
@@ -96,4 +96,28 @@ class GrowWiseApp extends StatelessWidget {
       ),
     );
   }
+}
+
+class _RingsPainter extends CustomPainter {
+  final Color color;
+  final double pulseOpacity;
+
+  _RingsPainter({required this.color, required this.pulseOpacity});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    for (int i = 0; i < 3; i++) {
+      final radius = 35.0 + i * 15;
+      final opacity = (pulseOpacity - i * 0.1).clamp(0.0, 1.0);
+      final paint = Paint()
+        ..color = color.withOpacity(opacity)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5;
+      canvas.drawCircle(center, radius, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_RingsPainter old) => old.pulseOpacity != pulseOpacity;
 }
