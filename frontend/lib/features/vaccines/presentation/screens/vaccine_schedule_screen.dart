@@ -7,7 +7,6 @@ import '../widgets/mark_done_sheet.dart';
 import '../widgets/vaccine_details_sheet.dart';
 import 'package:growise/features/profile/presentation/controllers/child_controller.dart';
 import 'package:get/get.dart';
-import 'package:growise/features/profile/presentation/controllers/child_controller.dart';
 
 class VaccineScheduleScreen extends StatefulWidget {
   const VaccineScheduleScreen({super.key});
@@ -26,16 +25,23 @@ class _VaccineScheduleScreenState extends State<VaccineScheduleScreen> {
   void initState() {
     super.initState();
     _childController = Get.find<ChildController>();
-    _childId = _childController.childId;
-    _childName = _childController.childName;
+    _childId = _childController.childId ?? '';
+    _childName = _childController.childName ?? 'Child';
+
     final birthDate = _childController.child?['birthDate'] != null
         ? (_childController.child!['birthDate'] as dynamic).toDate() as DateTime
         : DateTime(2022, 1, 1);
     final now = DateTime.now();
     _childAgeMonths =
         (now.year - birthDate.year) * 12 + now.month - birthDate.month;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<VaccineController>().loadSchedule(_childId);
+      print('DEBUG childId: $_childId');
+      if (_childId.isNotEmpty) {
+        context.read<VaccineController>().loadSchedule(_childId);
+      } else {
+        print('ERROR: childId is empty, schedule will not load');
+      }
     });
   }
 
@@ -146,7 +152,7 @@ class _VaccineScheduleScreenState extends State<VaccineScheduleScreen> {
                 ),
               ),
               Text(
-                '${_childAgeMonths} Months Old',
+                '$_childAgeMonths Months Old',
                 style: const TextStyle(color: Colors.white54, fontSize: 13),
               ),
             ],

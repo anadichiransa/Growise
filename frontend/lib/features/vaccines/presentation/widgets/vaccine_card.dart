@@ -73,14 +73,14 @@ class VaccineCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               isDone
-                  ? 'Given: ${_formatDate(record.administeredDate)}'
-                  : 'Rec: ${_formatDate(record.scheduledDate)}',
+                  ? 'Given: '
+                  : 'Rec: ',
               style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12),
             ),
-            if ((isDue || isOverdue) && !isDone) ...[
-              const SizedBox(height: 12),
-              Row(
-                children: [
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                if ((isDue || isOverdue) && !isDone) ...[
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: onMarkDone,
@@ -96,7 +96,9 @@ class VaccineCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  OutlinedButton(
+                ],
+                Expanded(
+                  child: OutlinedButton(
                     onPressed: onDetails,
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -107,9 +109,9 @@ class VaccineCard extends StatelessWidget {
                     ),
                     child: const Text('Details'),
                   ),
-                ],
-              )
-            ]
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -118,7 +120,7 @@ class VaccineCard extends StatelessWidget {
 
   String _formatDate(DateTime? date) {
     if (date == null) return 'N/A';
-    return '${_monthName(date.month)} ${date.day}, ${date.year}';
+    return ' , ';
   }
 
   String _monthName(int month) {
