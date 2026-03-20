@@ -98,6 +98,204 @@ class GrowWiseApp extends StatelessWidget {
   }
 }
 
+class _NotificationCard extends StatelessWidget {
+  final AppNotification notification;
+  final VoidCallback onDismiss;
+  final VoidCallback onTap;
+
+  const _NotificationCard({
+    required this.notification,
+    required this.onDismiss,
+    required this.onTap,
+  });
+
+  static const Map<NotificationType, (IconData, Color, String)> _typeConfig = {
+    NotificationType.appointment: (
+      Icons.calendar_today_rounded,
+      GrowWiseColors.accentAppointment,
+      'Appointment',
+    ),
+    NotificationType.vitamin: (
+      Icons.medication_liquid_rounded,
+      GrowWiseColors.accentVitamin,
+      'Supplement',
+    ),
+    NotificationType.vaccination: (
+      Icons.vaccines_rounded,
+      GrowWiseColors.accentVaccination,
+      'Vaccination',
+    ),
+    NotificationType.growth: (
+      Icons.show_chart_rounded,
+      GrowWiseColors.accentGrowth,
+      'Growth',
+    ),
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final (iconData, accentColor, typeLabel) = _typeConfig[notification.type]!;
+    return Dismissible(
+      key: Key(notification.id),
+      direction: DismissDirection.endToStart,
+      onDismissed: (_) => onDismiss(),
+      confirmDismiss: (_) => _confirmDismiss(context),
+      background: _buildSwipeBackground(accentColor),
+      child: GestureDetector(
+        onTap: onTap,
+        child: _buildCardBody(iconData, accentColor, typeLabel),
+      ),
+    );
+  }
+
+  Widget _buildSwipeBackground(Color accentColor) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.red.shade900.withOpacity(0.0), Colors.red.shade700],
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      alignment: Alignment.centerRight,
+      padding: const EdgeInsets.only(right: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Icon(Icons.delete_sweep_rounded, color: Colors.white, size: 28),
+          SizedBox(height: 4),
+          Text(
+            'Delete',
+            style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<bool?> _confirmDismiss(BuildContext context) async => true;
+
+  Widget _buildCardBody(IconData iconData, Color accentColor, String typeLabel) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [GrowWiseColors.cardGradStart, GrowWiseColors.cardGradEnd],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border(
+          left: BorderSide(color: accentColor, width: 4),
+          top: BorderSide(color: GrowWiseColors.violet.withOpacity(0.25), width: 1),
+          right: BorderSide(color: GrowWiseColors.violet.withOpacity(0.1), width: 1),
+          bottom: BorderSide(color: GrowWiseColors.violet.withOpacity(0.1), width: 1),
+        ),
+        boxShadow: [
+          BoxShadow(color: accentColor.withOpacity(0.12), blurRadius: 20, spreadRadius: -2, offset: const Offset(0, 6)),
+          BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 10, offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildIconChip(iconData, accentColor),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTypeBadge(typeLabel, accentColor),
+                      const SizedBox(height: 6),
+                      Text(
+                        notification.title,
+                        style: TextStyle(
+                          color: notification.isRead ? GrowWiseColors.textMuted : GrowWiseColors.textPrimary,
+                          fontSize: 14,
+                          fontWeight: notification.isRead ? FontWeight.w400 : FontWeight.w700,
+                          height: 1.45,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (!notification.isRead) ...[
+                  const SizedBox(width: 10),
+                  Container(
+                    width: 9,
+                    height: 9,
+                    decoration: BoxDecoration(
+                      color: accentColor,
+                      shape: BoxShape.circle,
+                      boxShadow: [BoxShadow(color: accentColor.withOpacity(0.6), blurRadius: 6)],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 12),
+            Divider(color: GrowWiseColors.violet.withOpacity(0.2), height: 1, thickness: 1),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Swipe left to dismiss',
+                  style: TextStyle(color: GrowWiseColors.textDim.withOpacity(0.6), fontSize: 10, fontStyle: FontStyle.italic),
+                ),
+                Row(
+                  children: [
+                    Icon(Icons.access_time_rounded, size: 11, color: GrowWiseColors.amber.withOpacity(0.8)),
+                    const SizedBox(width: 4),
+                    Text(
+                      notification.timestamp,
+                      style: TextStyle(color: GrowWiseColors.amber.withOpacity(0.9), fontSize: 11, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIconChip(IconData iconData, Color accentColor) {
+    return Container(
+      width: 50,
+      height: 50,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [GrowWiseColors.iconBg, accentColor.withOpacity(0.25)],
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: accentColor.withOpacity(0.4), width: 1.5),
+        boxShadow: [BoxShadow(color: accentColor.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4))],
+      ),
+      child: Center(child: Icon(iconData, color: GrowWiseColors.amberLight, size: 24)),
+    );
+  }
+
+  Widget _buildTypeBadge(String label, Color accentColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(color: accentColor.withOpacity(0.18), borderRadius: BorderRadius.circular(6)),
+      child: Text(
+        label.toUpperCase(),
+        style: TextStyle(color: accentColor, fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 1.2),
+      ),
+    );
+  }
+}
+
 class _EmptyState extends StatefulWidget {
   const _EmptyState({super.key});
 
@@ -112,10 +310,7 @@ class _EmptyStateState extends State<_EmptyState>
   @override
   void initState() {
     super.initState();
-    _pulseCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
+    _pulseCtrl = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(reverse: true);
   }
 
   @override
@@ -138,56 +333,25 @@ class _EmptyStateState extends State<_EmptyState>
                 width: 140,
                 height: 140,
                 child: CustomPaint(
-                  painter: _RingsPainter(
-                    color: GrowWiseColors.primaryPurple,
-                    pulseOpacity: pulseOpacity,
-                  ),
+                  painter: _RingsPainter(color: GrowWiseColors.primaryPurple, pulseOpacity: pulseOpacity),
                   child: Center(
                     child: Container(
                       width: 64,
                       height: 64,
                       decoration: BoxDecoration(
-                        gradient: RadialGradient(
-                          colors: [
-                            GrowWiseColors.violet.withOpacity(0.4),
-                            GrowWiseColors.iconBg,
-                          ],
-                        ),
+                        gradient: RadialGradient(colors: [GrowWiseColors.violet.withOpacity(0.4), GrowWiseColors.iconBg]),
                         shape: BoxShape.circle,
-                        border: Border.all(
-                          color: GrowWiseColors.violet.withOpacity(0.5),
-                          width: 1.5,
-                        ),
+                        border: Border.all(color: GrowWiseColors.violet.withOpacity(0.5), width: 1.5),
                       ),
-                      child: Icon(
-                        Icons.notifications_off_outlined,
-                        size: 30,
-                        color: GrowWiseColors.textMuted
-                            .withOpacity(0.5 + pulseOpacity * 0.5),
-                      ),
+                      child: Icon(Icons.notifications_off_outlined, size: 30, color: GrowWiseColors.textMuted.withOpacity(0.5 + pulseOpacity * 0.5)),
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
-                "You're all caught up!",
-                style: TextStyle(
-                  color: GrowWiseColors.textPrimary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              const Text("You're all caught up!", style: TextStyle(color: GrowWiseColors.textPrimary, fontSize: 18, fontWeight: FontWeight.w700)),
               const SizedBox(height: 8),
-              Text(
-                'No new notifications right now.\nCheck back later.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: GrowWiseColors.textMuted.withOpacity(0.7),
-                  fontSize: 13,
-                  height: 1.6,
-                ),
-              ),
+              Text('No new notifications right now.\nCheck back later.', textAlign: TextAlign.center, style: TextStyle(color: GrowWiseColors.textMuted.withOpacity(0.7), fontSize: 13, height: 1.6)),
             ],
           );
         },
@@ -208,10 +372,7 @@ class _RingsPainter extends CustomPainter {
     for (int i = 0; i < 3; i++) {
       final radius = 35.0 + i * 15;
       final opacity = (pulseOpacity - i * 0.1).clamp(0.0, 1.0);
-      final paint = Paint()
-        ..color = color.withOpacity(opacity)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5;
+      final paint = Paint()..color = color.withOpacity(opacity)..style = PaintingStyle.stroke..strokeWidth = 1.5;
       canvas.drawCircle(center, radius, paint);
     }
   }
