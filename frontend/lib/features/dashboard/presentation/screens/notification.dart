@@ -49,3 +49,51 @@ class AppNotification {
         isRead: isRead ?? this.isRead,
       );
 }
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ),
+  );
+  runApp(const GrowWiseApp());
+}
+ 
+class GrowWiseApp extends StatelessWidget {
+  const GrowWiseApp({super.key});
+ 
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'GrowWise',
+      debugShowCheckedModeBanner: false,
+      theme: _buildTheme(),
+      home: const Scaffold(
+        backgroundColor: GrowWiseColors.scaffoldBg,
+        body: Center(
+          child: Text('GrowWise', style: TextStyle(color: GrowWiseColors.textPrimary)),
+        ),
+      ),
+    );
+  }
+ 
+  ThemeData _buildTheme() {
+    return ThemeData(
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: GrowWiseColors.primaryPurple,
+        brightness: Brightness.dark,
+      ),
+      useMaterial3: true,
+      scaffoldBackgroundColor: GrowWiseColors.scaffoldBg,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.iOS:     CupertinoPageTransitionsBuilder(),
+        },
+      ),
+    );
+  }
+}
