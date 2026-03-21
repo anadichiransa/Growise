@@ -25,17 +25,24 @@ class StatusBanner extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (status != null)
-            Text(status!,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14)),
+            Text(
+              status!,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
           if (summary != null)
-            Text(summary!,
-                style: const TextStyle(color: Colors.white70, fontSize: 12)),
+            Text(
+              summary!,
+              style: const TextStyle(color: Colors.white70, fontSize: 12),
+            ),
           if (message != null)
-            Text(message!,
-                style: const TextStyle(color: Colors.white, fontSize: 13)),
+            Text(
+              message!,
+              style: const TextStyle(color: Colors.white, fontSize: 13),
+            ),
         ],
       ),
     );

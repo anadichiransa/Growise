@@ -106,17 +106,20 @@ class _EducationHubScreenState extends State<EducationHubScreen> {
               ),
             ),
           ),
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.white10,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.settings_outlined,
-              color: Colors.white54,
-              size: 20,
+          GestureDetector(
+            onTap: () => Get.toNamed('/settings'),
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white10,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.settings_outlined,
+                color: Colors.white54,
+                size: 20,
+              ),
             ),
           ),
         ],
@@ -157,7 +160,6 @@ class _EducationHubScreenState extends State<EducationHubScreen> {
                 color: Colors.white10,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.tune, color: Colors.white54, size: 16),
             ),
           ],
         ),
@@ -176,7 +178,7 @@ class _EducationHubScreenState extends State<EducationHubScreen> {
         itemBuilder: (context, index) {
           final cat = _categories[index];
           final isSelected = _selectedCategory == cat;
-          final color = _categoryColors[cat] ?? const Color(0xFF7C4DFF);
+          final color = _categoryColors[cat] ?? const Color(0xFF2A1245);
           return GestureDetector(
             onTap: () => setState(() => _selectedCategory = cat),
             child: AnimatedContainer(
@@ -219,7 +221,7 @@ class _EducationHubScreenState extends State<EducationHubScreen> {
             Text(
               actionLabel,
               style: const TextStyle(
-                color: Color(0xFF7C4DFF),
+                color: Color(0xFF4A2574),
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
@@ -240,21 +242,12 @@ class _EducationHubScreenState extends State<EducationHubScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [const Color(0xFF3D1A78), const Color(0xFF1A0E4E)],
+            colors: [const Color(0xFF1E0E34), const Color(0xFF1A0E4E)],
           ),
           border: Border.all(color: Colors.white10),
         ),
         child: Stack(
           children: [
-            // Background emoji
-            Positioned(
-              right: 20,
-              top: 20,
-              child: Text(
-                article.imageEmoji,
-                style: const TextStyle(fontSize: 80),
-              ),
-            ),
             // Content
             Padding(
               padding: const EdgeInsets.all(20),
@@ -334,14 +327,14 @@ class _EducationHubScreenState extends State<EducationHubScreen> {
   }
 
   Widget _buildArticleCard(Article article) {
-    final color = _categoryColors[article.category] ?? const Color(0xFF7C4DFF);
+    final color = _categoryColors[article.category] ?? const Color(0xFF2A1245);
     return GestureDetector(
       onTap: () => Get.to(() => ArticleDetailScreen(article: article)),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E1650),
+          color: const Color(0xFF1E0E34),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.white10),
         ),

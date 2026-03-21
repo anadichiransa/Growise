@@ -7,6 +7,7 @@ __pycache__/
 # --- Sensitive Data---
 .env
 firebase-admin-key.json
+serviceAccountKey.json
 
 # --- Local Databases ---
 chroma_data/

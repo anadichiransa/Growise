@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get.dart';
 import 'package:growise/features/profile/presentation/controllers/child_controller.dart';
 
 class BabyTrackerHome extends StatefulWidget {
@@ -29,19 +28,27 @@ class _BabyTrackerHomeState extends State<BabyTrackerHome> {
           children: [
             const SizedBox(height: 10),
 
-            /// ---------------- HEADER (Generic) ----------------
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: () => Get.toNamed('/profile'),
-                    child: const CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Color(0xFF2A1245),
-                      child: Icon(Icons.person_outline, color: Colors.white),
-                    ),
-                  ),
+                  Obx(() {
+                    final isGirl =
+                        Get.find<ChildController>().childGender.toLowerCase() ==
+                        'girl';
+                    return GestureDetector(
+                      onTap: () => Get.toNamed('/profile'),
+                      child: CircleAvatar(
+                        radius: 24,
+                        backgroundColor: const Color(0xFF2A1245),
+                        child: Icon(
+                          isGirl ? Icons.face_2 : Icons.face,
+                          color: const Color(0xFFF6A960),
+                          size: 26,
+                        ),
+                      ),
+                    );
+                  }),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
@@ -152,48 +159,135 @@ class _BabyTrackerHomeState extends State<BabyTrackerHome> {
 
   /// UI Helper: Generic Status Card
   Widget _buildStatusCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E0E34),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFF6D4C9C).withOpacity(0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "HEALTH SUMMARY",
-            style: TextStyle(
-              color: Color(0xFFF6A960),
-              fontSize: 11,
-              letterSpacing: 1.2,
-              fontWeight: FontWeight.bold,
+    final controller = Get.find<ChildController>();
+    return Obx(() {
+      final child = controller.child;
+      final name = controller.childName;
+      final gender = controller.childGender;
+
+      // Calculate age
+      String ageText = '';
+      String tip = '';
+      if (child != null && child['birthDate'] != null) {
+        try {
+          final birthDate =
+              (child['birthDate'] as dynamic).toDate() as DateTime;
+          final now = DateTime.now();
+          final months =
+              (now.year - birthDate.year) * 12 + now.month - birthDate.month;
+          if (months < 12) {
+            ageText = '$months months old';
+          } else {
+            final years = months ~/ 12;
+            final rem = months % 12;
+            ageText = rem > 0 ? '$years yr $rem mo old' : '$years years old';
+          }
+
+          // Age-based tip
+          if (months < 6) {
+            tip = 'Breast milk is the best nutrition at this stage.';
+          } else if (months < 12) {
+            tip = 'Time to start exploring solid foods!';
+          } else if (months < 24) {
+            tip = 'Encourage walking and talking every day.';
+          } else if (months < 36) {
+            tip = 'Reading together boosts language development.';
+          } else {
+            tip = 'Active play supports healthy growth.';
+          }
+        } catch (_) {
+          ageText = '';
+          tip = 'Keep tracking growth and vaccinations.';
+        }
+      } else {
+        tip = 'Add your child\'s details to get personalised tips.';
+      }
+
+      final isGirl = gender.toLowerCase() == 'girl';
+
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E0E34),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: const Color(0xFF6D4C9C).withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'HEALTH SUMMARY',
+                    style: TextStyle(
+                      color: Color(0xFFF6A960),
+                      fontSize: 11,
+                      letterSpacing: 1.2,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    '$name\nis doing great!',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      height: 1.2,
+                    ),
+                  ),
+                  if (ageText.isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      ageText,
+                      style: const TextStyle(
+                        color: Color(0xFF26D07C),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 10),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('💡 ', style: TextStyle(fontSize: 12)),
+                      Expanded(
+                        child: Text(
+                          tip,
+                          style: const TextStyle(
+                            color: Colors.white60,
+                            fontSize: 12,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 14),
-          const Text(
-            "Condition:\nStable",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              height: 1.2,
+            const SizedBox(width: 12),
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2A1245),
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFF6A960), width: 2),
+              ),
+              child: Icon(
+                isGirl ? Icons.face_2 : Icons.face,
+                size: 36,
+                color: const Color(0xFFF6A960),
+              ),
             ),
-          ),
-          const SizedBox(height: 18),
-          const Text(
-            "System Status:",
-            style: TextStyle(color: Colors.white54, fontSize: 12),
-          ),
-          const Text(
-            "Waiting for data input...",
-            style: TextStyle(color: Colors.white, fontSize: 13),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildIconButton(IconData icon) {
@@ -212,16 +306,32 @@ class _BabyTrackerHomeState extends State<BabyTrackerHome> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       color: const Color(0xFF140824),
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _NavItem(icon: Icons.home_filled, label: "Home", active: true),
-          _NavItem(icon: Icons.show_chart, label: "Tracker", active: false),
-          _NavItem(icon: Icons.school_outlined, label: "Learn", active: false),
+          _NavItem(
+            icon: Icons.home_filled,
+            label: "Home",
+            active: true,
+            onTap: () {},
+          ),
+          _NavItem(
+            icon: Icons.show_chart,
+            label: "Tracker",
+            active: false,
+            onTap: () => Get.toNamed('/growth'),
+          ),
+          _NavItem(
+            icon: Icons.school_outlined,
+            label: "Learn",
+            active: false,
+            onTap: () => Get.toNamed('/education'),
+          ),
           _NavItem(
             icon: Icons.settings_outlined,
             label: "Settings",
             active: false,
+            onTap: () => Get.toNamed('/settings'),
           ),
         ],
       ),
@@ -291,26 +401,31 @@ class _NavItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool active;
+  final VoidCallback onTap;
   const _NavItem({
     required this.icon,
     required this.label,
     required this.active,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: active ? const Color(0xFF26D07C) : Colors.white54),
-        Text(
-          label,
-          style: TextStyle(
-            color: active ? const Color(0xFF26D07C) : Colors.white54,
-            fontSize: 10,
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: active ? const Color(0xFF26D07C) : Colors.white54),
+          Text(
+            label,
+            style: TextStyle(
+              color: active ? const Color(0xFF26D07C) : Colors.white54,
+              fontSize: 10,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
