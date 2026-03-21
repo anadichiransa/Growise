@@ -7,6 +7,7 @@ import '../widgets/mark_done_sheet.dart';
 import '../widgets/vaccine_details_sheet.dart';
 import 'package:growise/features/profile/presentation/controllers/child_controller.dart';
 import 'package:get/get.dart';
+import 'package:growise/core/config/routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:growise/shared/widgets/common/bottom_nav.dart';
 
@@ -72,7 +73,13 @@ class _VaccineScheduleScreenState extends State<VaccineScheduleScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+              } else {
+                Get.offNamed(AppRoutes.dashboard);
+              }
+          },
         ),
         title: const Text(
           'Immunization Schedule',

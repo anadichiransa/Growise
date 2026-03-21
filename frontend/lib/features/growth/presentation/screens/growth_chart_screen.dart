@@ -7,6 +7,7 @@ import '../controllers/growth_controller.dart';
 import 'package:growise/data/models/growth_record.dart';
 import 'package:growise/shared/widgets/common/bottom_nav.dart';
 import 'package:get/get.dart';
+import 'package:growise/core/config/routes.dart';
 import 'package:growise/features/profile/presentation/controllers/child_controller.dart';
 
 class GrowthChartScreen extends StatefulWidget {
@@ -181,7 +182,13 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
                   _circularIconButton(
                     Icons.arrow_back,
                     Colors.white12,
-                    () => Navigator.pop(context),
+                    () {
+                      if (Navigator.canPop(context)) {
+                        Navigator.pop(context);
+                        } else {
+                          Get.offNamed(AppRoutes.dashboard);
+                        }
+                      },
                   ),
                   Expanded(
                     child: Text(

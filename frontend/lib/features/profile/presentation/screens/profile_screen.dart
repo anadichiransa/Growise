@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:growise/core/config/routes.dart';
 import 'package:growise/shared/widgets/common/bottom_nav.dart';
 
 /// Data model representing a child profile entry in the Switch Profile row.
@@ -27,83 +29,24 @@ class ProfileFormData {
   });
 }
 
-/// A reusable screen for viewing and editing a single child profile.
-///
-/// Usage:
-/// ```dart
-/// ProfileScreen(
-///   initialName: profile.name,
-///   initialBirthdate: profile.birthdate,
-///   initialGender: profile.gender,
-///   avatarImage: NetworkImage(profile.avatarUrl),
-///   lastWeightCheckLabel: '2 days ago',
-///   profiles: summaryList,
-///   selectedProfileId: profile.id,
-///   genderOptions: const ['Male', 'Female', 'Other'],
-///   onSave: (data) => ref.read(profileProvider.notifier).save(data),
-///   onAvatarTap: () => _pickImage(),
-///   onAddProfile: () => context.push('/add-profile'),
-///   onSwitchProfile: (id) => ref.read(profileProvider.notifier).switchTo(id),
-///   onViewAll: () => context.push('/profiles'),
-///   onBack: () => context.pop(),
-/// )
-/// ```
 class ProfileScreen extends StatefulWidget {
-  // ── Required fields ──────────────────────────────────────────────────────
-
-  /// Initial value for the full name field.
   final String initialName;
-
-  /// Initial birthdate shown in the date field.
   final DateTime initialBirthdate;
-
-  /// Initial selected gender. Must be one of [genderOptions].
   final String initialGender;
-
-  /// Called when the user taps "Save Changes".
-  /// Receives the current form values as [ProfileFormData].
   final Future<void> Function(ProfileFormData data) onSave;
 
-  // ── Optional display ─────────────────────────────────────────────────────
-
-  /// Avatar image for the main profile. Defaults to a placeholder icon.
   final ImageProvider? avatarImage;
-
-  /// Text shown below the profile name, e.g. "Last weight check: 2 days ago".
-  /// Pass null to hide the label entirely.
   final String? lastWeightCheckLabel;
-
-  /// List of available gender options rendered as toggle chips.
-  /// Defaults to ['Male', 'Female', 'Other'].
   final List<String> genderOptions;
 
-  // ── Switch Profile row ───────────────────────────────────────────────────
-
-  /// Profiles shown in the Switch Profile row.
-  /// Pass an empty list to hide the section entirely.
   final List<ChildProfileSummary> profiles;
-
-  /// The id of the currently active profile (highlighted in the row).
   final String? selectedProfileId;
-
-  /// Called when the user taps a profile chip in the Switch Profile row.
   final void Function(String profileId)? onSwitchProfile;
-
-  /// Called when the user taps "View All".
   final VoidCallback? onViewAll;
-
-  /// Called when the user taps the "+" add profile button.
   final VoidCallback? onAddProfile;
 
-  // ── Navigation callbacks ─────────────────────────────────────────────────
-
-  /// Called when the user taps the back arrow. Defaults to [Navigator.maybePop].
   final VoidCallback? onBack;
-
-  /// Called when the user taps the overflow (⋮) menu icon.
   final VoidCallback? onMenuTap;
-
-  /// Called when the user taps the avatar / camera icon.
   final VoidCallback? onAvatarTap;
 
   const ProfileScreen({
@@ -176,7 +119,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: child!,
       ),
     );
-    if (picked != null) setState(() => _selectedDate = picked);
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
+    }
   }
 
   String _formatDate(DateTime d) {
@@ -197,6 +142,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return '${months[d.month - 1]} ${d.day}, ${d.year}';
   }
 
+  void _handleSafeBack() {
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    } else {
+      Get.offNamed(AppRoutes.dashboard);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -208,7 +161,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _TopBar(
-                onBack: widget.onBack ?? () => Navigator.maybePop(context),
+                onBack: _handleSafeBack,
                 onMenu: widget.onMenuTap,
               ),
               _AvatarSection(
@@ -246,10 +199,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
-
-// ════════════════════════════════════════════════════════════════════════════
-// Private sub-widgets
-// ════════════════════════════════════════════════════════════════════════════
 
 class _TopBar extends StatelessWidget {
   final VoidCallback onBack;
@@ -347,16 +296,23 @@ class _AvatarSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        Text(name,
-            style: const TextStyle(
-                color: _ProfileScreenTheme.textPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.w700)),
+        Text(
+          name,
+          style: const TextStyle(
+            color: _ProfileScreenTheme.textPrimary,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         if (lastWeightCheckLabel != null) ...[
           const SizedBox(height: 4),
-          Text('Last weight check: $lastWeightCheckLabel',
-              style: const TextStyle(
-                  color: _ProfileScreenTheme.textSecondary, fontSize: 12.5)),
+          Text(
+            'Last weight check: $lastWeightCheckLabel',
+            style: const TextStyle(
+              color: _ProfileScreenTheme.textSecondary,
+              fontSize: 12.5,
+            ),
+          ),
         ],
       ],
     );
@@ -744,9 +700,6 @@ class _AddProfileChip extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-// Theme constants (private — not exposed globally)
-// ════════════════════════════════════════════════════════════════════════════
 abstract class _ProfileScreenTheme {
   static const bgDark = Color(0xFF1A0E2E);
   static const cardBg = Color(0xFF2A1A42);
