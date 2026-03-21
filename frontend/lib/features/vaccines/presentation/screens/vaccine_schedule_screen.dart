@@ -148,18 +148,19 @@ class _VaccineScheduleScreenState extends State<VaccineScheduleScreen> {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: Color(0xFF4A2574),
-            child: Text(
-              _childName[0],
-              style: const TextStyle(
+          Obx(() {
+            final isGirl =
+                Get.find<ChildController>().childGender.toLowerCase() == 'girl';
+            return CircleAvatar(
+              radius: 24,
+              backgroundColor: const Color(0xFF2A1245),
+              child: Icon(
+                isGirl ? Icons.face_2 : Icons.face,
                 color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+                size: 26,
               ),
-            ),
-          ),
+            );
+          }),
           const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

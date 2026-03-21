@@ -32,14 +32,23 @@ class _BabyTrackerHomeState extends State<BabyTrackerHome> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: () => Get.toNamed('/profile'),
-                    child: const CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Color(0xFF2A1245),
-                      child: Icon(Icons.person_outline, color: Colors.white),
-                    ),
-                  ),
+                  Obx(() {
+                    final isGirl =
+                        Get.find<ChildController>().childGender.toLowerCase() ==
+                        'girl';
+                    return GestureDetector(
+                      onTap: () => Get.toNamed('/profile'),
+                      child: CircleAvatar(
+                        radius: 24,
+                        backgroundColor: const Color(0xFF2A1245),
+                        child: Icon(
+                          isGirl ? Icons.face_2 : Icons.face,
+                          color: const Color(0xFFF6A960),
+                          size: 26,
+                        ),
+                      ),
+                    );
+                  }),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
