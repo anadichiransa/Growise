@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../features/dashboard/presentation/screens/notification.dart';
 import '../../features/auth/presentation/screens/welcome_page.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
@@ -35,8 +36,7 @@ class AppRoutes {
   static const growth = '/growth';
   static const vaccines = '/vaccines';
   static const education = '/education';
-  static const settings = '/settings';
-  static const help = '/help';
+  static const notification = '/notification';
 
   static final pages = [
     GetPage(name: welcome, page: () => const OnboradingScreen()),
@@ -45,6 +45,7 @@ class AppRoutes {
     GetPage(name: forgotPw, page: () => const ForgotPasswordPage()),
     GetPage(name: dashboard, page: () => const BabyTrackerHome()),
     GetPage(name: support, page: () => const SupportCenterScreen()),
+    GetPage(name: notification, page: () => const NotificationsScreen()),
     GetPage(
       name: activity,
       page: () => ActivityPage(
