@@ -22,7 +22,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
   late DateTime _dateOfBirth;
   late String _childId;
   late String _childName;
-  final GrowthController _controller = GrowthController();
+  late final GrowthController _controller;
   late TabController _tabController;
 
   List<GrowthRecord> _records = [];
@@ -91,6 +91,8 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
   void initState() {
     super.initState();
     _childController = Get.find<ChildController>();
+    // Use Get.put so AddMeasurementScreen can share the same instance
+    _controller = Get.put(GrowthController());
     _dateOfBirth = _childController.child?['birthDate'] != null
         ? (_childController.child!['birthDate'] as dynamic).toDate()
         : DateTime(2022, 1, 1);
@@ -107,6 +109,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
   }
 
   Future<void> _loadRecords() async {
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
       _errorMessage = '';
@@ -114,17 +117,19 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     try {
       final records = await _controller.loadRecords(_childId);
       records.sort((a, b) => b.date.compareTo(a.date));
-      setState(() {
-        _records = records;
-      });
+      if (mounted) {
+        setState(() {
+          _records = records;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Failed to load records. Please try again.';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Failed to load records. Please try again.';
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -206,7 +211,9 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
                           ),
                         ),
                       );
-                      _loadRecords();
+                      // Give Firestore time to propagate the write
+                      await Future.delayed(const Duration(milliseconds: 1500));
+                      await _loadRecords();
                     },
                   ),
                 ],

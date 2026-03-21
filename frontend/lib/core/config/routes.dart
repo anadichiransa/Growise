@@ -17,6 +17,7 @@ import '../../features/vaccines/presentation/screens/vaccine_schedule_screen.dar
 import 'package:provider/provider.dart';
 import '../../features/vaccines/presentation/controllers/vaccine_controller.dart';
 import '../../features/education/presentation/screens/education_hub_screen.dart';
+import '../../features/meals/presentation/screens/meal_planner_screen.dart';
 
 class AppRoutes {
   static const welcome = '/';
@@ -33,6 +34,7 @@ class AppRoutes {
   static const growth = '/growth';
   static const vaccines = '/vaccines';
   static const education = '/education';
+  static const meals = '/meals';
 
   static final pages = [
     GetPage(name: welcome, page: () => const OnboradingScreen()),
@@ -55,6 +57,7 @@ class AppRoutes {
     GetPage(name: accessRequest, page: () => const SetupExperienceScreen()),
     GetPage(name: growth, page: () => const GrowthChartScreen()),
     GetPage(name: education, page: () => const EducationHubScreen()),
+    GetPage(name: meals, page: () => const MealPlannerScreen()),
     GetPage(
       name: vaccines,
       page: () => ChangeNotifierProvider(

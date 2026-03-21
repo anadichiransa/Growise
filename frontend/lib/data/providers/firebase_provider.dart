@@ -20,17 +20,26 @@ class FirebaseGrowthProvider {
     required String childId,
     required String userId,
   }) async {
-    final snapshot = await _db
-        .collection(_collection)
-        .where('childId', isEqualTo: childId)
-        .where('userId', isEqualTo: userId)
-        .orderBy('date', descending: true)
-        .get(
-          // GetOptions tells Firestore to use cache if server is unreachable
-          const GetOptions(source: Source.serverAndCache),
-        );
-
-    return snapshot.docs.map((doc) => GrowthRecord.fromFirestore(doc)).toList();
+    // Try server first; fall back to local cache if server fails or index missing
+    try {
+      final snapshot = await _db
+          .collection(_collection)
+          .where('childId', isEqualTo: childId)
+          .where('userId', isEqualTo: userId)
+          .orderBy('date', descending: true)
+          .get(const GetOptions(source: Source.server));
+      return snapshot.docs.map((doc) => GrowthRecord.fromFirestore(doc)).toList();
+    } catch (_) {
+      // Fall back to cache — always works, includes records just saved
+      final snapshot = await _db
+          .collection(_collection)
+          .where('childId', isEqualTo: childId)
+          .where('userId', isEqualTo: userId)
+          .get(const GetOptions(source: Source.cache));
+      final records = snapshot.docs.map((doc) => GrowthRecord.fromFirestore(doc)).toList();
+      records.sort((a, b) => b.date.compareTo(a.date));
+      return records;
+    }
   }
 
   /// Delete a record. Works offline — SDK queues deletion.
