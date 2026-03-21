@@ -33,9 +33,7 @@ class _NotifConfig {
   final String label;
   const _NotifConfig(this.icon, this.color, this.label);
 }
- 
-// Map each notification type to its visual config.
-// Using a plain class instead of Dart 3 records guarantees compatibility.
+
 const Map<NotificationType, _NotifConfig> _typeConfig = {
   NotificationType.appointment: _NotifConfig(
     Icons.calendar_today_rounded, _C.accentAppt, 'Appointment'),
@@ -47,15 +45,11 @@ const Map<NotificationType, _NotifConfig> _typeConfig = {
     Icons.show_chart_rounded, _C.accentGrowth, 'Growth'),
 };
  
-// Safe getter: returns config or a fallback so UI never crashes
 _NotifConfig _configFor(NotificationType type) {
   return _typeConfig[type] ??
       const _NotifConfig(Icons.notifications_rounded, Color(0xFF7A7498), 'Info');
 }
  
-// ─────────────────────────────────────────────────────────────────────────────
-//  NOTIFICATIONS SCREEN
-// ─────────────────────────────────────────────────────────────────────────────
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
   @override
@@ -73,13 +67,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   void initState() {
     super.initState();
  
-    // Get.put: registers the controller with GetX if not already registered.
-    // If it's already registered (e.g., from a previous screen visit), it
-    // returns the existing one — no duplicate is created.
     _ctrl = Get.put(NotificationController());
  
-    // Refresh notifications every time this screen is opened.
-    // This picks up any new vaccine notifications generated since last visit.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _ctrl.refresh();
     });
@@ -111,7 +100,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         onTap: (i) {
           setState(() => _currentNavIndex = i);
           HapticFeedback.selectionClick();
-          // Navigate to the corresponding screen when nav tab is tapped
           const routes = ['/dashboard', '/growth', '/education', '/support'];
           if (i < routes.length) Get.toNamed(routes[i]);
         },
@@ -119,7 +107,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     );
   }
  
-  // ── HEADER ─────────────────────────────────────────────────────────────────
   Widget _buildHeader() {
     final topPad = MediaQuery.of(context).padding.top;
     return Container(
@@ -137,7 +124,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // ── Back button + title ───────────────────────────────────────────
           Row(
             children: [
               GestureDetector(
@@ -167,8 +153,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                       letterSpacing: -0.3,
                     ),
                   ),
-                  // Obx: this tiny Text auto-rebuilds when unreadCount changes.
-                  // Only THIS widget rebuilds — not the whole header.
                   Obx(() {
                     final count = _ctrl.unreadCount;
                     if (count == 0) return const SizedBox.shrink();
@@ -185,8 +169,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               ),
             ],
           ),
- 
-          // ── Clear All button ──────────────────────────────────────────────
           Obx(() => AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 child: _ctrl.hasNotifications
@@ -219,10 +201,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     );
   }
  
-  // ── BODY ───────────────────────────────────────────────────────────────────
   Widget _buildBody() {
     return Obx(() {
-      // Show spinner while loading from SharedPreferences
       if (_ctrl.isLoading.value) {
         return const Center(
           child: CircularProgressIndicator(color: _C.amber),
@@ -245,12 +225,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       itemCount: _ctrl.notifications.length,
       itemBuilder: (context, index) {
-        // Safety: if index is out of range (can happen during list updates), skip
         if (index >= _ctrl.notifications.length) return const SizedBox.shrink();
  
         final notif = _ctrl.notifications[index];
- 
-        // Staggered entrance animation: each card slides in slightly after the previous
         final staggerStart = (index * 0.1).clamp(0.0, 0.6);
         final staggerEnd = (staggerStart + 0.7).clamp(0.0, 1.0);
         final anim = CurvedAnimation(
@@ -268,9 +245,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             child: _NotifCard(
               key: ValueKey(notif.id),
               notification: notif,
-              // Swipe left → permanently remove
               onDismiss: () => _ctrl.dismiss(notif.id),
-              // Tap → show detail sheet → mark as read (stays in list)
               onTap: () => _showDetail(notif),
             ),
           ),
@@ -279,10 +254,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     );
   }
  
-  // ── DETAIL BOTTOM SHEET ────────────────────────────────────────────────────
-  // Shows the full body text when a card is tapped.
-  // When the sheet is closed (any method), marks the notification as READ.
-  // The notification is NOT removed from the list.
   void _showDetail(NotificationModel notif) {
     showModalBottomSheet<void>(
       context: context,
@@ -291,21 +262,11 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       barrierColor: Colors.black.withOpacity(0.65),
       builder: (_) => _DetailSheet(notification: notif),
     ).then((_) {
-      // .then() runs after the sheet closes (no matter how it was closed).
-      // Mark as read — the card glow disappears, text dims slightly.
-      // The notification STAYS in the list.
       _ctrl.markAsRead(notif.id);
     });
   }
 }
  
-// ═══════════════════════════════════════════════════════════════════════════
-//  _NotifCard — A single notification card
-//  KEY ADDITIONS vs original:
-//  1. Uses _NotifConfig class (no Dart 3 records) — FIXES BLANK CARDS
-//  2. Unread cards get a white glowing border and box shadow
-//  3. Read cards get the normal violet subtle border
-// ═══════════════════════════════════════════════════════════════════════════
 class _NotifCard extends StatelessWidget {
   final NotificationModel notification;
   final VoidCallback onDismiss;
@@ -320,12 +281,11 @@ class _NotifCard extends StatelessWidget {
  
   @override
   Widget build(BuildContext context) {
-    // Safe config lookup — never returns null
     final cfg = _configFor(notification.type);
  
     return Dismissible(
       key: Key(notification.id),
-      direction: DismissDirection.endToStart, // Swipe LEFT to dismiss
+      direction: DismissDirection.endToStart, 
       onDismissed: (_) => onDismiss(),
       confirmDismiss: (_) async => true,
       background: _swipeBackground(),
@@ -372,16 +332,12 @@ class _NotifCard extends StatelessWidget {
           colors: [_C.cardGradStart, _C.cardGradEnd],
         ),
         borderRadius: BorderRadius.circular(20),
- 
-        // ── UNREAD vs READ border ──────────────────────────────────────────
-        // UNREAD: white glowing border on all sides except the left accent
-        // READ:   subtle violet border (same as original Figma)
         border: Border(
           left: BorderSide(color: cfg.color, width: 4),
           top: BorderSide(
             color: isUnread
-                ? Colors.white.withOpacity(0.55)   // WHITE GLOW when unread
-                : _C.violet.withOpacity(0.25),       // subtle violet when read
+                ? Colors.white.withOpacity(0.55)   
+                : _C.violet.withOpacity(0.25),       
             width: isUnread ? 1.5 : 1.0,
           ),
           right: BorderSide(
@@ -399,9 +355,6 @@ class _NotifCard extends StatelessWidget {
         ),
  
         boxShadow: [
-          // ── UNREAD: outer white glow ────────────────────────────────────
-          // This is the "glowing border" effect — a white shadow that spreads
-          // just outside the card, giving the impression of a lit border.
           if (isUnread)
             BoxShadow(
               color: Colors.white.withOpacity(0.12),
@@ -409,14 +362,12 @@ class _NotifCard extends StatelessWidget {
               spreadRadius: 2,
               offset: Offset.zero,
             ),
-          // Accent colour tint (always present, stronger when unread)
           BoxShadow(
             color: cfg.color.withOpacity(isUnread ? 0.18 : 0.10),
             blurRadius: 20,
             spreadRadius: -2,
             offset: const Offset(0, 6),
           ),
-          // Base dark shadow
           BoxShadow(
             color: Colors.black.withOpacity(0.25),
             blurRadius: 10,
@@ -430,7 +381,6 @@ class _NotifCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Icon + type badge + title + unread dot ──────────────────────
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -445,7 +395,6 @@ class _NotifCard extends StatelessWidget {
                       Text(
                         notification.title,
                         style: TextStyle(
-                          // Unread = bold white. Read = regular muted colour.
                           color: isUnread ? _C.textPrimary : _C.textMuted,
                           fontSize: 14,
                           fontWeight: isUnread ? FontWeight.w700 : FontWeight.w400,
@@ -455,7 +404,6 @@ class _NotifCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Unread dot (the small circle on the top-right of unread cards)
                 if (isUnread) ...[
                   const SizedBox(width: 10),
                   Container(
@@ -478,8 +426,6 @@ class _NotifCard extends StatelessWidget {
             const SizedBox(height: 12),
             Divider(color: _C.violet.withOpacity(0.2), height: 1, thickness: 1),
             const SizedBox(height: 10),
- 
-            // ── Bottom row: hint text + timestamp ──────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -560,11 +506,6 @@ class _NotifCard extends StatelessWidget {
   }
 }
  
-// ═══════════════════════════════════════════════════════════════════════════
-//  _DetailSheet — Bottom sheet shown when a card is tapped
-//  Slides up from the bottom. Shows the full body text.
-//  Closing it (any method) marks the notification as read — does NOT remove it.
-// ═══════════════════════════════════════════════════════════════════════════
 class _DetailSheet extends StatelessWidget {
   final NotificationModel notification;
   const _DetailSheet({required this.notification});
@@ -580,11 +521,9 @@ class _DetailSheet extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: SingleChildScrollView(
-        // SingleChildScrollView allows the sheet to scroll if content is long
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Drag handle bar (visual cue: "you can swipe me down to close")
             Container(
               margin: const EdgeInsets.only(top: 12),
               width: 40, height: 4,
@@ -594,8 +533,7 @@ class _DetailSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
- 
-            // Large icon circle
+
             Container(
               width: 64, height: 64,
               decoration: BoxDecoration(
@@ -617,7 +555,6 @@ class _DetailSheet extends StatelessWidget {
             ),
             const SizedBox(height: 16),
  
-            // Title
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
@@ -632,8 +569,7 @@ class _DetailSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
- 
-            // Timestamp
+
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -657,7 +593,6 @@ class _DetailSheet extends StatelessWidget {
             ),
             const SizedBox(height: 16),
  
-            // Full body text
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
@@ -672,8 +607,6 @@ class _DetailSheet extends StatelessWidget {
             ),
             const SizedBox(height: 28),
  
-            // "Got it" button — closes the sheet
-            // After closing, parent's .then() marks this notification as read.
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: SizedBox(
@@ -701,10 +634,6 @@ class _DetailSheet extends StatelessWidget {
   }
 }
  
-// ═══════════════════════════════════════════════════════════════════════════
-//  _EmptyState — shown when the notifications list is empty
-//  Pulsing concentric rings with a muted bell icon. Unchanged from original.
-// ═══════════════════════════════════════════════════════════════════════════
 class _EmptyState extends StatefulWidget {
   const _EmptyState({super.key});
   @override
@@ -794,9 +723,6 @@ class _RingsPainter extends CustomPainter {
   bool shouldRepaint(_RingsPainter old) => old.op != op;
 }
  
-// ═══════════════════════════════════════════════════════════════════════════
-//  _BottomNav — Bottom navigation bar. Unchanged from original Figma design.
-// ═══════════════════════════════════════════════════════════════════════════
 class _BottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
