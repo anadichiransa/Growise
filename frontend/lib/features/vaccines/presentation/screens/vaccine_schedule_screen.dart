@@ -7,6 +7,7 @@ import '../widgets/mark_done_sheet.dart';
 import '../widgets/vaccine_details_sheet.dart';
 import 'package:growise/features/profile/presentation/controllers/child_controller.dart';
 import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class VaccineScheduleScreen extends StatefulWidget {
   const VaccineScheduleScreen({super.key});
@@ -34,9 +35,10 @@ class _VaccineScheduleScreenState extends State<VaccineScheduleScreen> {
   void _loadWithRetry({int attempt = 1}) {
     final id = _childController.childId ?? '';
     final name = _childController.childName ?? 'Your Child';
-    final birthDate = _childController.child?['birthDate'] != null
-        ? (_childController.child!['birthDate'] as dynamic).toDate() as DateTime
-        : null;
+    final rawDate = _childController.child?['birthDate'];
+    final DateTime? birthDate = rawDate is Timestamp
+        ? rawDate.toDate()
+        : (rawDate is DateTime ? rawDate : null);
     final now = DateTime.now();
     final ageMonths = birthDate != null
         ? (now.year - birthDate.year) * 12 + now.month - birthDate.month
@@ -110,7 +112,8 @@ class _VaccineScheduleScreenState extends State<VaccineScheduleScreen> {
                                 v.daysUntilDue != null &&
                                 v.daysUntilDue! <= 0,
                           );
-                          final isLocked = group.ageMonths > _childAgeMonths + 1;
+                          final isLocked =
+                              group.ageMonths > _childAgeMonths + 1;
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

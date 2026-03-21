@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:growise/shared/services/child_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChildController extends GetxController {
   final _child = Rx<Map<String, dynamic>?>(null);
@@ -55,7 +56,7 @@ class ChildController extends GetxController {
         ..._child.value!,
         'name': name,
         'gender': gender,
-        'birthDate': birthDate,
+        'birthDate': Timestamp.fromDate(birthDate),
       };
       // Also update in allChildren list
       final index = _allChildren.indexWhere((c) => c['id'] == childId);

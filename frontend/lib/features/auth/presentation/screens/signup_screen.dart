@@ -152,8 +152,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.g_mobiledata,
-                        color: Color(0xFFC19454), size: 28),
+                    const Icon(
+                      Icons.g_mobiledata,
+                      color: Color(0xFFC19454),
+                      size: 28,
+                    ),
                     const SizedBox(width: 12),
                     const Text(
                       "Sign Up with Google",
