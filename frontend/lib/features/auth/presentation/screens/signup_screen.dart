@@ -24,7 +24,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF2D1B41),
+      backgroundColor: Color(0xFF1E0E35),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -140,7 +140,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
               // Google Sign Up
               OutlinedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Get.snackbar(
+                    "Coming Soon",
+                    "Google Sign Up is currently under construction.",
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: const Color(0xFF3F2B55),
+                    colorText: Colors.white,
+                    margin: const EdgeInsets.all(15),
+                    duration: const Duration(seconds: 2),
+                  );
+                },
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 55),
                   side: const BorderSide(color: Color(0xFFC19454)),

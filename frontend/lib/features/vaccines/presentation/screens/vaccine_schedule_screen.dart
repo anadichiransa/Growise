@@ -79,13 +79,13 @@ class _VaccineScheduleScreenState extends State<VaccineScheduleScreen> {
       ),
       body: !_childReady
           ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF00E5CC)),
+              child: CircularProgressIndicator(color: Color(0xFF4CAF50)),
             )
           : Consumer<VaccineController>(
               builder: (context, controller, _) {
                 if (controller.isLoading) {
                   return const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF00E5CC)),
+                    child: CircularProgressIndicator(color: Color(0xFF4CAF50)),
                   );
                 }
                 if (controller.error != null) {
@@ -150,7 +150,7 @@ class _VaccineScheduleScreenState extends State<VaccineScheduleScreen> {
         children: [
           CircleAvatar(
             radius: 24,
-            backgroundColor: const Color(0xFF5C35CC),
+            backgroundColor: Color(0xFF4A2574),
             child: Text(
               _childName[0],
               style: const TextStyle(
@@ -198,8 +198,8 @@ class _VaccineScheduleScreenState extends State<VaccineScheduleScreen> {
             borderRadius: BorderRadius.circular(4),
             child: const LinearProgressIndicator(
               value: 0.3,
-              backgroundColor: Color(0xFF2D1B69),
-              valueColor: AlwaysStoppedAnimation(Color(0xFF00E5CC)),
+              backgroundColor: Color(0xFF4A2574),
+              valueColor: AlwaysStoppedAnimation(Color(0xFF4CAF50)),
               minHeight: 6,
             ),
           ),

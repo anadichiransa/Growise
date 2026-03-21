@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get.dart';
 import 'package:growise/features/profile/presentation/controllers/child_controller.dart';
 
 class BabyTrackerHome extends StatefulWidget {
@@ -29,7 +28,6 @@ class _BabyTrackerHomeState extends State<BabyTrackerHome> {
           children: [
             const SizedBox(height: 10),
 
-            /// ---------------- HEADER (Generic) ----------------
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -209,16 +207,32 @@ class _BabyTrackerHomeState extends State<BabyTrackerHome> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       color: const Color(0xFF140824),
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _NavItem(icon: Icons.home_filled, label: "Home", active: true),
-          _NavItem(icon: Icons.show_chart, label: "Tracker", active: false),
-          _NavItem(icon: Icons.school_outlined, label: "Learn", active: false),
+          _NavItem(
+            icon: Icons.home_filled,
+            label: "Home",
+            active: true,
+            onTap: () {},
+          ),
+          _NavItem(
+            icon: Icons.show_chart,
+            label: "Tracker",
+            active: false,
+            onTap: () => Get.toNamed('/growth'),
+          ),
+          _NavItem(
+            icon: Icons.school_outlined,
+            label: "Learn",
+            active: false,
+            onTap: () => Get.toNamed('/education'),
+          ),
           _NavItem(
             icon: Icons.settings_outlined,
             label: "Settings",
             active: false,
+            onTap: () => Get.toNamed('/settings'),
           ),
         ],
       ),
@@ -288,26 +302,31 @@ class _NavItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool active;
+  final VoidCallback onTap;
   const _NavItem({
     required this.icon,
     required this.label,
     required this.active,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: active ? const Color(0xFF26D07C) : Colors.white54),
-        Text(
-          label,
-          style: TextStyle(
-            color: active ? const Color(0xFF26D07C) : Colors.white54,
-            fontSize: 10,
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: active ? const Color(0xFF26D07C) : Colors.white54),
+          Text(
+            label,
+            style: TextStyle(
+              color: active ? const Color(0xFF26D07C) : Colors.white54,
+              fontSize: 10,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

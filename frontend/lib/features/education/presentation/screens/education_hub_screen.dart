@@ -219,7 +219,7 @@ class _EducationHubScreenState extends State<EducationHubScreen> {
             Text(
               actionLabel,
               style: const TextStyle(
-                color: Color(0xFF7C4DFF),
+                color: Color(0xFF4A2574),
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
@@ -334,7 +334,7 @@ class _EducationHubScreenState extends State<EducationHubScreen> {
   }
 
   Widget _buildArticleCard(Article article) {
-    final color = _categoryColors[article.category] ?? const Color(0xFF7C4DFF);
+    final color = _categoryColors[article.category] ?? const Color(0xFF4A2574);
     return GestureDetector(
       onTap: () => Get.to(() => ArticleDetailScreen(article: article)),
       child: Container(

@@ -195,21 +195,38 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _socialButton(String label, IconData icon) {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        color: fieldBg,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: Colors.white),
-          const SizedBox(width: 8),
-          Text(label,
+    return GestureDetector(
+      onTap: () {
+        Get.snackbar(
+          "Coming Soon",
+          "$label login is currently under construction.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: fieldBg, // Using your existing dark field color
+          colorText: Colors.white,
+          margin: const EdgeInsets.all(15),
+          duration: const Duration(seconds: 2),
+        );
+      },
+      child: Container(
+        height: 50,
+        decoration: BoxDecoration(
+          color: fieldBg,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white),
+            const SizedBox(width: 8),
+            Text(
+              label,
               style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.w500)),
-        ],
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
