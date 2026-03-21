@@ -13,8 +13,8 @@ class VaccineBanner extends StatelessWidget {
 
     final isToday = urgent.first.daysUntilDue == 0;
     final isTomorrow = urgent.first.daysUntilDue == 1;
-    final isOverdue = urgent.first.daysUntilDue != null &&
-                      urgent.first.daysUntilDue! < 0;
+    final isOverdue =
+        urgent.first.daysUntilDue != null && urgent.first.daysUntilDue! < 0;
 
     return Container(
       margin: const EdgeInsets.all(16),
@@ -27,15 +27,17 @@ class VaccineBanner extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isOverdue ? Colors.red : const Color(0xFF00E5CC),
+          color: isOverdue ? Colors.red : Color(0xFF4CAF50),
           width: 1.5,
         ),
       ),
       child: Row(
         children: [
           Icon(
-            isOverdue ? Icons.warning_amber_rounded : Icons.notifications_active,
-            color: isOverdue ? Colors.orange : const Color(0xFF00E5CC),
+            isOverdue
+                ? Icons.warning_amber_rounded
+                : Icons.notifications_active,
+            color: isOverdue ? Colors.orange : Color(0xFF4CAF50),
             size: 28,
           ),
           const SizedBox(width: 12),
@@ -47,12 +49,13 @@ class VaccineBanner extends StatelessWidget {
                   isOverdue
                       ? '⚠️ Missed Vaccine — Action Needed'
                       : isToday
-                          ? '🔔 Vaccine Due Today'
-                          : '💉 Vaccine Due Tomorrow',
+                      ? '🔔 Vaccine Due Today'
+                      : '💉 Vaccine Due Tomorrow',
                   style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -65,12 +68,13 @@ class VaccineBanner extends StatelessWidget {
           TextButton(
             onPressed: () {
               // Navigate to immunization screen
-              Navigator.pushNamed(context, '/immunization',
-                  arguments: childId);
+              Navigator.pushNamed(context, '/immunization', arguments: childId);
             },
-            child: const Text('View',
-                style: TextStyle(color: Color(0xFF00E5CC))),
-          )
+            child: const Text(
+              'View',
+              style: TextStyle(color: Color(0xFF4CAF50)),
+            ),
+          ),
         ],
       ),
     );
