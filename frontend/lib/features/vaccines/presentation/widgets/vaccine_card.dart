@@ -73,8 +73,8 @@ class VaccineCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               isDone
-                  ? 'Given: '
-                  : 'Rec: ',
+                  ? 'Given: ${_formatDate(record.administeredDate)}'
+                  : 'Rec: ${_formatDate(record.scheduledDate)}',
               style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12),
             ),
             const SizedBox(height: 12),
@@ -120,7 +120,7 @@ class VaccineCard extends StatelessWidget {
 
   String _formatDate(DateTime? date) {
     if (date == null) return 'N/A';
-    return ' , ';
+    return '${_monthName(date.month)} ${date.day}, ${date.year}';
   }
 
   String _monthName(int month) {

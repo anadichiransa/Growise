@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/vaccine_controller.dart';
 import '../widgets/age_group_header.dart';
@@ -17,32 +17,46 @@ class VaccineScheduleScreen extends StatefulWidget {
 
 class _VaccineScheduleScreenState extends State<VaccineScheduleScreen> {
   late ChildController _childController;
-  late String _childId;
-  late String _childName;
-  late int _childAgeMonths;
+  String _childId = '';
+  String _childName = 'Your Child';
+  int _childAgeMonths = 0;
+  bool _childReady = false;
 
   @override
   void initState() {
     super.initState();
     _childController = Get.find<ChildController>();
-    _childId = _childController.childId ?? '';
-    _childName = _childController.childName ?? 'Child';
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadWithRetry();
+    });
+  }
 
+  void _loadWithRetry({int attempt = 1}) {
+    final id = _childController.childId ?? '';
+    final name = _childController.childName ?? 'Your Child';
     final birthDate = _childController.child?['birthDate'] != null
         ? (_childController.child!['birthDate'] as dynamic).toDate() as DateTime
-        : DateTime(2022, 1, 1);
+        : null;
     final now = DateTime.now();
-    _childAgeMonths =
-        (now.year - birthDate.year) * 12 + now.month - birthDate.month;
+    final ageMonths = birthDate != null
+        ? (now.year - birthDate.year) * 12 + now.month - birthDate.month
+        : 0;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      print('DEBUG childId: $_childId');
-      if (_childId.isNotEmpty) {
-        context.read<VaccineController>().loadSchedule(_childId);
-      } else {
-        print('ERROR: childId is empty, schedule will not load');
+    if (id.isNotEmpty) {
+      if (mounted) {
+        setState(() {
+          _childId = id;
+          _childName = name;
+          _childAgeMonths = ageMonths;
+          _childReady = true;
+        });
+        context.read<VaccineController>().loadSchedule(id);
       }
-    });
+    } else if (attempt < 5) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) _loadWithRetry(attempt: attempt + 1);
+      });
+    }
   }
 
   @override
@@ -61,64 +75,68 @@ class _VaccineScheduleScreenState extends State<VaccineScheduleScreen> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
-      body: Consumer<VaccineController>(
-        builder: (context, controller, _) {
-          if (controller.isLoading) {
-            return const Center(
+      body: !_childReady
+          ? const Center(
               child: CircularProgressIndicator(color: Color(0xFF00E5CC)),
-            );
-          }
-          if (controller.error != null) {
-            return Center(
-              child: Text(
-                controller.error!,
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          }
-          return Column(
-            children: [
-              _buildChildHeader(),
-              const Divider(color: Colors.white12, height: 1),
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 32),
-                  itemCount: controller.groupedSchedule.length,
-                  itemBuilder: (context, index) {
-                    final group = controller.groupedSchedule[index];
-                    final isDueNow = group.vaccines.any(
-                      (v) =>
-                          v.status == 'pending' &&
-                          v.daysUntilDue != null &&
-                          v.daysUntilDue! <= 0,
-                    );
-                    final isLocked = group.ageMonths > _childAgeMonths + 1;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AgeGroupHeader(
-                          ageLabel: group.ageLabel,
-                          allDone: group.allDone,
-                          isDueNow: isDueNow,
-                          isLocked: isLocked,
-                        ),
-                        ...group.vaccines.map(
-                          (vaccine) => VaccineCard(
-                            record: vaccine,
-                            onMarkDone: () => _showMarkDoneSheet(vaccine),
-                            onDetails: () => _showDetailsSheet(vaccine),
-                          ),
-                        ),
-                        if (isLocked) _buildProgressBar(group.ageLabel),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        },
-      ),
+            )
+          : Consumer<VaccineController>(
+              builder: (context, controller, _) {
+                if (controller.isLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF00E5CC)),
+                  );
+                }
+                if (controller.error != null) {
+                  return Center(
+                    child: Text(
+                      controller.error!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  );
+                }
+                return Column(
+                  children: [
+                    _buildChildHeader(),
+                    const Divider(color: Colors.white12, height: 1),
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.only(bottom: 32),
+                        itemCount: controller.groupedSchedule.length,
+                        itemBuilder: (context, index) {
+                          final group = controller.groupedSchedule[index];
+                          final isDueNow = group.vaccines.any(
+                            (v) =>
+                                v.status == 'pending' &&
+                                v.daysUntilDue != null &&
+                                v.daysUntilDue! <= 0,
+                          );
+                          final isLocked = group.ageMonths > _childAgeMonths + 1;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AgeGroupHeader(
+                                ageLabel: group.ageLabel,
+                                allDone: group.allDone,
+                                isDueNow: isDueNow,
+                                isLocked: isLocked,
+                              ),
+                              ...group.vaccines.map(
+                                (vaccine) => VaccineCard(
+                                  record: vaccine,
+                                  onMarkDone: () => _showMarkDoneSheet(vaccine),
+                                  onDetails: () => _showDetailsSheet(vaccine),
+                                ),
+                              ),
+                              if (isLocked) _buildProgressBar(group.ageLabel),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
     );
   }
 
