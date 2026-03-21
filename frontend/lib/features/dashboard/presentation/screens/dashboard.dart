@@ -68,7 +68,10 @@ class _BabyTrackerHomeState extends State<BabyTrackerHome> {
                       ],
                     ),
                   ),
-                  _buildIconButton(Icons.notifications_none),
+                  GestureDetector(
+                    onTap: () => Get.toNamed('/notification'),
+                    child: _buildIconButton(Icons.notifications_none),
+                  )
                 ],
               ),
             ),
