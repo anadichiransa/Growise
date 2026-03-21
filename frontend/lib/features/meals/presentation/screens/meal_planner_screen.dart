@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/meal_controller.dart';
 import '../widgets/ingredient_selector.dart';
 import '../widgets/recipe_card.dart';
+import 'package:growise/shared/widgets/common/bottom_nav.dart';
 
 class MealPlannerScreen extends StatelessWidget {
   const MealPlannerScreen({super.key});
@@ -31,6 +32,7 @@ class MealPlannerScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: _bg,
+      bottomNavigationBar: const AppBottomNav(currentIndex: 2),
       appBar: AppBar(
         backgroundColor: _bg,
         elevation: 0,

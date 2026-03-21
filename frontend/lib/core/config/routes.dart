@@ -20,6 +20,7 @@ import '../../features/vaccines/presentation/controllers/vaccine_controller.dart
 import '../../features/education/presentation/screens/education_hub_screen.dart';
 import '../../features/dashboard/presentation/screens/settings_screen.dart';
 import '../../features/profile/presentation/screens/help_recovery.dart';
+import '../../features/meals/presentation/screens/meal_planner_screen.dart';
 
 class AppRoutes {
   static const welcome = '/';
@@ -34,6 +35,7 @@ class AppRoutes {
   static const signupForm = '/signup-form';
   static const accessRequest = '/access-requesting';
   static const growth = '/growth';
+  static const meals = '/meals';
   static const vaccines = '/vaccines';
   static const education = '/education';
   static const notification = '/notification';
@@ -61,6 +63,7 @@ class AppRoutes {
     GetPage(name: signupForm, page: () => const SignupFormScreen()),
     GetPage(name: accessRequest, page: () => const SetupExperienceScreen()),
     GetPage(name: growth, page: () => const GrowthChartScreen()),
+    GetPage(name: meals, page: () => const MealPlannerScreen()),
     GetPage(name: settings, page: () => const SettingsScreen()),
     GetPage(name: education, page: () => const EducationHubScreen()),
     GetPage(name: help, page: () => const HelpRecoveryScreen()),

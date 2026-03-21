@@ -29,8 +29,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
   bool _isLoading = true;
   String _errorMessage = '';
 
-  // WHO median & SD reference lines for boys (weight-for-age, key months)
-  // Format: {age: [minus2SD, median, plus2SD]}
   static const Map<int, List<double>> _weightRefBoys = {
     0: [2.5, 3.3, 4.4],
     2: [3.8, 5.6, 7.4],
@@ -111,6 +109,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
       _isLoading = true;
       _errorMessage = '';
     });
+
     try {
       final records = await _controller.loadRecords(_childId);
       records.sort((a, b) => b.date.compareTo(a.date));
@@ -130,11 +129,14 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
 
   GrowthRecord? get _latestRecord =>
       _records.isNotEmpty ? _records.first : null;
+
   String get _currentStatus => _latestRecord?.category ?? 'unknown';
 
   String get _summary {
-    if (_latestRecord == null)
+    if (_latestRecord == null) {
       return 'No measurements yet. Add your first measurement!';
+    }
+
     return _controller.generateSummary(
       category: _currentStatus,
       weightZ: _latestRecord!.weightForAgeZ,
@@ -143,9 +145,8 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     );
   }
 
-  List<String> get _recommendations => _latestRecord == null
-      ? []
-      : _controller.getRecommendations(_currentStatus);
+  List<String> get _recommendations =>
+      _latestRecord == null ? [] : _controller.getRecommendations(_currentStatus);
 
   int _calculateAgeInMonths(DateTime measurementDate) {
     int months = (measurementDate.year - _dateOfBirth.year) * 12;
@@ -156,23 +157,22 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
 
   Map<int, List<double>> get _weightRef =>
       _childController.childGender.toLowerCase() == 'boy'
-      ? _weightRefBoys
-      : _weightRefGirls;
+          ? _weightRefBoys
+          : _weightRefGirls;
 
   Map<int, List<double>> get _heightRef =>
       _childController.childGender.toLowerCase() == 'boy'
-      ? _heightRefBoys
-      : _heightRefGirls;
+          ? _heightRefBoys
+          : _heightRefGirls;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1B0B3B),
-      bottomNavigationBar: AppBottomNav(currentIndex: 1),
+      bottomNavigationBar: const AppBottomNav(currentIndex: 1),
       body: SafeArea(
         child: Column(
           children: [
-            // App Bar
             Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -183,12 +183,16 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
                     Colors.white12,
                     () => Navigator.pop(context),
                   ),
-                  Text(
-                    '$_childName\'s Growth',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  Expanded(
+                    child: Text(
+                      '$_childName\'s Growth',
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   _circularIconButton(
@@ -212,7 +216,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
                 ],
               ),
             ),
-
             Expanded(
               child: _isLoading
                   ? const Center(
@@ -221,10 +224,8 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
                       ),
                     )
                   : _errorMessage.isNotEmpty
-                  ? _buildErrorState()
-                  : _records.isEmpty
-                  ? _buildEmptyState()
-                  : _buildChartView(),
+                      ? _buildErrorState()
+                      : _buildChartView(),
             ),
           ],
         ),
@@ -264,100 +265,19 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     );
   }
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                color: Color(0xFF3B1B45),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.show_chart,
-                size: 70,
-                color: Color(0xFFD9A577),
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'No measurements yet',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Start tracking your baby\'s growth\nusing WHO standards',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white60,
-                fontSize: 15,
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddMeasurementScreen(
-                      childId: _childId,
-                      childName: _childName,
-                      gender: _childController.childGender,
-                      dateOfBirth: _dateOfBirth,
-                    ),
-                  ),
-                );
-                _loadRecords();
-              },
-              icon: const Icon(Icons.add),
-              label: const Text(
-                'Add First Measurement',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                foregroundColor: Colors.black,
-                minimumSize: const Size(double.infinity, 58),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              '💡 Tip: You\'ll need your baby\'s weight and height',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: Colors.white38),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildChartView() {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          // Status Banner
           StatusBanner(status: _currentStatus, summary: _summary),
           const SizedBox(height: 16),
 
-          // Latest weight callout (like Nivvethik)
-          if (_latestRecord != null) _buildLatestCallout(),
-          const SizedBox(height: 16),
+          if (_latestRecord != null) ...[
+            _buildLatestCallout(),
+            const SizedBox(height: 16),
+          ],
 
-          // Tab bar for Weight / Height charts
           Container(
             decoration: BoxDecoration(
               color: const Color(0xFF3B1B45),
@@ -380,7 +300,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           ),
           const SizedBox(height: 16),
 
-          // Charts
           SizedBox(
             height: 340,
             child: TabBarView(
@@ -402,17 +321,53 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
 
           const SizedBox(height: 16),
 
-          // Latest Metrics
-          _buildMetricsCard(),
+          if (_records.isEmpty) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF3B1B45),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: const Color(0xFFD9A577).withOpacity(0.3),
+                ),
+              ),
+              child: const Column(
+                children: [
+                  Text(
+                    'No measurements yet',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'WHO growth charts are shown above. Add the first measurement to plot your baby’s progress.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
 
-          const SizedBox(height: 16),
+          if (_latestRecord != null) ...[
+            _buildMetricsCard(),
+            const SizedBox(height: 16),
+          ],
 
-          // Recommendations
-          if (_recommendations.isNotEmpty) _buildRecommendationsCard(),
+          if (_recommendations.isNotEmpty) ...[
+            _buildRecommendationsCard(),
+            const SizedBox(height: 16),
+          ],
 
-          const SizedBox(height: 16),
-
-          // Add Measurement button
           ElevatedButton.icon(
             onPressed: () async {
               await Navigator.push(
@@ -442,10 +397,8 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
               ),
             ),
           ),
-
           const SizedBox(height: 12),
 
-          // View Saved button
           OutlinedButton.icon(
             onPressed: () {
               Navigator.push(
@@ -484,11 +437,12 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
   }
 
   Widget _buildLatestCallout() {
+    if (_latestRecord == null) return const SizedBox();
+
     final latest = _latestRecord!;
     final prevRecord = _records.length > 1 ? _records[1] : null;
-    final weightDiff = prevRecord != null
-        ? latest.weight - prevRecord.weight
-        : null;
+    final weightDiff =
+        prevRecord != null ? latest.weight - prevRecord.weight : null;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -537,6 +491,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
                 ),
               ),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
                     weightDiff >= 0 ? Icons.trending_up : Icons.trending_down,
@@ -585,16 +540,14 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           const SizedBox(height: 12),
           Expanded(child: LineChart(chartData)),
           const SizedBox(height: 12),
-          // Legend
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 12,
+            runSpacing: 8,
             children: [
               _legendItem('Baby', const Color(0xFFFFFFFF)),
-              const SizedBox(width: 16),
               _legendItem('+2 SD', const Color(0xFFD9A577)),
-              const SizedBox(width: 16),
               _legendDashed('Median'),
-              const SizedBox(width: 16),
               _legendItem('-2 SD', const Color(0xFFD9A577)),
             ],
           ),
@@ -604,7 +557,10 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
   }
 
   Widget _buildMetricsCard() {
+    if (_latestRecord == null) return const SizedBox();
+
     final latest = _latestRecord!;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -624,20 +580,23 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           ),
           const SizedBox(height: 16),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _metricTile(
-                'Weight',
-                '${latest.weight.toStringAsFixed(1)} kg',
-                'z-score: ${latest.weightForAgeZ?.toStringAsFixed(2) ?? 'N/A'}',
-                Icons.monitor_weight_outlined,
+              Expanded(
+                child: _metricTile(
+                  'Weight',
+                  '${latest.weight.toStringAsFixed(1)} kg',
+                  'z-score: ${latest.weightForAgeZ?.toStringAsFixed(2) ?? 'N/A'}',
+                  Icons.monitor_weight_outlined,
+                ),
               ),
               Container(width: 1, height: 60, color: Colors.white12),
-              _metricTile(
-                'Height',
-                '${latest.height.toStringAsFixed(0)} cm',
-                'z-score: ${latest.heightForAgeZ?.toStringAsFixed(2) ?? 'N/A'}',
-                Icons.height,
+              Expanded(
+                child: _metricTile(
+                  'Height',
+                  '${latest.height.toStringAsFixed(0)} cm',
+                  'z-score: ${latest.heightForAgeZ?.toStringAsFixed(2) ?? 'N/A'}',
+                  Icons.height,
+                ),
               ),
             ],
           ),
@@ -701,8 +660,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     );
   }
 
-  // ── Chart data builders ──────────────────────────────────────────────────────
-
   LineChartData _buildWeightChartData() {
     final babySpots = <FlSpot>[];
     for (final r in _records.reversed) {
@@ -725,15 +682,12 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     double minY,
     double maxY,
   ) {
-    final plus2Spots = ref.entries
-        .map((e) => FlSpot(e.key.toDouble(), e.value[2]))
-        .toList();
-    final medianSpots = ref.entries
-        .map((e) => FlSpot(e.key.toDouble(), e.value[1]))
-        .toList();
-    final minus2Spots = ref.entries
-        .map((e) => FlSpot(e.key.toDouble(), e.value[0]))
-        .toList();
+    final plus2Spots =
+        ref.entries.map((e) => FlSpot(e.key.toDouble(), e.value[2])).toList();
+    final medianSpots =
+        ref.entries.map((e) => FlSpot(e.key.toDouble(), e.value[1])).toList();
+    final minus2Spots =
+        ref.entries.map((e) => FlSpot(e.key.toDouble(), e.value[0])).toList();
 
     return LineChartData(
       minY: minY,
@@ -786,7 +740,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
         ),
       ),
       lineBarsData: [
-        // +2 SD line (gold)
         LineChartBarData(
           spots: plus2Spots,
           isCurved: true,
@@ -795,7 +748,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           dotData: FlDotData(show: false),
           belowBarData: BarAreaData(show: false),
         ),
-        // Median dashed (white)
         LineChartBarData(
           spots: medianSpots,
           isCurved: true,
@@ -805,7 +757,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           dotData: FlDotData(show: false),
           belowBarData: BarAreaData(show: false),
         ),
-        // -2 SD line (gold)
         LineChartBarData(
           spots: minus2Spots,
           isCurved: true,
@@ -814,7 +765,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           dotData: FlDotData(show: false),
           belowBarData: BarAreaData(show: false),
         ),
-        // Baby's actual data (white, prominent)
         LineChartBarData(
           spots: babySpots,
           isCurved: true,
@@ -836,8 +786,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
         touchTooltipData: LineTouchTooltipData(
           getTooltipColor: (_) => const Color(0xFF1B0B3B),
           getTooltipItems: (spots) => spots.map((spot) {
-            if (spot.barIndex != 3)
-              return null; // only show tooltip for baby's line
+            if (spot.barIndex != 3) return null;
             return LineTooltipItem(
               '${spot.y.toStringAsFixed(1)}\nAge: ${spot.x.toInt()}mo',
               const TextStyle(
@@ -852,20 +801,22 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     );
   }
 
-  // ── Helper widgets ──────────────────────────────────────────────────────────
-
   Widget _metricTile(String label, String value, String sub, IconData icon) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, color: const Color(0xFFD9A577), size: 26),
         const SizedBox(height: 6),
         Text(
           label,
+          textAlign: TextAlign.center,
           style: const TextStyle(color: Colors.white54, fontSize: 12),
         ),
         const SizedBox(height: 4),
         Text(
           value,
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 20,
@@ -873,13 +824,18 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           ),
         ),
         const SizedBox(height: 4),
-        Text(sub, style: const TextStyle(color: Colors.white38, fontSize: 11)),
+        Text(
+          sub,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white38, fontSize: 11),
+        ),
       ],
     );
   }
 
   Widget _legendItem(String label, Color color) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(width: 16, height: 2.5, color: color),
         const SizedBox(width: 5),
@@ -893,8 +849,10 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
 
   Widget _legendDashed(String label) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
+          mainAxisSize: MainAxisSize.min,
           children: List.generate(
             3,
             (_) => Container(

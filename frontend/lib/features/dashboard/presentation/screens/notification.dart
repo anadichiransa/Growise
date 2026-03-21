@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:growise/shared/widgets/common/bottom_nav.dart';
 
 abstract class GrowWiseColors {
   static const Color scaffoldBg    = Color(0xFF200E36);
@@ -150,11 +151,12 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     final topPadding = MediaQuery.of(context).padding.top;
     return Scaffold(
       backgroundColor: GrowWiseColors.scaffoldBg,
+      
       body: Column(children: [
         _buildHeader(topPadding),
         Expanded(child: _buildBody()),
       ]),
-      bottomNavigationBar: _GrowWiseBottomNav(currentIndex: _currentNavIndex, onTap: _onNavTap),
+      bottomNavigationBar: const AppBottomNav(currentIndex: 0),
     );
   }
 

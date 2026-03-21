@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:growise/features/profile/presentation/controllers/child_controller.dart';
+import 'package:growise/shared/widgets/common/bottom_nav.dart';
 
 class BabyTrackerHome extends StatefulWidget {
   const BabyTrackerHome({super.key});
@@ -153,7 +154,7 @@ class _BabyTrackerHomeState extends State<BabyTrackerHome> {
       ),
 
       /// ---------------- NAVIGATION ----------------
-      bottomNavigationBar: _buildBottomNav(),
+      bottomNavigationBar: const AppBottomNav(currentIndex: 0),
     );
   }
 

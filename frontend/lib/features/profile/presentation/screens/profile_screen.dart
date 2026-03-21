@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:growise/shared/widgets/common/bottom_nav.dart';
 
 /// Data model representing a child profile entry in the Switch Profile row.
 class ChildProfileSummary {
@@ -200,6 +201,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _ProfileScreenTheme.bgDark,
+      bottomNavigationBar: const AppBottomNav(currentIndex: 4),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(

@@ -8,6 +8,7 @@ import '../widgets/vaccine_details_sheet.dart';
 import 'package:growise/features/profile/presentation/controllers/child_controller.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:growise/shared/widgets/common/bottom_nav.dart';
 
 class VaccineScheduleScreen extends StatefulWidget {
   const VaccineScheduleScreen({super.key});
@@ -65,6 +66,7 @@ class _VaccineScheduleScreenState extends State<VaccineScheduleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0F0A2E),
+      bottomNavigationBar: const AppBottomNav(currentIndex: 3),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F0A2E),
         elevation: 0,
