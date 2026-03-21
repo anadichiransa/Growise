@@ -15,43 +15,12 @@ class OnboradingScreen extends StatelessWidget {
 
           children: [
             Center(
-              child: Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFF3B1E54).withOpacity(0.5),
-                ),
-                child: Center(
-                  child: Container(
-                    width: 110,
-                    height: 110,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Color(0xFF4A2574),
-                    ),
-                    child: const Icon(
-                      Icons.face_retouching_natural,
-                      size: 55,
-                      color: Color(0xFFE2A673),
-                    ),
-                  ),
-                ),
+              child: Image.asset(
+                'assets/images/logo.png',
+                width: MediaQuery.of(context).size.width * 0.85,
+                fit: BoxFit.contain,
               ),
             ),
-            const SizedBox(height: 50),
-
-            // 2. GROWISE Tag
-            const Text(
-              "GROWISE",
-              style: TextStyle(
-                color: Color(0xFFE2A673),
-                letterSpacing: 2,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
 
             // 1. Main Title with Split Colors
             RichText(

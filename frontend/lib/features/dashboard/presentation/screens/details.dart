@@ -1,19 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+void main() {
+  runApp(const GroWiseApp());
+}
 
 class GroWiseColors {
   GroWiseColors._();
 
-  static const Color backgroundDark = Color(0xFF1A0F2E);
-  static const Color backgroundPurple = Color(0xFF2D1B4E);
-  static const Color accentGold = Color(0xFFFFB84D);
-  static const Color primaryPurple = Color(0xFF9B6FD9);
+  static const Color backgroundDark = Color(0xFF1A0B2E);
+  static const Color backgroundPurple = Color(0xFF210F37);
+  static const Color accentGold = Color(0xFFD9A574);
+  static const Color buttonGold = Color(0xFFFFC44D);
+  static const Color primaryPurple = Color(0xFF8B5FBF);
   static const Color textWhite = Color(0xFFFFFFFF);
-  static const Color textGray = Color(0xFFB8B8D8);
-  static const Color cardPurple1 = Color(0xFF7D5BA6);
-  static const Color cardPurple2 = Color(0xFF6B4A93);
-  static const Color cardPurple3 = Color(0xFF5A3980);
+  static const Color textGray = Color(0xFFB8A8CC);
+  static const Color textDark = Color(0xFF2E1A3D);
+  static const Color cardPurple = Color(0xFF3A2553);
+  static const Color heroGradientTop = Color(0xFFDCC9B8);
+  static const Color heroGradientBottom = Color(0xFF4A2F5C);
+  static const Color badgePurple = Color(0xFF4F1C51);
+  static const Color badgeDot = Color(0xFFE67E9E);
+}
+
+class GroWiseApp extends StatelessWidget {
+  const GroWiseApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'GroWise',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        fontFamily: 'Roboto',
+        colorScheme: ColorScheme.dark(
+          primary: GroWiseColors.primaryPurple,
+          secondary: GroWiseColors.accentGold,
+          background: GroWiseColors.backgroundDark,
+          surface: GroWiseColors.backgroundPurple,
+        ),
+      ),
+      home: const OnboardingDetailsPage(),
+    );
+  }
 }
 
 class OnboardingDetailsPage extends StatefulWidget {
@@ -38,25 +69,17 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut,
-      ),
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOutCubic,
-      ),
-    );
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
 
     _animationController.forward();
   }
@@ -109,7 +132,6 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
                             description:
                                 'Monitor height, weight, and BMI milestones against national standards.',
                             icon: Icons.trending_up_rounded,
-                            color: GroWiseColors.cardPurple1,
                             delay: 0,
                           ),
                           const SizedBox(height: 16),
@@ -118,7 +140,6 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
                             description:
                                 'Keep a secure digital log of vaccinations and medical history.',
                             icon: Icons.medical_services_rounded,
-                            color: GroWiseColors.cardPurple2,
                             delay: 150,
                           ),
                           const SizedBox(height: 16),
@@ -127,7 +148,6 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
                             description:
                                 'Access approved guides on early childhood development.',
                             icon: Icons.school_rounded,
-                            color: GroWiseColors.cardPurple3,
                             delay: 300,
                           ),
                           const SizedBox(height: 50),
@@ -151,13 +171,10 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
       child: Padding(
         padding: const EdgeInsets.only(top: 8.0, right: 24.0),
         child: TextButton(
-          onPressed: _handleSkip,
+          onPressed: () => Get.offAllNamed('/signup-form'),
           style: TextButton.styleFrom(
             foregroundColor: GroWiseColors.textGray,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 12,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
@@ -182,16 +199,17 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
           colors: [
-            GroWiseColors.primaryPurple.withOpacity(0.3),
-            GroWiseColors.backgroundPurple.withOpacity(0.5),
+            GroWiseColors.heroGradientTop,
+            GroWiseColors.heroGradientBottom,
           ],
+          stops: const [0.0, 0.8],
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -200,22 +218,19 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
       child: Stack(
         children: [
           Center(
-            child: Icon(
-              Icons.family_restroom_rounded,
-              size: 100,
-              color: GroWiseColors.primaryPurple.withOpacity(0.5),
+            child: Image.asset(
+              'assets/images/details.png',
+              height: 180,
+              fit: BoxFit.contain,
             ),
           ),
           Positioned(
             left: 20,
             bottom: 20,
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color: GroWiseColors.primaryPurple,
+                color: GroWiseColors.badgePurple,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -260,7 +275,7 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
             width: 8,
             height: 8,
             decoration: const BoxDecoration(
-              color: GroWiseColors.accentGold,
+              color: GroWiseColors.badgeDot,
               shape: BoxShape.circle,
             ),
           ),
@@ -305,7 +320,6 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
     required String title,
     required String description,
     required IconData icon,
-    required Color color,
     required int delay,
   }) {
     return TweenAnimationBuilder<double>(
@@ -315,26 +329,23 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
       builder: (context, value, child) {
         return Transform.translate(
           offset: Offset(0, 30 * (1 - value)),
-          child: Opacity(
-            opacity: value,
-            child: child,
-          ),
+          child: Opacity(opacity: value, child: child),
         );
       },
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: color,
+          color: GroWiseColors.cardPurple,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
+              color: Colors.black.withOpacity(0.2),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
             BoxShadow(
-              color: Colors.white.withOpacity(0.05),
+              color: Colors.white.withOpacity(0.03),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -347,15 +358,11 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: GroWiseColors.backgroundDark.withOpacity(0.4),
+                color: GroWiseColors.backgroundDark.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Center(
-                child: Icon(
-                  icon,
-                  color: GroWiseColors.accentGold,
-                  size: 28,
-                ),
+                child: Icon(icon, color: GroWiseColors.accentGold, size: 28),
               ),
             ),
             const SizedBox(width: 16),
@@ -378,7 +385,7 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      color: GroWiseColors.textWhite.withOpacity(0.90),
+                      color: GroWiseColors.textGray,
                       height: 1.5,
                       letterSpacing: 0.2,
                     ),
@@ -399,12 +406,12 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
         width: double.infinity,
         height: 58,
         child: ElevatedButton(
-          onPressed: _handleContinue,
+          onPressed: () => Get.toNamed('/signup-form'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: GroWiseColors.accentGold,
-            foregroundColor: GroWiseColors.backgroundDark,
+            backgroundColor: GroWiseColors.buttonGold,
+            foregroundColor: GroWiseColors.textDark,
             elevation: 6,
-            shadowColor: GroWiseColors.accentGold.withOpacity(0.5),
+            shadowColor: GroWiseColors.buttonGold.withOpacity(0.4),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(32),
             ),
@@ -423,22 +430,11 @@ class _OnboardingDetailsPageState extends State<OnboardingDetailsPage>
                 ),
               ),
               SizedBox(width: 8),
-              Icon(
-                Icons.arrow_forward_rounded,
-                size: 22,
-              ),
+              Icon(Icons.arrow_forward_rounded, size: 22),
             ],
           ),
         ),
       ),
     );
-  }
-
-  void _handleSkip() {
-    Get.toNamed('/signup-form');
-  }
-
-  void _handleContinue() {
-    Get.toNamed('/signup-form');
   }
 }
