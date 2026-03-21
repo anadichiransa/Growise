@@ -1,0 +1,840 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:get/get.dart';
+import 'package:growise/data/repositories/child_repository.dart';
+import 'package:growise/features/profile/presentation/controllers/child_controller.dart';
+
+class SignupFormScreen extends StatefulWidget {
+  const SignupFormScreen({super.key});
+
+  @override
+  State<SignupFormScreen> createState() => _SignupFormScreenState();
+}
+
+class _SignupFormScreenState extends State<SignupFormScreen> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _dayController = TextEditingController();
+  final TextEditingController _monthController = TextEditingController();
+  final TextEditingController _yearController = TextEditingController();
+
+  final FocusNode _dayFocus = FocusNode();
+  final FocusNode _monthFocus = FocusNode();
+  final FocusNode _yearFocus = FocusNode();
+
+  final ChildRepository _childRepository = ChildRepository();
+
+  String? _selectedGender;
+  DateTime? _selectedDate;
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _dayController.dispose();
+    _monthController.dispose();
+    _yearController.dispose();
+    _dayFocus.dispose();
+    _monthFocus.dispose();
+    _yearFocus.dispose();
+    super.dispose();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDialog<DateTime>(
+      context: context,
+      builder: (BuildContext context) {
+        return _CustomDatePickerDialog(
+          initialDate: _selectedDate ?? DateTime.now(),
+        );
+      },
+    );
+
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _dayController.text = picked.day.toString().padLeft(2, '0');
+        _monthController.text = picked.month.toString().padLeft(2, '0');
+        _yearController.text = picked.year.toString();
+      });
+    }
+  }
+
+  Future<void> _openNativeDatePicker(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Color(0xFFE8B36A),
+              onPrimary: Color(0xFF1E1335),
+              surface: Color(0xFF2D1F4A),
+              onSurface: Color(0xFF2D1F4A),
+            ),
+            textTheme: const TextTheme(
+              headlineMedium: TextStyle(color: Colors.white),
+              titleLarge: TextStyle(color: Colors.white),
+              bodyLarge: TextStyle(color: Colors.white),
+              bodyMedium: TextStyle(color: Colors.white),
+              labelLarge: TextStyle(color: Colors.white),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _dayController.text = picked.day.toString().padLeft(2, '0');
+        _monthController.text = picked.month.toString().padLeft(2, '0');
+        _yearController.text = picked.year.toString();
+      });
+    }
+  }
+
+  void _validateDateFields() {
+    if (_dayController.text.isEmpty ||
+        _monthController.text.isEmpty ||
+        _yearController.text.isEmpty) {
+      return;
+    }
+
+    try {
+      int day = int.parse(_dayController.text);
+      int month = int.parse(_monthController.text);
+      int year = int.parse(_yearController.text);
+
+      if (day < 1 || day > 31) {
+        _showSnackBar('Day must be between 01 and 31');
+        return;
+      }
+
+      if (month < 1 || month > 12) {
+        _showSnackBar('Month must be between 01 and 12');
+        return;
+      }
+
+      int currentYear = DateTime.now().year;
+      if (year < 2000 || year > currentYear) {
+        _showSnackBar('Year must be between 2000 and $currentYear');
+        return;
+      }
+
+      DateTime parsedDate = DateTime(year, month, day);
+
+      if (parsedDate.day != day ||
+          parsedDate.month != month ||
+          parsedDate.year != year) {
+        _showSnackBar('Invalid date. Please check the day and month.');
+        return;
+      }
+
+      if (parsedDate.isAfter(DateTime.now())) {
+        _showSnackBar('Date cannot be in the future');
+        return;
+      }
+
+      setState(() {
+        _selectedDate = parsedDate;
+      });
+    } catch (e) {
+      _showSnackBar('Please enter a valid date');
+    }
+  }
+
+  void _completeSetup() async {
+    if (_nameController.text.isEmpty) {
+      _showSnackBar('Please enter child\'s name');
+      return;
+    }
+    if (_dayController.text.isEmpty ||
+        _monthController.text.isEmpty ||
+        _yearController.text.isEmpty) {
+      _showSnackBar('Please enter complete date of birth');
+      return;
+    }
+    if (_selectedGender == null) {
+      _showSnackBar('Please select gender');
+      return;
+    }
+
+    _validateDateFields();
+    if (_selectedDate == null) {
+      _showSnackBar('Please enter a valid date');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final childId = await _childRepository.saveChild(
+        name: _nameController.text.trim(),
+        birthDate: _selectedDate!,
+        gender: _selectedGender!,
+      );
+      Get.find<ChildController>().loadChildren();
+
+      if (mounted) {
+        _showSnackBar('Profile created successfully!');
+        await Future.delayed(const Duration(milliseconds: 500));
+        Get.toNamed('/access-requesting');
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar('Error: ${e.toString()}');
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: const Color(0xFF2D1F4A),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF1E1335),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () => Get.back(),
+                    ),
+                    Row(
+                      children: [
+                        _buildProgressDot(false),
+                        const SizedBox(width: 8),
+                        _buildProgressDot(true),
+                        const SizedBox(width: 8),
+                        _buildProgressDot(false),
+                      ],
+                    ),
+                    const SizedBox(width: 48),
+                  ],
+                ),
+                const SizedBox(height: 40),
+                const Text(
+                  'Personalize Your\nExperience',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Tell us a bit about your child so we can tailor the content specifically for their development stage.',
+                  style: TextStyle(
+                    color: Color(0xFFB8B0C8),
+                    fontSize: 16,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 48),
+                _buildLabel('CHILD\'S NAME'),
+                const SizedBox(height: 8),
+                _buildTextField(
+                  controller: _nameController,
+                  hintText: 'e.g. Sahan',
+                  prefixIcon: Icons.emoji_emotions_outlined,
+                ),
+                const SizedBox(height: 24),
+                _buildLabel('DATE OF BIRTH'),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: _buildDateSegmentField(
+                        controller: _dayController,
+                        focusNode: _dayFocus,
+                        hintText: 'DD',
+                        maxLength: 2,
+                        nextFocus: _monthFocus,
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        '/',
+                        style: TextStyle(
+                          color: Color(0xFF6B5A7F),
+                          fontSize: 24,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: _buildDateSegmentField(
+                        controller: _monthController,
+                        focusNode: _monthFocus,
+                        hintText: 'MM',
+                        maxLength: 2,
+                        nextFocus: _yearFocus,
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        '/',
+                        style: TextStyle(
+                          color: Color(0xFF6B5A7F),
+                          fontSize: 24,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: _buildDateSegmentField(
+                        controller: _yearController,
+                        focusNode: _yearFocus,
+                        hintText: 'YYYY',
+                        maxLength: 4,
+                        isLast: true,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      height: 56,
+                      width: 56,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2D1F4A),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color(0xFF3D2F54),
+                          width: 1,
+                        ),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.calendar_month,
+                          color: Color(0xFFE8B36A),
+                          size: 24,
+                        ),
+                        onPressed: () => _openNativeDatePicker(context),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                _buildLabel('GENDER'),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildGenderButton(
+                        label: 'Boy',
+                        icon: Icons.male,
+                        isSelected: _selectedGender == 'Boy',
+                        onTap: () {
+                          setState(() {
+                            _selectedGender = 'Boy';
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildGenderButton(
+                        label: 'Girl',
+                        icon: Icons.female,
+                        isSelected: _selectedGender == 'Girl',
+                        onTap: () {
+                          setState(() {
+                            _selectedGender = 'Girl';
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 40),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _completeSetup,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE8B36A),
+                      foregroundColor: const Color(0xFF1E1335),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFF1E1335),
+                              ),
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Text(
+                                'Complete Setup',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Icon(Icons.check_circle_outline, size: 20),
+                            ],
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const SizedBox(height: 24),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProgressDot(bool isActive) {
+    return Container(
+      width: isActive ? 32 : 8,
+      height: 8,
+      decoration: BoxDecoration(
+        color: isActive ? const Color(0xFFE8B36A) : const Color(0xFF4A3D5F),
+        borderRadius: BorderRadius.circular(4),
+      ),
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        color: Color(0xFFD4A574),
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.5,
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    required IconData prefixIcon,
+    bool readOnly = false,
+    VoidCallback? onTap,
+    int? maxLength,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+    Function(String)? onChanged,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF2D1F4A),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF3D2F54), width: 1),
+      ),
+      child: TextField(
+        controller: controller,
+        readOnly: readOnly,
+        onTap: onTap,
+        maxLength: maxLength,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        onChanged: onChanged,
+        style: const TextStyle(color: Colors.white, fontSize: 16),
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: const TextStyle(color: Color(0xFF6B5A7F), fontSize: 16),
+          prefixIcon: Icon(
+            prefixIcon,
+            color: const Color(0xFF6B5A7F),
+            size: 20,
+          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+          counterText: '',
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateSegmentField({
+    required TextEditingController controller,
+    required FocusNode focusNode,
+    required String hintText,
+    required int maxLength,
+    FocusNode? nextFocus,
+    bool isLast = false,
+  }) {
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        color: const Color(0xFF2D1F4A),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF3D2F54), width: 1),
+      ),
+      child: TextField(
+        controller: controller,
+        focusNode: focusNode,
+        keyboardType: TextInputType.number,
+        maxLength: maxLength,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: const TextStyle(color: Color(0xFF6B5A7F), fontSize: 16),
+          border: InputBorder.none,
+          counterText: '',
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 8,
+            vertical: 16,
+          ),
+        ),
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+          LengthLimitingTextInputFormatter(maxLength),
+        ],
+        onChanged: (value) {
+          if (value.length == maxLength && !isLast && nextFocus != null) {
+            FocusScope.of(context).requestFocus(nextFocus);
+          }
+          if (isLast || (value.length == maxLength && nextFocus == null)) {
+            _validateDateFields();
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildGenderButton({
+    required String label,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 56,
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF4A3667) : const Color(0xFF2D1F4A),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF5D4882)
+                : const Color(0xFF3D2F54),
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.white : const Color(0xFF6B5A7F),
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : const Color(0xFF6B5A7F),
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CustomDatePickerDialog extends StatefulWidget {
+  final DateTime initialDate;
+
+  const _CustomDatePickerDialog({required this.initialDate});
+
+  @override
+  State<_CustomDatePickerDialog> createState() =>
+      _CustomDatePickerDialogState();
+}
+
+class _CustomDatePickerDialogState extends State<_CustomDatePickerDialog> {
+  late TextEditingController _dateController;
+  DateTime? _selectedDate;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _dateController = TextEditingController();
+    _selectedDate = widget.initialDate;
+  }
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    super.dispose();
+  }
+
+  void _validateAndSetDate(String value) {
+    setState(() {
+      _errorMessage = null;
+    });
+
+    String digitsOnly = value.replaceAll(RegExp(r'[^\d]'), '');
+
+    if (digitsOnly.length == 8) {
+      try {
+        int day = int.parse(digitsOnly.substring(0, 2));
+        int month = int.parse(digitsOnly.substring(2, 4));
+        int year = int.parse(digitsOnly.substring(4, 8));
+
+        if (day < 1 || day > 31) {
+          setState(() {
+            _errorMessage = 'Day must be between 01 and 31';
+          });
+          return;
+        }
+
+        if (month < 1 || month > 12) {
+          setState(() {
+            _errorMessage = 'Month must be between 01 and 12';
+          });
+          return;
+        }
+
+        int currentYear = DateTime.now().year;
+        if (year < 2000 || year > currentYear) {
+          setState(() {
+            _errorMessage = 'Year must be between 2000 and $currentYear';
+          });
+          return;
+        }
+
+        DateTime parsedDate = DateTime(year, month, day);
+
+        if (parsedDate.day != day ||
+            parsedDate.month != month ||
+            parsedDate.year != year) {
+          setState(() {
+            _errorMessage = 'Invalid date. Please check the day and month.';
+          });
+          return;
+        }
+
+        if (parsedDate.isAfter(DateTime.now())) {
+          setState(() {
+            _errorMessage = 'Date cannot be in the future';
+          });
+          return;
+        }
+
+        setState(() {
+          _selectedDate = parsedDate;
+          _errorMessage = null;
+        });
+      } catch (e) {
+        setState(() {
+          _errorMessage = 'Invalid date format';
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: const Color(0xFF2D1F4A),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Select date',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _selectedDate != null
+                  ? DateFormat('EEE, MMM d').format(_selectedDate!)
+                  : 'No date selected',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF3D2F54),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: _errorMessage != null
+                      ? Colors.red
+                      : const Color(0xFFE8B36A),
+                  width: 2,
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Enter Date',
+                    style: TextStyle(color: Color(0xFFE8B36A), fontSize: 12),
+                  ),
+                  const SizedBox(height: 4),
+                  TextField(
+                    controller: _dateController,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    keyboardType: TextInputType.number,
+                    maxLength: 10,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      _DialogDateFormatter(),
+                    ],
+                    onChanged: _validateAndSetDate,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                      counterText: '',
+                      hintText: 'dd/mm/yyyy',
+                      hintStyle: TextStyle(
+                        color: Color(0xFF6B5A7F),
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (_errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  _errorMessage!,
+                  style: const TextStyle(color: Colors.red, fontSize: 12),
+                ),
+              ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Color(0xFFE8B36A), fontSize: 16),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                TextButton(
+                  onPressed: _selectedDate != null && _errorMessage == null
+                      ? () => Navigator.of(context).pop(_selectedDate)
+                      : null,
+                  child: Text(
+                    'OK',
+                    style: TextStyle(
+                      color: _selectedDate != null && _errorMessage == null
+                          ? const Color(0xFFE8B36A)
+                          : const Color(0xFF6B5A7F),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DialogDateFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    String digits = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
+
+    if (digits.length > 8) {
+      digits = digits.substring(0, 8);
+    }
+
+    String formatted = '';
+    for (int i = 0; i < digits.length; i++) {
+      if (i == 2 || i == 4) {
+        formatted += '/';
+      }
+      formatted += digits[i];
+    }
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}

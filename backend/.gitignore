@@ -1,0 +1,28 @@
+# --- Python Environment ---
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# --- Sensitive Data---
+.env
+firebase-admin-key.json
+
+# --- Local Databases ---
+chroma_data/
+*.db
+*.sqlite3
+
+# --- Data Preparation Artifacts ---
+data/processed/*.csv
+!data/processed/.gitkeep
+# Firebase & Secrets
+firebase-admin-key.json
+firebase-key.json
+.env
+.venv/
+venv/
+
+# Python artifacts
+__pycache__/
+*.pyc

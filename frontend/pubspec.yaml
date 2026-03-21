@@ -1,23 +1,46 @@
-name: frontend
-description: "GrowIse - Child Growth Tracking App"
-publish_to: 'none'
-
+name: growise
+description: "Growise - Child Growth & Health App"
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.11.0
+  sdk: ^3.10.0
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  # HTTP calls to backend
-  http: ^1.2.0
-  # Charts
-  fl_chart: ^0.68.0
+  permission_handler: ^11.3.1
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.9.4
+
+  # State management + navigation + DI
+  get: ^4.6.6
+
   # Firebase
   firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
   cloud_firestore: ^5.4.4
+  firebase_storage: ^12.3.2
+
+  # HTTP
+  dio: ^5.7.0
+  http: ^1.2.2
+
+  # URL + video
+  url_launcher: ^6.3.1
+  video_player: ^2.9.2
+
+  # Charts
+  fl_chart: ^0.69.0
+
+  # Connectivity
+  connectivity_plus: ^6.1.0
+
+  # Utils
+  intl: ^0.19.0
+  shared_preferences: ^2.3.3
+  provider: ^6.1.5+1
 
 dev_dependencies:
   flutter_test:
@@ -26,3 +49,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/animations/

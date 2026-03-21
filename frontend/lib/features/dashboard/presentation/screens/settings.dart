@@ -1,0 +1,1074 @@
+import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 🚀 ENTRY POINT  ←── THIS WAS MISSING — caused "Undefined name 'main'" error
+// ─────────────────────────────────────────────────────────────────────────────
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(const MyApp());
+}
+
+class DefaultFirebaseOptions {
+  static FirebaseOptions? get currentPlatform => null;
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: AppColors.bg,
+        primaryColor: AppColors.primary,
+        colorScheme: const ColorScheme.dark(
+          primary: AppColors.primary,
+          secondary: AppColors.accent,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: AppColors.primary,
+          elevation: 0,
+        ),
+      ),
+      home: const LoginScreen(),
+    );
+  }
+}
+
+// ── App Colors ────────────────────────────────────────────────────────────────
+class AppColors {
+  static const bg = Color(0xFF140824);
+  static const card = Color(0xFF1E0E34);
+  static const cardDark = Color(0xFF2A0D44);
+  static const primary = Color(0xFF5A1E63);
+  static const accent = Color(0xFFFFB74D);
+}
+
+// ── API Service ───────────────────────────────────────────────────────────────
+class SettingsApiService {
+  static const String _base = 'http://10.0.2.2:8000/api/v1';
+  // iOS simulator  → http://127.0.0.1:8000/api/v1
+  // Real device    → http://YOUR_PC_IP:8000/api/v1
+
+  // ✅ FIXED: was returning Future<String?>? — now correctly Future<String?>
+  static Future<String?> _token() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return null;
+    return user.getIdToken();
+  }
+
+  static Future<Map<String, dynamic>?> getProfile() async {
+    final token = await _token();
+    if (token == null) return null;
+    final res = await http.get(
+      Uri.parse('$_base/profile/me'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    return res.statusCode == 200 ? jsonDecode(res.body) : null;
+  }
+
+  static Future<bool> updateProfile(Map<String, dynamic> data) async {
+    final token = await _token();
+    if (token == null) return false;
+    final res = await http.patch(
+      Uri.parse('$_base/profile/me'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(data),
+    );
+    return res.statusCode == 200;
+  }
+
+  static Future<bool> logout() async {
+    final token = await _token();
+    if (token == null) return false;
+    final res = await http.post(
+      Uri.parse('$_base/auth/logout'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    return res.statusCode == 200;
+  }
+
+  static Future<String?> forgotPassword(String email) async {
+    final res = await http.post(
+      Uri.parse('$_base/auth/forgot-password'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
+    if (res.statusCode == 200) {
+      return jsonDecode(res.body)['reset_link'];
+    }
+    return null;
+  }
+
+  static Future<List<dynamic>> getAccessRequests() async {
+    final token = await _token();
+    if (token == null) return [];
+    final res = await http.get(
+      Uri.parse('$_base/access-requests/'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    return res.statusCode == 200 ? jsonDecode(res.body) : [];
+  }
+
+  static Future<bool> submitAccessRequest(String type, {String? reason}) async {
+    final token = await _token();
+    if (token == null) return false;
+    final res = await http.post(
+      Uri.parse('$_base/access-requests/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'request_type': type, 'reason': reason}),
+    );
+    return res.statusCode == 201;
+  }
+
+  static Future<bool> submitSupportTicket({
+    required String category,
+    required String subject,
+    required String description,
+  }) async {
+    final token = await _token();
+    if (token == null) return false;
+    final res = await http.post(
+      Uri.parse('$_base/support/tickets'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'category': category,
+        'subject': subject,
+        'description': description,
+      }),
+    );
+    return res.statusCode == 201;
+  }
+}
+
+// ── Login Screen ──────────────────────────────────────────────────────────────
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailCtrl = TextEditingController();
+  final _passwordCtrl = TextEditingController();
+  bool _loading = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _passwordCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _login() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailCtrl.text.trim(),
+        password: _passwordCtrl.text,
+      );
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const SettingsScreen()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  void _forgotPassword() {
+    showDialog(context: context, builder: (_) => _ForgotPasswordDialog());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.bg,
+      body: Padding(
+        padding: const EdgeInsets.all(28),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Welcome Back',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 32),
+            _field(_emailCtrl, 'Email', false),
+            const SizedBox(height: 14),
+            _field(_passwordCtrl, 'Password', true),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: _forgotPassword,
+                child: const Text(
+                  'Forgot password?',
+                  style: TextStyle(color: AppColors.accent),
+                ),
+              ),
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                _error!,
+                style: const TextStyle(color: Colors.redAccent, fontSize: 13),
+              ),
+            ],
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: _loading ? null : _login,
+                child: _loading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        'Login',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _field(TextEditingController ctrl, String hint, bool obscure) {
+    return TextField(
+      controller: ctrl,
+      obscureText: obscure,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.white54),
+        filled: true,
+        fillColor: AppColors.cardDark,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+}
+
+// ── Forgot Password Dialog ────────────────────────────────────────────────────
+class _ForgotPasswordDialog extends StatefulWidget {
+  @override
+  State<_ForgotPasswordDialog> createState() => _ForgotPasswordDialogState();
+}
+
+class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
+  final _ctrl = TextEditingController();
+  bool _loading = false;
+  String? _message;
+  bool _success = false;
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _send() async {
+    setState(() {
+      _loading = true;
+      _message = null;
+    });
+    final link = await SettingsApiService.forgotPassword(_ctrl.text.trim());
+    setState(() {
+      _loading = false;
+      if (link != null) {
+        _success = true;
+        _message = 'Reset link sent! Check your email.';
+      } else {
+        _success = false;
+        _message = 'No account found with that email.';
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: AppColors.card,
+      title: const Text(
+        'Forgot Password',
+        style: TextStyle(color: Colors.white),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'Enter your email to receive a reset link.',
+            style: TextStyle(color: Colors.white70, fontSize: 13),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _ctrl,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: 'Email',
+              hintStyle: const TextStyle(color: Colors.white54),
+              filled: true,
+              fillColor: AppColors.cardDark,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+          if (_message != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              _message!,
+              style: TextStyle(
+                color: _success ? Colors.greenAccent : Colors.redAccent,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: _loading ? null : _send,
+          child: _loading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text(
+                  'Send Link',
+                  style: TextStyle(color: AppColors.accent),
+                ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Settings Screen ───────────────────────────────────────────────────────────
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.bg,
+      appBar: AppBar(
+        title: const Text('Settings'),
+        leading: const Icon(Icons.arrow_back),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _label('ACCOUNT MANAGEMENT'),
+            const SizedBox(height: 15),
+            _tile(context, Icons.person_outline, 'Edit Profile', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+              );
+            }),
+            const SizedBox(height: 10),
+            _tile(context, Icons.verified_user_outlined, 'Access Requests', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AccessRequestsScreen()),
+              );
+            }),
+            const SizedBox(height: 35),
+            _label('SUPPORT & SAFETY'),
+            const SizedBox(height: 15),
+            _tile(context, Icons.shield_outlined, 'Help & Recovery', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      const SupportScreen(category: 'account_recovery'),
+                ),
+              );
+            }),
+            const SizedBox(height: 10),
+            _tile(context, Icons.help_outline, 'Support Center', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SupportScreen()),
+              );
+            }),
+            const Spacer(),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: const Icon(Icons.logout),
+                label: const Text(
+                  'Logout',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () => _showLogoutDialog(context),
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: AppColors.bg,
+        selectedItemColor: AppColors.accent,
+        unselectedItemColor: Colors.white60,
+        currentIndex: 4,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.show_chart),
+            label: 'Tracker',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.school), label: 'Education'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.support_agent),
+            label: 'Support',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Widget _label(String text) => Text(
+    text,
+    style: const TextStyle(
+      color: AppColors.accent,
+      fontSize: 12,
+      letterSpacing: 1.5,
+      fontWeight: FontWeight.bold,
+    ),
+  );
+
+  static Widget _tile(
+    BuildContext ctx,
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.cardDark,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: AppColors.accent),
+        ),
+        title: Text(title, style: const TextStyle(color: Colors.white)),
+        trailing: const Icon(Icons.chevron_right, color: Colors.white54),
+        onTap: onTap,
+      ),
+    );
+  }
+
+  static void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColors.card,
+        title: const Text('Logout', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Are you sure you want to logout?',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await SettingsApiService.logout();
+              await FirebaseAuth.instance.signOut();
+              if (context.mounted) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  (route) => false,
+                );
+              }
+            },
+            child: const Text('Logout', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Edit Profile Screen ───────────────────────────────────────────────────────
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key});
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  final _nameCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
+  final _bioCtrl = TextEditingController();
+  bool _loading = true;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _phoneCtrl.dispose();
+    _bioCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _load() async {
+    final profile = await SettingsApiService.getProfile();
+    if (mounted) {
+      setState(() {
+        _nameCtrl.text = profile?['display_name'] ?? '';
+        _phoneCtrl.text = profile?['phone_number'] ?? '';
+        _bioCtrl.text = profile?['bio'] ?? '';
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _save() async {
+    setState(() => _saving = true);
+    final ok = await SettingsApiService.updateProfile({
+      'display_name': _nameCtrl.text,
+      'phone_number': _phoneCtrl.text,
+      'bio': _bioCtrl.text,
+    });
+    if (mounted) {
+      setState(() => _saving = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ok ? 'Profile updated!' : 'Update failed. Try again.'),
+          backgroundColor: ok ? Colors.green : Colors.red,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.bg,
+      appBar: AppBar(title: const Text('Edit Profile')),
+      body: _loading
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.accent),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  _field(_nameCtrl, 'Display Name'),
+                  const SizedBox(height: 14),
+                  _field(_phoneCtrl, 'Phone Number'),
+                  const SizedBox(height: 14),
+                  _field(_bioCtrl, 'Bio', maxLines: 3),
+                  const SizedBox(height: 28),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: _saving ? null : _save,
+                      child: _saving
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                              'Save Changes',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+
+  Widget _field(TextEditingController ctrl, String hint, {int maxLines = 1}) {
+    return TextField(
+      controller: ctrl,
+      maxLines: maxLines,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.white54),
+        filled: true,
+        fillColor: AppColors.cardDark,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+}
+
+// ── Access Requests Screen ────────────────────────────────────────────────────
+class AccessRequestsScreen extends StatefulWidget {
+  const AccessRequestsScreen({super.key});
+  @override
+  State<AccessRequestsScreen> createState() => _AccessRequestsScreenState();
+}
+
+class _AccessRequestsScreenState extends State<AccessRequestsScreen> {
+  List<dynamic> _requests = [];
+  bool _loading = true;
+  final _types = ['data_export', 'account_deletion', 'privacy_report'];
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final data = await SettingsApiService.getAccessRequests();
+    if (mounted) {
+      setState(() {
+        _requests = data;
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _submit(String type) async {
+    final ok = await SettingsApiService.submitAccessRequest(type);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            ok ? 'Request submitted!' : 'Already have a pending request.',
+          ),
+          backgroundColor: ok ? Colors.green : Colors.orange,
+        ),
+      );
+      if (ok) _load();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.bg,
+      appBar: AppBar(title: const Text('Access Requests')),
+      body: _loading
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.accent),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'SUBMIT A REQUEST',
+                    style: TextStyle(
+                      color: AppColors.accent,
+                      fontSize: 12,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  ..._types.map(
+                    (type) => Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.cardDark,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ListTile(
+                          title: Text(
+                            type.replaceAll('_', ' ').toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                            ),
+                          ),
+                          trailing: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () => _submit(type),
+                            child: const Text(
+                              'Request',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'MY REQUESTS',
+                    style: TextStyle(
+                      color: AppColors.accent,
+                      fontSize: 12,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  if (_requests.isEmpty)
+                    const Text(
+                      'No requests yet.',
+                      style: TextStyle(color: Colors.white54),
+                    )
+                  else
+                    ..._requests.map(
+                      (r) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: AppColors.cardDark,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  r['request_type'].toString().replaceAll(
+                                    '_',
+                                    ' ',
+                                  ),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: r['status'] == 'pending'
+                                      ? Colors.orange.withOpacity(0.2)
+                                      : Colors.green.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  r['status'],
+                                  style: TextStyle(
+                                    color: r['status'] == 'pending'
+                                        ? Colors.orange
+                                        : Colors.green,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+    );
+  }
+}
+
+// ── Support Screen ────────────────────────────────────────────────────────────
+class SupportScreen extends StatefulWidget {
+  final String? category;
+  const SupportScreen({super.key, this.category});
+  @override
+  State<SupportScreen> createState() => _SupportScreenState();
+}
+
+class _SupportScreenState extends State<SupportScreen> {
+  final _subjectCtrl = TextEditingController();
+  final _descCtrl = TextEditingController();
+  String _category = 'technical';
+  bool _submitting = false;
+
+  final _categories = [
+    'account_recovery',
+    'billing',
+    'technical',
+    'safety',
+    'privacy',
+    'other',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.category != null) _category = widget.category!;
+  }
+
+  @override
+  void dispose() {
+    _subjectCtrl.dispose();
+    _descCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (_subjectCtrl.text.isEmpty || _descCtrl.text.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please fill all fields.')));
+      return;
+    }
+    setState(() => _submitting = true);
+    final ok = await SettingsApiService.submitSupportTicket(
+      category: _category,
+      subject: _subjectCtrl.text,
+      description: _descCtrl.text,
+    );
+    if (mounted) {
+      setState(() => _submitting = false);
+      if (ok) {
+        _subjectCtrl.clear();
+        _descCtrl.clear();
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            ok
+                ? "Ticket submitted! We'll respond within 24h."
+                : 'Failed. Try again.',
+          ),
+          backgroundColor: ok ? Colors.green : Colors.red,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.bg,
+      appBar: AppBar(title: const Text('Support Center')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'SUBMIT A TICKET',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 12,
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: AppColors.cardDark,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _category,
+                  dropdownColor: AppColors.card,
+                  isExpanded: true,
+                  style: const TextStyle(color: Colors.white),
+                  items: _categories
+                      .map(
+                        (c) => DropdownMenuItem(
+                          value: c,
+                          child: Text(
+                            c.replaceAll('_', ' ').toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (v) => setState(() => _category = v!),
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+            _field(_subjectCtrl, 'Subject'),
+            const SizedBox(height: 14),
+            _field(_descCtrl, 'Describe your issue...', maxLines: 5),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: _submitting ? null : _submit,
+                child: _submitting
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        'Submit Ticket',
+                        style: TextStyle(color: Colors.white),
+                      ),
+              ),
+            ),
+            const SizedBox(height: 32),
+            const Text(
+              'CONTACT US',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 12,
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 14),
+            _contactTile(Icons.phone_rounded, 'Helpline', '+94 11 234 5678'),
+            const SizedBox(height: 10),
+            _contactTile(Icons.email_outlined, 'Email', 'support@childcare.lk'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _field(TextEditingController ctrl, String hint, {int maxLines = 1}) {
+    return TextField(
+      controller: ctrl,
+      maxLines: maxLines,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.white54),
+        filled: true,
+        fillColor: AppColors.cardDark,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+
+  Widget _contactTile(IconData icon, String label, String value) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.cardDark,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: AppColors.accent, size: 20),
+          ),
+          const SizedBox(width: 14),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(color: Colors.white54, fontSize: 12),
+              ),
+              Text(
+                value,
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

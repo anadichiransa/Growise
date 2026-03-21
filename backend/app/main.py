@@ -1,12 +1,11 @@
+from dotenv import load_dotenv
+load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api import growth, who_standards
+from app.api.v1 import children  
 
-app = FastAPI(
-    title="GrowIse API",
-    description="Backend for GrowIse Flutter app",
-    version="1.0.0",
-)
+app = FastAPI(title="Growise API")
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,9 +15,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(growth.router,        prefix="/growth", tags=["Growth Tracker"])
-app.include_router(who_standards.router, prefix="/who",    tags=["WHO Standards"])
+app.include_router(children.router, prefix="/api/v1")
 
 @app.get("/")
-def root():
-    return {"status": "ok", "message": "GrowIse API is running"}
+def read_root():
+    return {"message": "Growise API is running"}

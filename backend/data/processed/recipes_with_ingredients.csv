@@ -1,0 +1,51 @@
+recipe_name,ingredients,category,preparation,texture_tags,ingredients_array,ingredient_count
+Well-mashed Rice,"rice, expressed breast milk",Main,Boil and mash,smooth_puree,"['rice', 'breast_milk']",2
+Dhal Puree,"red lentils, turmeric, water",Main,Boil and blend,smooth_puree,"['red_lentils', 'turmeric', 'water']",3
+Mashed Pumpkin,"pumpkin, coconut milk",Vegetable,Steam and mash,smooth_puree,"['pumpkin', 'coconut_milk']",2
+Carrot Mash,"carrot, water",Vegetable,Boil and mash,smooth_puree,"['carrot', 'water']",2
+Papaya Puree,ripe papaya,Fruit,Mash with fork,smooth_puree,['papaya'],1
+Banana Mash,ripe ambul banana,Fruit,Mash with fork,smooth_puree,['ripe ambul banana'],1
+Avocado Cream,"ripe avocado, breast milk",Fruit,Mash,smooth_puree,"['avocado', 'breast_milk']",2
+Rice and Dhal Mix,"rice, red lentils, carrot",Main,Boil together and mash,well_mashed,"['rice', 'red_lentils', 'carrot']",3
+Sprats Powder Rice,"rice, dried sprats powder, pumpkin",Main,Boil and mash,well_mashed,"['rice', 'dried sprats powder', 'pumpkin']",3
+Fish and Rice Mash,"rice, thalapath fish, gotukola",Main,Boil and mash,well_mashed,"['rice', 'fish', 'gotukola']",3
+Sweet Potato Mash,"sweet potato, coconut milk",Vegetable,Boil and mash,well_mashed,"['sweet_potato', 'coconut_milk']",2
+Gotukola Rice,"rice, gotukola, coconut milk",Main,Boil and finely chop,well_mashed,"['rice', 'gotukola', 'coconut_milk']",3
+Chicken Puree,"chicken breast, potato, carrot",Main,Boil and blend,smooth_puree,"['chicken', 'potato', 'carrot']",3
+Egg Yolk Mash,"boiled egg yolk, rice",Main,Mash with rice,well_mashed,"['egg_yolk', 'rice']",2
+Mashed Jak,"ripe jakfruit, coconut milk",Main,Boil and mash,coarsely_chopped,"['jakfruit', 'coconut_milk']",2
+Breadfruit Mash,"breadfruit, turmeric, coconut milk",Main,Boil and mash,coarsely_chopped,"['breadfruit', 'turmeric', 'coconut_milk']",3
+Soft Hopper Center,"rice flour, coconut milk",Snack,Steam,finger_food,"['rice_flour', 'coconut_milk']",2
+Bread and Butter,"white bread, unsalted butter",Snack,Remove crusts,finger_food,"['bread', 'butter']",2
+Boiled Potato Cubes,"potato, turmeric",Snack,Boil and cube,finger_food,"['potato', 'turmeric']",2
+Vegetable Soup,"carrot, leeks, potato, beans",Soup,Boil and strain,liquid,"['carrot', 'leeks', 'potato', 'beans']",4
+Kanda (Rice Porridge),"rice, red rice, coconut milk",Main,Boil until soft,smooth_puree,"['rice', 'red_rice', 'coconut_milk']",3
+Mung Bean Mash,"green gram, rice",Main,Boil and mash,well_mashed,"['mung_beans', 'rice']",2
+Thabbila (King Coconut),king coconut water,Drink,Fresh,liquid,['king_coconut_water'],1
+Steamed Apple,"apple, cinnamon",Fruit,Steam and puree,smooth_puree,"['apple', 'cinnamon']",2
+Beetroot Mash,"beetroot, potato",Vegetable,Boil and mash,well_mashed,"['beetroot', 'potato']",2
+Liver and Rice,"chicken liver, rice, pumpkin",Main,Boil and mash,well_mashed,"['chicken_liver', 'rice', 'pumpkin']",3
+Curd and Banana,"curd, ripe banana",Snack,Mix and mash,well_mashed,"['curd', 'banana']",2
+Yoghurt,plain yoghurt,Snack,Serve chilled,smooth_puree,['yoghurt'],1
+Scrambled Egg,"egg, coconut milk",Main,Soft scramble,well_mashed,"['egg', 'coconut_milk']",2
+Milk Rice (Kiribath),"white rice, coconut milk",Main,Boil soft,well_mashed,"['white rice', 'coconut_milk']",2
+Vegetable Omelet,"egg, finely chopped carrots, leeks",Main,Pan fry soft,coarsely_chopped,"['egg', 'finely chopped carrots', 'leeks']",3
+Red Rice and Fish,"red rice, tuna, beans",Main,Boil and chop,coarsely_chopped,"['red_rice', 'tuna', 'beans']",3
+Dhal and Spinach,"red lentils, spinach, coconut milk",Vegetable,Boil,coarsely_chopped,"['red_lentils', 'spinach', 'coconut_milk']",3
+Beef and Potato Stew,"beef mince, potato, carrot",Main,Slow cook and mash,coarsely_chopped,"['beef mince', 'potato', 'carrot']",3
+Chickpea Mash,"boiled chickpeas, coconut",Snack,Mash well,coarsely_chopped,"['boiled chickpeas', 'coconut']",2
+Semolina Porridge,"semolina, milk, cardamom",Main,Boil,smooth_puree,"['semolina', 'milk', 'cardamom']",3
+Oats and Banana,"oats, milk, banana",Main,Boil,smooth_puree,"['oats', 'milk', 'banana']",3
+Stewed Pears,"pears, water",Fruit,Simmer,smooth_puree,"['pears', 'water']",2
+Minced Chicken Pasta,"pasta, chicken mince, tomato",Main,Boil soft,coarsely_chopped,"['pasta', 'chicken mince', 'tomato']",3
+Tofu and Veggie Mix,"soft tofu, beans, carrot",Main,Steam,coarsely_chopped,"['soft tofu', 'beans', 'carrot']",3
+String Hopper Mash,"rice string hoppers, dhal curry",Main,Mash together,well_mashed,"['rice string hoppers', 'dhal curry']",2
+Mashed Beans,"green beans, coconut milk",Vegetable,Boil and mash,well_mashed,"['beans', 'coconut_milk']",2
+Sago Pudding,"sago, coconut milk",Snack,Boil,smooth_puree,"['sago', 'coconut_milk']",2
+Fish Cutlet (Baked),"fish, potato, breadcrumbs",Snack,Bake soft,finger_food,"['fish', 'potato', 'breadcrumbs']",3
+Scraped Coconut Rice,"rice, fresh coconut",Main,Mix,coarsely_chopped,"['rice', 'fresh coconut']",2
+Pumpkin Soup,"pumpkin, onion, garlic",Soup,Blend,smooth_puree,"['pumpkin', 'onion', 'garlic']",3
+Papaya Cubes,ripe papaya,Fruit,Slice,finger_food,['papaya'],1
+Mango Puree,ripe mango,Fruit,Blend,smooth_puree,['ripe mango'],1
+Soft Roti Pieces,"wheat flour, coconut, water",Main,Tear into bits,finger_food,"['wheat flour', 'coconut', 'water']",3
+Cheese and Bread,"bread, cheddar cheese",Snack,Melt lightly,finger_food,"['bread', 'cheddar cheese']",2
