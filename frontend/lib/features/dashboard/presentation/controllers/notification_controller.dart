@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import '../../../data/models/notification_model.dart';
-import '../../../data/repositories/notification_repository.dart';
+import '../../data/models/notification_model.dart';
+import '../../data/repositories/notification_repository.dart';
  
 class NotificationController extends GetxController {
   final NotificationRepository _repo;
@@ -64,7 +64,7 @@ class NotificationController extends GetxController {
       debugPrint('NotificationController.clearAll: $e');
     });
   }
-  
+
   Future<void> refresh() async {
     await loadNotifications();
   }

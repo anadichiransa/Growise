@@ -8,6 +8,7 @@ import '../widgets/vaccine_details_sheet.dart';
 import 'package:growise/features/profile/presentation/controllers/child_controller.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../dashboard/data/services/vaccine_notification_generator.dart';
 
 class VaccineScheduleScreen extends StatefulWidget {
   const VaccineScheduleScreen({super.key});
