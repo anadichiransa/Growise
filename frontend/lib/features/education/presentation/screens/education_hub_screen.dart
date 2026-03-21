@@ -239,10 +239,13 @@ class _EducationHubScreenState extends State<EducationHubScreen> {
         height: 200,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [const Color(0xFF1E0E34), const Color(0xFF1A0E4E)],
+          image: DecorationImage(
+            image: const AssetImage('assets/images/education.png'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withOpacity(0.5),
+              BlendMode.darken,
+            ),
           ),
           border: Border.all(color: Colors.white10),
         ),
@@ -260,7 +263,7 @@ class _EducationHubScreenState extends State<EducationHubScreen> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF7C4DFF).withOpacity(0.3),
+                      color: Color.fromARGB(255, 44, 33, 79),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: const Color(0xFF7C4DFF),
@@ -292,7 +295,10 @@ class _EducationHubScreenState extends State<EducationHubScreen> {
                     article.summary,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white60, fontSize: 12),
+                    style: const TextStyle(
+                      color: Color.fromARGB(253, 255, 255, 255),
+                      fontSize: 12,
+                    ),
                   ),
                   const Spacer(),
                   Row(
@@ -300,7 +306,7 @@ class _EducationHubScreenState extends State<EducationHubScreen> {
                       Text(
                         'Read Guide',
                         style: TextStyle(
-                          color: Color(0xFF7C4DFF),
+                          color: Color.fromARGB(255, 23, 17, 42),
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
@@ -308,7 +314,7 @@ class _EducationHubScreenState extends State<EducationHubScreen> {
                       SizedBox(width: 4),
                       Icon(
                         Icons.arrow_forward,
-                        color: Color(0xFF7C4DFF),
+                        color: Color.fromARGB(255, 23, 17, 42),
                         size: 14,
                       ),
                     ],
