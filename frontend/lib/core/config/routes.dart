@@ -38,7 +38,7 @@ class AppRoutes {
   static const education = '/education';
   static const notification = '/notification';
   static const settings = '/settings';
-  static const help = '/help'
+  static const help = '/help';
 
   static final pages = [
     GetPage(name: welcome, page: () => const OnboradingScreen()),
