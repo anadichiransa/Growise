@@ -73,7 +73,7 @@ class _SignupFormScreenState extends State<SignupFormScreen> {
               primary: Color(0xFFE8B36A),
               onPrimary: Color(0xFF1E1335),
               surface: Color(0xFF2D1F4A),
-              onSurface: Color(0xFF2D1F4A),
+              onSurface: Color(0xFFE8B36A),
             ),
             textTheme: const TextTheme(
               headlineMedium: TextStyle(color: Colors.white),
