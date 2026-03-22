@@ -23,3 +23,7 @@ app.include_router(vaccines.router, prefix="/api/v1")
 @app.get("/")
 def read_root():
     return {"message": "Growise API is running"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "version": "1.0.0"}
