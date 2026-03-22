@@ -18,7 +18,7 @@ chroma_data/
 data/processed/*.csv
 !data/processed/.gitkeep
 # Firebase & Secrets
-firebase-admin-key.json
+firebase-key.json
 .env
 .venv/
 venv/
