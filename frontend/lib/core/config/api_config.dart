@@ -8,6 +8,5 @@ class ApiConfig {
     return "http://127.0.0.1:8000/api/v1";
   }
 
-  // ADD THIS:
   static const int timeoutMs = 30000;
 }

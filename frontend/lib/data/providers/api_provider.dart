@@ -1,19 +1,19 @@
 import 'package:dio/dio.dart';
+import '../../core/config/api_config.dart';
 
 class ApiProvider {
   final Dio _dio;
 
-  static const String baseUrl =
-      'http://10.0.2.2:8000/api/v1'; // Android emulator
-  // Use 'http://localhost:8000/api/v1' for web/desktop
-
   ApiProvider()
-      : _dio = Dio(BaseOptions(
-          baseUrl: baseUrl,
-          connectTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 10),
-          headers: {'Content-Type': 'application/json'},
-        ));
+      : _dio = Dio(
+          BaseOptions(
+            baseUrl: ApiConfig.baseUrl,
+            connectTimeout: Duration(milliseconds: ApiConfig.timeoutMs),
+            receiveTimeout: Duration(milliseconds: ApiConfig.timeoutMs),
+            sendTimeout: Duration(milliseconds: ApiConfig.timeoutMs),
+            headers: {'Content-Type': 'application/json'},
+          ),
+        );
 
   // ── Auth ──────────────────────────────────────────────
   Future<Response> login(Map<String, dynamic> data) async {

@@ -128,8 +128,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     }
   }
 
-  GrowthRecord? get _latestRecord =>
-      _records.isNotEmpty ? _records.first : null;
+  GrowthRecord? get _latestRecord => _records.isNotEmpty ? _records.first : null;
 
   String get _currentStatus => _latestRecord?.category ?? 'unknown';
 
@@ -185,10 +184,10 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
                     () {
                       if (Navigator.canPop(context)) {
                         Navigator.pop(context);
-                        } else {
-                          Get.offNamed(AppRoutes.dashboard);
-                        }
-                      },
+                      } else {
+                        Get.offNamed(AppRoutes.dashboard);
+                      }
+                    },
                   ),
                   Expanded(
                     child: Text(
@@ -279,12 +278,10 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
         children: [
           StatusBanner(status: _currentStatus, summary: _summary),
           const SizedBox(height: 16),
-
           if (_latestRecord != null) ...[
             _buildLatestCallout(),
             const SizedBox(height: 16),
           ],
-
           Container(
             decoration: BoxDecoration(
               color: const Color(0xFF3B1B45),
@@ -306,7 +303,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
             ),
           ),
           const SizedBox(height: 16),
-
           SizedBox(
             height: 340,
             child: TabBarView(
@@ -314,20 +310,16 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
               children: [
                 _buildChartCard(
                   'WEIGHT-FOR-AGE WHO STANDARDS',
-                  'kg',
                   _buildWeightChartData(),
                 ),
                 _buildChartCard(
                   'HEIGHT-FOR-AGE WHO STANDARDS',
-                  'cm',
                   _buildHeightChartData(),
                 ),
               ],
             ),
           ),
-
           const SizedBox(height: 16),
-
           if (_records.isEmpty) ...[
             Container(
               width: double.infinity,
@@ -364,17 +356,14 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
             ),
             const SizedBox(height: 16),
           ],
-
           if (_latestRecord != null) ...[
             _buildMetricsCard(),
             const SizedBox(height: 16),
           ],
-
           if (_recommendations.isNotEmpty) ...[
             _buildRecommendationsCard(),
             const SizedBox(height: 16),
           ],
-
           ElevatedButton.icon(
             onPressed: () async {
               await Navigator.push(
@@ -405,7 +394,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
             ),
           ),
           const SizedBox(height: 12),
-
           OutlinedButton.icon(
             onPressed: () {
               Navigator.push(
@@ -436,7 +424,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
               ),
             ),
           ),
-
           const SizedBox(height: 30),
         ],
       ),
@@ -526,7 +513,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     );
   }
 
-  Widget _buildChartCard(String title, String unit, LineChartData chartData) {
+  Widget _buildChartCard(String title, LineChartData chartData) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -552,10 +539,11 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
             spacing: 12,
             runSpacing: 8,
             children: [
-              _legendItem('Baby', const Color(0xFFFFFFFF)),
-              _legendItem('+2 SD', const Color(0xFFD9A577)),
+              _legendBand('Red zone', const Color(0xFFE53935)),
+              _legendBand('Yellow zone', const Color(0xFFF4C542)),
+              _legendBand('Healthy', const Color(0xFF81C784)),
               _legendDashed('Median'),
-              _legendItem('-2 SD', const Color(0xFFD9A577)),
+              _legendItem('Baby', Colors.white),
             ],
           ),
         ],
@@ -672,7 +660,12 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     for (final r in _records.reversed) {
       babySpots.add(FlSpot(_calculateAgeInMonths(r.date).toDouble(), r.weight));
     }
-    return _buildRefChartData(babySpots, _weightRef, 0, 20);
+    return _buildRefChartData(
+      babySpots,
+      _weightRef,
+      0,
+      20,
+    );
   }
 
   LineChartData _buildHeightChartData() {
@@ -680,7 +673,12 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     for (final r in _records.reversed) {
       babySpots.add(FlSpot(_calculateAgeInMonths(r.date).toDouble(), r.height));
     }
-    return _buildRefChartData(babySpots, _heightRef, 40, 110);
+    return _buildRefChartData(
+      babySpots,
+      _heightRef,
+      40,
+      110,
+    );
   }
 
   LineChartData _buildRefChartData(
@@ -689,41 +687,163 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     double minY,
     double maxY,
   ) {
-    final plus2Spots =
-        ref.entries.map((e) => FlSpot(e.key.toDouble(), e.value[2])).toList();
-    final medianSpots =
-        ref.entries.map((e) => FlSpot(e.key.toDouble(), e.value[1])).toList();
-    final minus2Spots =
-        ref.entries.map((e) => FlSpot(e.key.toDouble(), e.value[0])).toList();
+    final minus2 = <FlSpot>[];
+    final minus1 = <FlSpot>[];
+    final median = <FlSpot>[];
+    final plus1 = <FlSpot>[];
+    final plus2 = <FlSpot>[];
+    final minus3 = <FlSpot>[];
+    final plus3 = <FlSpot>[];
+
+    for (final e in ref.entries) {
+      final x = e.key.toDouble();
+      final m2 = e.value[0];
+      final med = e.value[1];
+      final p2 = e.value[2];
+
+      final sdStep = (p2 - med) / 2.0;
+
+      final m1 = med - sdStep;
+      final p1 = med + sdStep;
+      final m3 = m2 - sdStep;
+      final p3 = p2 + sdStep;
+
+      minus3.add(FlSpot(x, m3));
+      minus2.add(FlSpot(x, m2));
+      minus1.add(FlSpot(x, m1));
+      median.add(FlSpot(x, med));
+      plus1.add(FlSpot(x, p1));
+      plus2.add(FlSpot(x, p2));
+      plus3.add(FlSpot(x, p3));
+    }
+
+    final lineBars = <LineChartBarData>[
+      // 0 - minus3
+      LineChartBarData(
+        spots: minus3,
+        isCurved: true,
+        color: Colors.transparent,
+        barWidth: 0,
+        dotData: FlDotData(show: false),
+      ),
+
+      // 1 - minus2
+      LineChartBarData(
+        spots: minus2,
+        isCurved: true,
+        color: const Color(0xFFCC3D2E),
+        barWidth: 1.6,
+        dotData: FlDotData(show: false),
+      ),
+
+      // 2 - minus1
+      LineChartBarData(
+        spots: minus1,
+        isCurved: true,
+        color: const Color(0xFFE7C34A),
+        barWidth: 1.2,
+        dotData: FlDotData(show: false),
+      ),
+
+      // 3 - median
+      LineChartBarData(
+        spots: median,
+        isCurved: true,
+        color: Colors.white54,
+        barWidth: 1.2,
+        dashArray: [6, 4],
+        dotData: FlDotData(show: false),
+      ),
+
+      // 4 - plus1
+      LineChartBarData(
+        spots: plus1,
+        isCurved: true,
+        color: const Color(0xFF98D89B),
+        barWidth: 1.0,
+        dotData: FlDotData(show: false),
+      ),
+
+      // 5 - plus2
+      LineChartBarData(
+        spots: plus2,
+        isCurved: true,
+        color: const Color(0xFFD9A577),
+        barWidth: 1.8,
+        dotData: FlDotData(show: false),
+      ),
+
+      // 6 - plus3
+      LineChartBarData(
+        spots: plus3,
+        isCurved: true,
+        color: const Color(0xFFD9A577).withOpacity(0.85),
+        barWidth: 1.2,
+        dotData: FlDotData(show: false),
+      ),
+
+      // 7 - baby line
+      LineChartBarData(
+        spots: babySpots,
+        isCurved: true,
+        color: Colors.white,
+        barWidth: 2.8,
+        dotData: FlDotData(
+          show: true,
+          getDotPainter: (_, __, ___, ____) => FlDotCirclePainter(
+            radius: 5,
+            color: Colors.white,
+            strokeWidth: 2,
+            strokeColor: const Color(0xFF1B0B3B),
+          ),
+        ),
+      ),
+    ];
 
     return LineChartData(
+      minX: 0,
+      maxX: 36,
       minY: minY,
       maxY: maxY,
       gridData: FlGridData(
         show: true,
-        drawVerticalLine: false,
-        horizontalInterval: (maxY - minY) / 5,
-        getDrawingHorizontalLine: (_) =>
-            FlLine(color: Colors.white.withOpacity(0.06), strokeWidth: 1),
+        drawVerticalLine: true,
+        horizontalInterval: (maxY - minY) / 6,
+        verticalInterval: 3,
+        getDrawingHorizontalLine: (_) => FlLine(
+          color: Colors.white.withOpacity(0.08),
+          strokeWidth: 1,
+        ),
+        getDrawingVerticalLine: (_) => FlLine(
+          color: Colors.white.withOpacity(0.05),
+          strokeWidth: 1,
+        ),
       ),
       titlesData: FlTitlesData(
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            reservedSize: 32,
+            reservedSize: 34,
+            interval: (maxY - minY) / 5,
             getTitlesWidget: (value, _) => Text(
               value.toInt().toString(),
-              style: const TextStyle(color: Colors.white38, fontSize: 10),
+              style: const TextStyle(
+                color: Colors.white54,
+                fontSize: 10,
+              ),
             ),
           ),
         ),
         bottomTitles: AxisTitles(
-          axisNameWidget: const Text(
-            'AGE (MONTHS)',
-            style: TextStyle(
-              color: Colors.white38,
-              fontSize: 9,
-              letterSpacing: 1,
+          axisNameWidget: const Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: Text(
+              'AGE (MONTHS)',
+              style: TextStyle(
+                color: Colors.white38,
+                fontSize: 10,
+                letterSpacing: 1,
+              ),
             ),
           ),
           sideTitles: SideTitles(
@@ -732,12 +852,19 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
             interval: 6,
             getTitlesWidget: (value, _) => Text(
               '${value.toInt()}m',
-              style: const TextStyle(color: Colors.white38, fontSize: 10),
+              style: const TextStyle(
+                color: Colors.white54,
+                fontSize: 10,
+              ),
             ),
           ),
         ),
-        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        topTitles: AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
       ),
       borderData: FlBorderData(
         show: true,
@@ -746,63 +873,62 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           bottom: BorderSide(color: Colors.white.withOpacity(0.15)),
         ),
       ),
-      lineBarsData: [
-        LineChartBarData(
-          spots: plus2Spots,
-          isCurved: true,
-          color: const Color(0xFFD9A577),
-          barWidth: 1.5,
-          dotData: FlDotData(show: false),
-          belowBarData: BarAreaData(show: false),
+
+      betweenBarsData: [
+        // red zone: -3SD to -2SD
+        BetweenBarsData(
+          fromIndex: 0,
+          toIndex: 1,
+          color: const Color(0xFFE53935).withOpacity(0.55),
         ),
-        LineChartBarData(
-          spots: medianSpots,
-          isCurved: true,
-          color: Colors.white38,
-          barWidth: 1,
-          dashArray: [6, 4],
-          dotData: FlDotData(show: false),
-          belowBarData: BarAreaData(show: false),
+
+        // yellow zone: -2SD to -1SD
+        BetweenBarsData(
+          fromIndex: 1,
+          toIndex: 2,
+          color: const Color(0xFFF4C542).withOpacity(0.72),
         ),
-        LineChartBarData(
-          spots: minus2Spots,
-          isCurved: true,
-          color: const Color(0xFFD9A577),
-          barWidth: 1.5,
-          dotData: FlDotData(show: false),
-          belowBarData: BarAreaData(show: false),
+
+        // healthy lower green: -1SD to median
+        BetweenBarsData(
+          fromIndex: 2,
+          toIndex: 3,
+          color: const Color(0xFFB7E4A8).withOpacity(0.50),
         ),
-        LineChartBarData(
-          spots: babySpots,
-          isCurved: true,
-          color: Colors.white,
-          barWidth: 2.5,
-          dotData: FlDotData(
-            show: true,
-            getDotPainter: (_, __, ___, ____) => FlDotCirclePainter(
-              radius: 5,
-              color: Colors.white,
-              strokeWidth: 2,
-              strokeColor: const Color(0xFF1B0B3B),
-            ),
-          ),
-          belowBarData: BarAreaData(show: false),
+
+        // healthy upper green: median to +1SD
+        BetweenBarsData(
+          fromIndex: 3,
+          toIndex: 4,
+          color: const Color(0xFFA8E6A3).withOpacity(0.38),
+        ),
+
+        // upper light zone: +1SD to +2SD
+        BetweenBarsData(
+          fromIndex: 4,
+          toIndex: 5,
+          color: const Color(0xFFE7F5E7).withOpacity(0.12),
         ),
       ],
+
+      lineBarsData: lineBars,
+
       lineTouchData: LineTouchData(
         touchTooltipData: LineTouchTooltipData(
           getTooltipColor: (_) => const Color(0xFF1B0B3B),
-          getTooltipItems: (spots) => spots.map((spot) {
-            if (spot.barIndex != 3) return null;
-            return LineTooltipItem(
-              '${spot.y.toStringAsFixed(1)}\nAge: ${spot.x.toInt()}mo',
-              const TextStyle(
-                color: Color(0xFFD9A577),
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              ),
-            );
-          }).toList(),
+          getTooltipItems: (spots) {
+            return spots.map((spot) {
+              if (spot.barIndex != 7) return null;
+              return LineTooltipItem(
+                '${spot.y.toStringAsFixed(1)}\n${spot.x.toInt()} months',
+                const TextStyle(
+                  color: Color(0xFFD9A577),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              );
+            }).toList();
+          },
         ),
       ),
     );
@@ -844,8 +970,29 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(width: 16, height: 2.5, color: color),
-        const SizedBox(width: 5),
+        Container(width: 18, height: 3, color: color),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white54, fontSize: 10),
+        ),
+      ],
+    );
+  }
+
+  Widget _legendBand(String label, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 14,
+          height: 10,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 6),
         Text(
           label,
           style: const TextStyle(color: Colors.white54, fontSize: 10),
