@@ -34,8 +34,7 @@ jobs:
       
       - name: Run Pytest
         env:
-          # Add any secret environment variables your tests need here
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
-          pytest tests/
+          pytest -m pytest tests/
