@@ -39,6 +39,6 @@ guidelines_collection = client.get_or_create_collection(
 )
 
 # Log on import so you can see the state at startup
-print(f" ChromaDB ready")
+print(" ChromaDB ready")
 print(f"   Recipes:    {recipe_collection.count()} items")
 print(f"   Guidelines: {guidelines_collection.count()} items")

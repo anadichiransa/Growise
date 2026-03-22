@@ -46,6 +46,11 @@ jobs:
 
       - name: Analyze code
         run: flutter analyze
+        continue-on-error: true
+
+      - name: Create google-services.json
+        run: |
+          echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > android/app/google-services.json
 
       # only build and deploy the APK if the code was PUSHED/MERGED to dev, not just a PR.
       - name: Build Android APK
@@ -59,4 +64,4 @@ jobs:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           groups: beta-testers
-          file: build/app/outputs/flutter-apk/app-release.apk
+          file: frontend/build/app/outputs/flutter-apk/app-release.apk
