@@ -26,20 +26,24 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
-
+        run: |
+          pip install -r requirements.txt
+          pip install ruff
+          
       - name: Create Firebase Key File
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}' > firebase-key.json
-
+      
+      - name: Lint with Ruff
+        run: ruff check .
 
       - name: Run Pytest
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           FIREBASE_CREDENTIALS_PATH: ./firebase-key.json
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           USDA_API_KEY: ${{ secrets.USDA_API_KEY }}
