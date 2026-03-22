@@ -45,4 +45,4 @@ jobs:
           USDA_API_KEY: ${{ secrets.USDA_API_KEY }}
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
-          pytest -m pytest tests/
+          pytest -m pytest backend/tests/unit/
