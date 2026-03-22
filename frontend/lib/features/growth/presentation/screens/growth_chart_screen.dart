@@ -9,6 +9,7 @@ import 'package:growise/shared/widgets/common/bottom_nav.dart';
 import 'package:get/get.dart';
 import 'package:growise/core/config/routes.dart';
 import 'package:growise/features/profile/presentation/controllers/child_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class GrowthChartScreen extends StatefulWidget {
   const GrowthChartScreen({super.key});
@@ -90,13 +91,54 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
   void initState() {
     super.initState();
     _childController = Get.find<ChildController>();
-    _dateOfBirth = _childController.child?['birthDate'] != null
-        ? (_childController.child!['birthDate'] as dynamic).toDate()
-        : DateTime(2022, 1, 1);
-    _childId = _childController.childId;
-    _childName = _childController.childName;
     _tabController = TabController(length: 2, vsync: this);
-    _loadRecords();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadWithRetry();
+    });
+  }
+
+  void _loadWithRetry({int attempt = 1}) {
+    final childId = _childController.childId;
+    final childName = _childController.childName;
+    final rawBirthDate = _childController.child?['birthDate'];
+
+    DateTime? birthDate;
+
+    if (rawBirthDate is Timestamp) {
+      birthDate = rawBirthDate.toDate();
+    } else if (rawBirthDate is DateTime) {
+      birthDate = rawBirthDate;
+    } else if (rawBirthDate != null) {
+      try {
+        birthDate = (rawBirthDate as dynamic).toDate();
+      } catch (_) {}
+    }
+
+    if (childId.isNotEmpty && birthDate != null) {
+      if (!mounted) return;
+
+      setState(() {
+        _childId = childId;
+        _childName = childName;
+        _dateOfBirth = birthDate!;
+      });
+
+      _loadRecords();
+    } else if (attempt < 6) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          _loadWithRetry(attempt: attempt + 1);
+        }
+      });
+    } else {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage =
+            'Child profile is not ready yet. Please reopen the screen.';
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -182,11 +224,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
                     Icons.arrow_back,
                     Colors.white12,
                     () {
-                      if (Navigator.canPop(context)) {
-                        Navigator.pop(context);
-                      } else {
-                        Get.offNamed(AppRoutes.dashboard);
-                      }
+                      Get.offNamed(AppRoutes.dashboard);
                     },
                   ),
                   Expanded(
@@ -216,7 +254,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
                           ),
                         ),
                       );
-                      _loadRecords();
+                      _loadWithRetry();
                     },
                   ),
                 ],
@@ -253,7 +291,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: _loadRecords,
+            onPressed: _loadWithRetry,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
               foregroundColor: Colors.black,
@@ -377,7 +415,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
                   ),
                 ),
               );
-              _loadRecords();
+              _loadWithRetry();
             },
             icon: const Icon(Icons.add),
             label: const Text(
@@ -406,7 +444,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
                     dateOfBirth: _dateOfBirth,
                   ),
                 ),
-              ).then((_) => _loadRecords());
+              ).then((_) => _loadWithRetry());
             },
             icon: const Icon(Icons.list_alt, color: Color(0xFFD9A577)),
             label: const Text(
@@ -718,7 +756,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     }
 
     final lineBars = <LineChartBarData>[
-      // 0 - minus3
       LineChartBarData(
         spots: minus3,
         isCurved: true,
@@ -726,8 +763,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
         barWidth: 0,
         dotData: FlDotData(show: false),
       ),
-
-      // 1 - minus2
       LineChartBarData(
         spots: minus2,
         isCurved: true,
@@ -735,8 +770,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
         barWidth: 1.6,
         dotData: FlDotData(show: false),
       ),
-
-      // 2 - minus1
       LineChartBarData(
         spots: minus1,
         isCurved: true,
@@ -744,8 +777,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
         barWidth: 1.2,
         dotData: FlDotData(show: false),
       ),
-
-      // 3 - median
       LineChartBarData(
         spots: median,
         isCurved: true,
@@ -754,8 +785,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
         dashArray: [6, 4],
         dotData: FlDotData(show: false),
       ),
-
-      // 4 - plus1
       LineChartBarData(
         spots: plus1,
         isCurved: true,
@@ -763,8 +792,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
         barWidth: 1.0,
         dotData: FlDotData(show: false),
       ),
-
-      // 5 - plus2
       LineChartBarData(
         spots: plus2,
         isCurved: true,
@@ -772,8 +799,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
         barWidth: 1.8,
         dotData: FlDotData(show: false),
       ),
-
-      // 6 - plus3
       LineChartBarData(
         spots: plus3,
         isCurved: true,
@@ -781,8 +806,6 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
         barWidth: 1.2,
         dotData: FlDotData(show: false),
       ),
-
-      // 7 - baby line
       LineChartBarData(
         spots: babySpots,
         isCurved: true,
@@ -873,46 +896,34 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           bottom: BorderSide(color: Colors.white.withOpacity(0.15)),
         ),
       ),
-
       betweenBarsData: [
-        // red zone: -3SD to -2SD
         BetweenBarsData(
           fromIndex: 0,
           toIndex: 1,
           color: const Color(0xFFE53935).withOpacity(0.55),
         ),
-
-        // yellow zone: -2SD to -1SD
         BetweenBarsData(
           fromIndex: 1,
           toIndex: 2,
           color: const Color(0xFFF4C542).withOpacity(0.72),
         ),
-
-        // healthy lower green: -1SD to median
         BetweenBarsData(
           fromIndex: 2,
           toIndex: 3,
           color: const Color(0xFFB7E4A8).withOpacity(0.50),
         ),
-
-        // healthy upper green: median to +1SD
         BetweenBarsData(
           fromIndex: 3,
           toIndex: 4,
           color: const Color(0xFFA8E6A3).withOpacity(0.38),
         ),
-
-        // upper light zone: +1SD to +2SD
         BetweenBarsData(
           fromIndex: 4,
           toIndex: 5,
           color: const Color(0xFFE7F5E7).withOpacity(0.12),
         ),
       ],
-
       lineBarsData: lineBars,
-
       lineTouchData: LineTouchData(
         touchTooltipData: LineTouchTooltipData(
           getTooltipColor: (_) => const Color(0xFF1B0B3B),
