@@ -3,13 +3,18 @@ name: Growise Frontend CI/CD
 # Only trigger when files inside the 'frontend' folder are changed
 on:
   push:
-    branches: [ dev ]
+    branches: 
+      - dev
+      - main
     paths:
       - 'frontend/**'
   pull_request:
-    branches: [ dev ]
+    branches: 
+      - dev
+      - main
     paths:
       - 'frontend/**'
+  workflow_dispatch:
 
 jobs:
   build_and_deploy_frontend:
@@ -48,10 +53,10 @@ jobs:
         run: flutter build apk --release
 
       - name: Distribute to Beta Testers via Firebase
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}
-          token: ${{ secrets.FIREBASE_TOKEN }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           groups: beta-testers
-          file: frontend/build/app/outputs/flutter-apk/app-release.apk
+          file: build/app/outputs/flutter-apk/app-release.apk
