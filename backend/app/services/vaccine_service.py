@@ -1,5 +1,4 @@
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from firebase_admin import firestore
 from app.models.vaccine import VaccineStatus, SupplementType
 from app.utils.helpers import add_months

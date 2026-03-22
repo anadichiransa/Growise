@@ -1,8 +1,6 @@
 from pydantic import BaseModel
-from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import Optional
-from datetime import date, datetime
 
 
 class ChildCreate(BaseModel):

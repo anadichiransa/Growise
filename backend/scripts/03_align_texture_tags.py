@@ -89,7 +89,7 @@ def main():
     # Unmapped textures — show them so you can add to TEXTURE_MAP
     unmapped = df[df['texture_tag_aligned'].isna()]['texture_raw'].unique()
     if len(unmapped) > 0:
-        print(f"\n⚠️  These texture values were not mapped (defaulting to 'well_mashed'):")
+        print("\n⚠️  These texture values were not mapped (defaulting to 'well_mashed'):")
         for t in unmapped:
             print(f"   '{t}' — add to TEXTURE_MAP if needed")
     df['texture_tag_aligned'] = df['texture_tag_aligned'].fillna('well_mashed')

@@ -158,7 +158,7 @@ def main():
     df = pd.concat([df, nutrition_rows], axis=1)
 
     # Print nutrition summary
-    print(f"\nNutrition averages across all recipes:")
+    print("\nNutrition averages across all recipes:")
     print(f"  Calories:  {df['calories'].mean():.1f} kcal")
     print(f"  Protein:   {df['protein_g'].mean():.1f} g")
     print(f"  Iron:      {df['iron_mg'].mean():.2f} mg")

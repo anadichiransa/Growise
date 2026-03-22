@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import List
-from fastapi import HTTPException, UploadFile, status
+from fastapi import HTTPException, UploadFile
 from firebase_admin import firestore
 from app.models.child import ChildCreate, ChildResponse, ChildSummary
 from app.schemas.child import ChildUpdateRequest

@@ -78,12 +78,12 @@ def main():
         f"{valid_age.sum()}/{len(df)}"
     )
 
-    print(f"\nNutrition summary:")
+    print("\nNutrition summary:")
     print(f"   Calories avg:  {df['calories'].mean():.1f} kcal")
     print(f"   Protein avg:   {df['protein_g'].mean():.1f} g")
     print(f"   Iron avg:      {df['iron_mg'].mean():.2f} mg")
 
-    print(f"\nAge distribution:")
+    print("\nAge distribution:")
     dist = df.groupby('min_age_months').size()
     for age, count in dist.items():
         print(f"   From {age:>2} months: {count} recipes")
