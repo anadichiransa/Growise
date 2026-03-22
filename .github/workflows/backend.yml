@@ -32,10 +32,17 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      
+      - name: Create Firebase Key File
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}' > firebase-key.json
+
+
       - name: Run Pytest
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          FIREBASE_CREDENTIALS_PATH: ./firebase-key.json
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          USDA_API_KEY: ${{ secrets.USDA_API_KEY }}
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           pytest -m pytest tests/
