@@ -92,6 +92,12 @@ jobs:
           pip install -r requirements.txt
           pip install schemathesis
 
+      - name: Create Firebase Key File
+        run: |
+          cat << 'EOF' > firebase-key.json
+          ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          EOF
+
       - name: Run Schemathesis Tests
         env:
           # We need to pass dummy keys so the app can start up
