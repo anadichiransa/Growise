@@ -300,3 +300,130 @@ class _BabyTrackerHomeState extends State<BabyTrackerHome> {
       child: Icon(icon, color: Colors.white),
     );
   }
+Widget _buildBottomNav() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      color: const Color(0xFF140824),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _NavItem(
+            icon: Icons.home_filled,
+            label: "Home",
+            active: true,
+            onTap: () {},
+          ),
+          _NavItem(
+            icon: Icons.show_chart,
+            label: "Tracker",
+            active: false,
+            onTap: () => Get.toNamed('/growth'),
+          ),
+          _NavItem(
+            icon: Icons.school_outlined,
+            label: "Learn",
+            active: false,
+            onTap: () => Get.toNamed('/education'),
+          ),
+          _NavItem(
+            icon: Icons.settings_outlined,
+            label: "Settings",
+            active: false,
+            onTap: () => Get.toNamed('/settings'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Helper Widget: Feature Card (Reusable Component)
+class _FeatureCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _FeatureCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        height: 150,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E0E34),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0x2226D07C),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: const Color(0xFFF6A960), size: 20),
+            ),
+            const Spacer(),
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: const TextStyle(color: Colors.white54, fontSize: 11),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.active,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: active ? const Color(0xFF26D07C) : Colors.white54),
+          Text(
+            label,
+            style: TextStyle(
+              color: active ? const Color(0xFF26D07C) : Colors.white54,
+              fontSize: 10,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
