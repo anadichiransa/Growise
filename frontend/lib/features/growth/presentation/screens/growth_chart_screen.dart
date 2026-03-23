@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
+
 import 'add_measurement_screen.dart';
 import 'saved_measurements_screen.dart';
 import 'package:growise/shared/widgets/common/status_banner.dart';
 import '../controllers/growth_controller.dart';
 import 'package:growise/data/models/growth_record.dart';
 import 'package:growise/shared/widgets/common/bottom_nav.dart';
-import 'package:get/get.dart';
 import 'package:growise/core/config/routes.dart';
 import 'package:growise/features/profile/presentation/controllers/child_controller.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class GrowthChartScreen extends StatefulWidget {
   const GrowthChartScreen({super.key});
@@ -21,11 +22,13 @@ class GrowthChartScreen extends StatefulWidget {
 class _GrowthChartScreenState extends State<GrowthChartScreen>
     with SingleTickerProviderStateMixin {
   late ChildController _childController;
-  late DateTime _dateOfBirth;
-  late String _childId;
-  late String _childName;
-  final GrowthController _controller = GrowthController();
   late TabController _tabController;
+
+  final GrowthController _controller = GrowthController();
+
+  DateTime? _dateOfBirth;
+  String? _childId;
+  String _childName = 'Child';
 
   List<GrowthRecord> _records = [];
   bool _isLoading = true;
@@ -98,6 +101,12 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     });
   }
 
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   void _loadWithRetry({int attempt = 1}) {
     final childId = _childController.childId;
     final childName = _childController.childName;
@@ -120,12 +129,12 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
 
       setState(() {
         _childId = childId;
-        _childName = childName;
-        _dateOfBirth = birthDate!;
+        _childName = childName.isNotEmpty ? childName : 'Child';
+        _dateOfBirth = birthDate;
       });
 
       _loadRecords();
-    } else if (attempt < 6) {
+    } else if (attempt < 8) {
       Future.delayed(const Duration(milliseconds: 300), () {
         if (mounted) {
           _loadWithRetry(attempt: attempt + 1);
@@ -141,29 +150,28 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     }
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
   Future<void> _loadRecords() async {
+    if (_childId == null) return;
+
     setState(() {
       _isLoading = true;
       _errorMessage = '';
     });
 
     try {
-      final records = await _controller.loadRecords(_childId);
+      final records = await _controller.loadRecords(_childId!);
       records.sort((a, b) => b.date.compareTo(a.date));
+      if (!mounted) return;
       setState(() {
         _records = records;
       });
-    } catch (e) {
+    } catch (_) {
+      if (!mounted) return;
       setState(() {
         _errorMessage = 'Failed to load records. Please try again.';
       });
     } finally {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
@@ -191,9 +199,11 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
       _latestRecord == null ? [] : _controller.getRecommendations(_currentStatus);
 
   int _calculateAgeInMonths(DateTime measurementDate) {
-    int months = (measurementDate.year - _dateOfBirth.year) * 12;
-    months += measurementDate.month - _dateOfBirth.month;
-    if (measurementDate.day < _dateOfBirth.day) months--;
+    if (_dateOfBirth == null) return 0;
+
+    int months = (measurementDate.year - _dateOfBirth!.year) * 12;
+    months += measurementDate.month - _dateOfBirth!.month;
+    if (measurementDate.day < _dateOfBirth!.day) months--;
     return months;
   }
 
@@ -209,6 +219,8 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
 
   @override
   Widget build(BuildContext context) {
+    final childReady = _childId != null && _dateOfBirth != null;
+
     return Scaffold(
       backgroundColor: const Color(0xFF1B0B3B),
       bottomNavigationBar: const AppBottomNav(currentIndex: 1),
@@ -223,9 +235,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
                   _circularIconButton(
                     Icons.arrow_back,
                     Colors.white12,
-                    () {
-                      Get.offNamed(AppRoutes.dashboard);
-                    },
+                    () => Get.offNamed(AppRoutes.dashboard),
                   ),
                   Expanded(
                     child: Text(
@@ -243,14 +253,16 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
                     Icons.add,
                     const Color(0xFFD9A577),
                     () async {
+                      if (!childReady) return;
+
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => AddMeasurementScreen(
-                            childId: _childId,
+                            childId: _childId!,
                             childName: _childName,
                             gender: _childController.childGender,
-                            dateOfBirth: _dateOfBirth,
+                            dateOfBirth: _dateOfBirth!,
                           ),
                         ),
                       );
@@ -261,7 +273,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
               ),
             ),
             Expanded(
-              child: _isLoading
+              child: _isLoading || !childReady
                   ? const Center(
                       child: CircularProgressIndicator(
                         color: Color(0xFFD9A577),
@@ -404,14 +416,16 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           ],
           ElevatedButton.icon(
             onPressed: () async {
+              if (_childId == null || _dateOfBirth == null) return;
+
               await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => AddMeasurementScreen(
-                    childId: _childId,
+                    childId: _childId!,
                     childName: _childName,
                     gender: _childController.childGender,
-                    dateOfBirth: _dateOfBirth,
+                    dateOfBirth: _dateOfBirth!,
                   ),
                 ),
               );
@@ -434,14 +448,16 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
           const SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: () {
+              if (_childId == null || _dateOfBirth == null) return;
+
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => SavedMeasurementsScreen(
-                    childId: _childId,
+                    childId: _childId!,
                     childName: _childName,
                     gender: _childController.childGender,
-                    dateOfBirth: _dateOfBirth,
+                    dateOfBirth: _dateOfBirth!,
                   ),
                 ),
               ).then((_) => _loadWithRetry());
@@ -698,12 +714,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     for (final r in _records.reversed) {
       babySpots.add(FlSpot(_calculateAgeInMonths(r.date).toDouble(), r.weight));
     }
-    return _buildRefChartData(
-      babySpots,
-      _weightRef,
-      0,
-      20,
-    );
+    return _buildRefChartData(babySpots, _weightRef, 0, 20);
   }
 
   LineChartData _buildHeightChartData() {
@@ -711,12 +722,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     for (final r in _records.reversed) {
       babySpots.add(FlSpot(_calculateAgeInMonths(r.date).toDouble(), r.height));
     }
-    return _buildRefChartData(
-      babySpots,
-      _heightRef,
-      40,
-      110,
-    );
+    return _buildRefChartData(babySpots, _heightRef, 40, 110);
   }
 
   LineChartData _buildRefChartData(

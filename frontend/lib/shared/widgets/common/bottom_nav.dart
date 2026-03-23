@@ -17,17 +17,22 @@ class AppBottomNav extends StatelessWidget {
       case 0:
         Get.offNamed(AppRoutes.dashboard);
         break;
+
       case 1:
         Get.offNamed(AppRoutes.growth);
         break;
+
       case 2:
         Get.offNamed(AppRoutes.meals);
         break;
+
       case 3:
         Get.offNamed(AppRoutes.vaccines);
         break;
+
+      /// changed profile -> settings page
       case 4:
-        Get.offNamed(AppRoutes.profile);
+        Get.offNamed(AppRoutes.settings);
         break;
     }
   }
@@ -42,11 +47,32 @@ class AppBottomNav extends StatelessWidget {
       unselectedItemColor: Colors.white70,
       type: BottomNavigationBarType.fixed,
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.show_chart), label: 'Growth'),
-        BottomNavigationBarItem(icon: Icon(Icons.restaurant), label: 'Meals'),
-        BottomNavigationBarItem(icon: Icon(Icons.vaccines), label: 'Vaccines'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
+        ),
+
+        BottomNavigationBarItem(
+          icon: Icon(Icons.show_chart),
+          label: 'Growth',
+        ),
+
+        BottomNavigationBarItem(
+          icon: Icon(Icons.restaurant),
+          label: 'Meals',
+        ),
+
+        BottomNavigationBarItem(
+          icon: Icon(Icons.vaccines),
+          label: 'Vaccines',
+        ),
+
+        /// changed icon
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings_outlined),
+          label: 'Settings',
+        ),
       ],
     );
   }

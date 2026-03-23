@@ -4,6 +4,7 @@ from app.routers.help_router import router as help_router
 
 from app.api.v1 import children
 from app.api.v1 import vaccines
+from app.api.v1 import growth
 
 app = FastAPI(title="Growise API")
 
@@ -20,6 +21,7 @@ app.add_middleware(
 app.include_router(help_router, prefix="/api/v1")
 app.include_router(children.router, prefix="/api/v1")
 app.include_router(vaccines.router, prefix="/api/v1")
+app.include_router(growth.router, prefix="/api/v1")
 
 # test route
 @app.get("/")

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:growise/core/config/routes.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -12,15 +13,21 @@ class SettingsScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // App Bar
+
+            // ── APP BAR ─────────────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 16, 0),
               child: Row(
                 children: [
+
+                  // BACK BUTTON FIXED
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => Get.back(),
+
+                    // FIX: go to dashboard instead of Get.back()
+                    onPressed: () => Get.offNamed(AppRoutes.dashboard),
                   ),
+
                   const Text(
                     'Settings',
                     style: TextStyle(
@@ -41,6 +48,7 @@ class SettingsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+
                     // ── ACCOUNT MANAGEMENT ──────────────────────
                     const Text(
                       'ACCOUNT MANAGEMENT',
@@ -51,13 +59,16 @@ class SettingsScreen extends StatelessWidget {
                         letterSpacing: 1.2,
                       ),
                     ),
+
                     const SizedBox(height: 12),
+
                     _buildSection([
                       _SettingsItem(
                         icon: Icons.person_outline,
                         label: 'Edit Profile',
-                        onTap: () => Get.toNamed('/profile'),
+                        onTap: () => Get.toNamed(AppRoutes.profile),
                       ),
+
                       _SettingsItem(
                         icon: Icons.shield_outlined,
                         label: 'Access Requests',
@@ -77,13 +88,16 @@ class SettingsScreen extends StatelessWidget {
                         letterSpacing: 1.2,
                       ),
                     ),
+
                     const SizedBox(height: 12),
+
                     _buildSection([
                       _SettingsItem(
                         icon: Icons.lock_reset_outlined,
                         label: 'Help & Recovery',
                         onTap: () => Get.toNamed('/help'),
                       ),
+
                       _SettingsItem(
                         icon: Icons.headset_mic_outlined,
                         label: 'Support Center',
@@ -96,28 +110,37 @@ class SettingsScreen extends StatelessWidget {
                     // ── LOGOUT ───────────────────────────────────
                     GestureDetector(
                       onTap: () async {
+
                         await FirebaseAuth.instance.signOut();
-                        Get.offAllNamed('/');
+
+                        Get.offAllNamed('/'); // go to login
                       },
+
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 16),
+
                         decoration: BoxDecoration(
                           color: const Color(0xFF1E0E34),
                           borderRadius: BorderRadius.circular(16),
+
                           border: Border.all(
                             color: const Color(0xFF6D4C9C).withOpacity(0.4),
                           ),
                         ),
+
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
+
                           children: [
                             Icon(
                               Icons.logout,
                               color: Color(0xFFD4A96A),
                               size: 20,
                             ),
+
                             SizedBox(width: 8),
+
                             Text(
                               'Logout',
                               style: TextStyle(
@@ -130,6 +153,7 @@ class SettingsScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -142,56 +166,77 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Widget _buildSection(List<_SettingsItem> items) {
+
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF1E0E34),
+
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF6D4C9C).withOpacity(0.3)),
+
+        border: Border.all(
+          color: const Color(0xFF6D4C9C).withOpacity(0.3),
+        ),
       ),
+
       child: Column(
         children: items.asMap().entries.map((entry) {
+
           final index = entry.key;
           final item = entry.value;
+
           return Column(
             children: [
+
               ListTile(
+
                 leading: Container(
                   width: 36,
                   height: 36,
+
                   decoration: BoxDecoration(
                     color: const Color(0xFF2A1245),
+
                     borderRadius: BorderRadius.circular(10),
                   ),
+
                   child: Icon(
                     item.icon,
                     color: const Color(0xFFD4A96A),
                     size: 18,
                   ),
                 ),
+
                 title: Text(
                   item.label,
+
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
+
                 trailing: const Icon(
                   Icons.chevron_right,
                   color: Colors.white38,
                   size: 20,
                 ),
+
                 onTap: item.onTap,
               ),
+
               if (index < items.length - 1)
+
                 const Divider(
                   height: 1,
                   color: Color(0xFF2A1245),
+
                   indent: 16,
                   endIndent: 16,
                 ),
             ],
           );
+
         }).toList(),
       ),
     );
@@ -199,6 +244,7 @@ class SettingsScreen extends StatelessWidget {
 }
 
 class _SettingsItem {
+
   final IconData icon;
   final String label;
   final VoidCallback onTap;
