@@ -1,0 +1,67 @@
+name: Growise Frontend CI/CD
+
+# Only trigger when files inside the 'frontend' folder are changed
+on:
+  push:
+    branches: 
+      - dev
+      - main
+    paths:
+      - 'frontend/**'
+  pull_request:
+    branches: 
+      - dev
+      - main
+    paths:
+      - 'frontend/**'
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy_frontend:
+    runs-on: ubuntu-latest
+    
+    # Tells GitHub to run all commands inside the frontend folder
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java (Required for Android build)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze code
+        run: flutter analyze
+        continue-on-error: true
+
+      - name: Create google-services.json
+        run: |
+          echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > android/app/google-services.json
+
+      # only build and deploy the APK if the code was PUSHED/MERGED to dev, not just a PR.
+      - name: Build Android APK
+        if: github.event_name == 'push'
+        run: flutter build apk --release
+
+      - name: Distribute to Beta Testers via Firebase
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          groups: beta-testers
+          file: frontend/build/app/outputs/flutter-apk/app-release.apk
