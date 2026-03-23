@@ -1,0 +1,41 @@
+# --- Git & CI/CD ---
+.git/
+.gitignore
+.github/
+
+# --- IDEs & OS Files ---
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# --- Python Environment & Caches ---
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Sensitive Data (Security) ---
+.env
+*.json
+!requirements.txt
+# Specifically your Firebase keys
+firebase-admin-key.json
+serviceAccountKey.json
+firebase-key.json
+
+# --- Local Databases & Data ---
+chroma_data/
+*.db
+*.sqlite3
+data/processed/*.csv
+# Ignore any local uploads or temp files
+app/uploads/
+temp/
