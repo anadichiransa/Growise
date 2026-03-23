@@ -1,34 +1,45 @@
-// firestore.rules
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ── Master vaccination schedule ──────────────────────────────
-    // Read-only for all authenticated users. Write only via Admin SDK.
+    // Master vaccination schedule
     match /vaccination_schedule/{vaccineId} {
       allow read: if request.auth != null;
       allow write: if false;
     }
 
-    // ── Per-child records ────────────────────────────────────────
-    // Only the parent who owns the child document can read/write
+    // Child documents
     match /children/{childId} {
       allow read, write: if request.auth != null
-        && request.auth.uid == resource.data.parent_uid;
+        && (
+          request.auth.uid == resource.data.parent_uid ||
+          request.auth.uid == resource.data.parentId
+        );
 
-      // Immunization records sub-collection
       match /immunization_records/{recordId} {
         allow read, write: if request.auth != null
-          && get(/databases/$(database)/documents/children/$(childId))
-              .data.parent_uid == request.auth.uid;
+          && (
+            get(/databases/$(database)/documents/children/$(childId)).data.parent_uid == request.auth.uid ||
+            get(/databases/$(database)/documents/children/$(childId)).data.parentId == request.auth.uid
+          );
       }
 
-      // Supplement records sub-collection
       match /supplement_records/{recordId} {
         allow read, write: if request.auth != null
-          && get(/databases/$(database)/documents/children/$(childId))
-              .data.parent_uid == request.auth.uid;
+          && (
+            get(/databases/$(database)/documents/children/$(childId)).data.parent_uid == request.auth.uid ||
+            get(/databases/$(database)/documents/children/$(childId)).data.parentId == request.auth.uid
+          );
       }
+    }
+
+    // Growth records
+    match /growthRecords/{recordId} {
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid;
+
+      allow read, update, delete: if request.auth != null
+        && resource.data.userId == request.auth.uid;
     }
   }
 }

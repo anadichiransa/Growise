@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../controllers/growth_controller.dart';
 import 'package:growise/shared/widgets/common/bottom_nav.dart';
 
@@ -21,7 +22,8 @@ class AddMeasurementScreen extends StatefulWidget {
 }
 
 class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
-  final GrowthController _controller = GrowthController();
+  // Use Get.find() to get the same controller instance as GrowthChartScreen
+  late GrowthController _controller;
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _weightController = TextEditingController();
@@ -31,6 +33,13 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
   DateTime _selectedDate = DateTime.now();
   String _measuredAt = 'home';
   bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Get the shared GrowthController instance
+    _controller = Get.find<GrowthController>();
+  }
 
   @override
   void dispose() {
@@ -99,7 +108,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to save. Please try again.'),
+            content: Text('❌ Failed to save. Please try again.'),
             backgroundColor: Color(0xFFC62828),
             behavior: SnackBarBehavior.floating,
           ),
@@ -108,9 +117,9 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: const Color(0xFFC62828),
+          const SnackBar(
+            content: Text('⚠️ Invalid input. Please check and try again.'),
+            backgroundColor: Color(0xFFEF6C00),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -122,232 +131,333 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final dateStr =
+        '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}';
+
     return Scaffold(
       backgroundColor: const Color(0xFF1B0B3B),
-      bottomNavigationBar: AppBottomNav(currentIndex: 1),
+      bottomNavigationBar: const AppBottomNav(currentIndex: 1),
       body: SafeArea(
         child: Column(
           children: [
-            // App Bar
             Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _circularIconButton(Icons.arrow_back, Colors.white12, () {
-                    Navigator.pop(context);
-                  }),
-                  const Text(
-                    'Add Measurement',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: const BoxDecoration(
+                        color: Colors.white12,
+                        shape: BoxShape.circle,
+                      ),
+                      child:
+                          const Icon(Icons.arrow_back, color: Colors.white, size: 24),
                     ),
                   ),
-                  const SizedBox(width: 48), // balance the back button
+                  const Expanded(
+                    child: Text(
+                      'Add Measurement',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 44),
                 ],
               ),
             ),
-
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Form(
                   key: _formKey,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 8),
-
-                      // Child name header
-                      Text(
-                        'Recording for ${widget.childName}',
-                        style: const TextStyle(
-                          color: Color(0xFFD9A577),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Date Picker
-                      _sectionLabel('Measurement Date'),
-                      const SizedBox(height: 8),
-                      GestureDetector(
-                        onTap: _pickDate,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 16),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF3B1B45),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 16),
-                              ),
-                              const Icon(Icons.calendar_today,
-                                  color: Color(0xFFD9A577), size: 20),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Weight
-                      _sectionLabel('Weight (kg)'),
-                      const SizedBox(height: 8),
-                      _inputField(
-                        controller: _weightController,
-                        hint: 'e.g. 7.5',
-                        icon: Icons.monitor_weight_outlined,
-                        validator: (val) {
-                          if (val == null || val.isEmpty)
-                            return 'Please enter weight';
-                          final w = double.tryParse(val);
-                          if (w == null || w <= 0)
-                            return 'Enter a valid number';
-                          if (w < 1 || w > 30)
-                            return 'Weight seems unusual — please check';
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Height
-                      _sectionLabel('Height (cm)'),
-                      const SizedBox(height: 8),
-                      _inputField(
-                        controller: _heightController,
-                        hint: 'e.g. 68',
-                        icon: Icons.height,
-                        validator: (val) {
-                          if (val == null || val.isEmpty)
-                            return 'Please enter height';
-                          final h = double.tryParse(val);
-                          if (h == null || h <= 0)
-                            return 'Enter a valid number';
-                          if (h < 40 || h > 150)
-                            return 'Height seems unusual — please check';
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Measured At
-                      _sectionLabel('Measured At'),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _radioOption(
-                                'Home', 'home', Icons.home_outlined),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _radioOption('Clinic', 'clinic',
-                                Icons.local_hospital_outlined),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Notes
-                      _sectionLabel('Notes (optional)'),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _notesController,
-                        maxLines: 3,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: 'Any observations or context...',
-                          hintStyle: const TextStyle(color: Colors.white38),
-                          filled: true,
-                          fillColor: const Color(0xFF3B1B45),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide.none,
-                          ),
-                          contentPadding: const EdgeInsets.all(16),
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // WHO info box
+                      const SizedBox(height: 12),
                       Container(
-                        padding: const EdgeInsets.all(14),
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFD9A577).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                              color: const Color(0xFFD9A577).withOpacity(0.3)),
+                          color: const Color(0xFF3B1B45),
+                          borderRadius: BorderRadius.circular(24),
                         ),
-                        child: const Row(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(Icons.info_outline,
-                                color: Color(0xFFD9A577), size: 18),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                'Measurements are analysed using WHO Child Growth Standards (2006)',
-                                style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 12,
-                                    height: 1.4),
+                            const Text(
+                              'Date of Measurement',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            GestureDetector(
+                              onTap: _pickDate,
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF1B0B3B),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: const Color(0xFFD9A577).withOpacity(0.5),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      dateStr,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.calendar_today,
+                                      color: Color(0xFFD9A577),
+                                      size: 20,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-
-                      const SizedBox(height: 32),
-
-                      // Save Button
+                      const SizedBox(height: 20),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF3B1B45),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Weight (kg)',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              controller: _weightController,
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(decimal: true),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'e.g., 4.5',
+                                hintStyle: TextStyle(color: Colors.white38),
+                                filled: true,
+                                fillColor: const Color(0xFF1B0B3B),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: const Color(0xFFD9A577).withOpacity(0.5),
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: const Color(0xFFD9A577).withOpacity(0.5),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFD9A577),
+                                    width: 2,
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: const BorderSide(color: Colors.red),
+                                ),
+                              ),
+                              validator: (v) {
+                                if (v == null || v.trim().isEmpty) {
+                                  return 'Please enter weight';
+                                }
+                                final parsed = double.tryParse(v.trim());
+                                if (parsed == null || parsed <= 0 || parsed > 40) {
+                                  return 'Enter a valid weight (0-40 kg)';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF3B1B45),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Height (cm)',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              controller: _heightController,
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(decimal: true),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'e.g., 60',
+                                hintStyle: TextStyle(color: Colors.white38),
+                                filled: true,
+                                fillColor: const Color(0xFF1B0B3B),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: const Color(0xFFD9A577).withOpacity(0.5),
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: const Color(0xFFD9A577).withOpacity(0.5),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFD9A577),
+                                    width: 2,
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: const BorderSide(color: Colors.red),
+                                ),
+                              ),
+                              validator: (v) {
+                                if (v == null || v.trim().isEmpty) {
+                                  return 'Please enter height';
+                                }
+                                final parsed = double.tryParse(v.trim());
+                                if (parsed == null || parsed <= 0 || parsed > 200) {
+                                  return 'Enter a valid height (0-200 cm)';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF3B1B45),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Notes (optional)',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextField(
+                              controller: _notesController,
+                              maxLines: 3,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                              decoration: InputDecoration(
+                                hintText:
+                                    'E.g., measured after feeding, baby was calm',
+                                hintStyle: TextStyle(color: Colors.white38),
+                                filled: true,
+                                fillColor: const Color(0xFF1B0B3B),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: const Color(0xFFD9A577).withOpacity(0.5),
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: const Color(0xFFD9A577).withOpacity(0.5),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFD9A577),
+                                    width: 2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 30),
                       ElevatedButton(
                         onPressed: _isSaving ? null : _save,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange,
                           foregroundColor: Colors.black,
-                          minimumSize: const Size(double.infinity, 62),
+                          minimumSize: const Size(double.infinity, 58),
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(35)),
-                          elevation: 8,
-                          disabledBackgroundColor:
-                              Colors.orange.withOpacity(0.4),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          disabledBackgroundColor: Colors.orange.withOpacity(0.5),
                         ),
                         child: _isSaving
                             ? const SizedBox(
                                 height: 24,
                                 width: 24,
                                 child: CircularProgressIndicator(
-                                    color: Colors.black, strokeWidth: 2.5),
+                                  strokeWidth: 2.5,
+                                  color: Colors.black54,
+                                ),
                               )
-                            : const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Save Measurement',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w900),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Icon(Icons.arrow_forward),
-                                ],
+                            : const Text(
+                                'Save Measurement',
+                                style:
+                                    TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                               ),
                       ),
-
                       const SizedBox(height: 30),
                     ],
                   ),
@@ -356,96 +466,6 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _sectionLabel(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        color: Colors.white70,
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-      ),
-    );
-  }
-
-  Widget _inputField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    required String? Function(String?) validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      style: const TextStyle(color: Colors.white, fontSize: 16),
-      validator: validator,
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white38),
-        prefixIcon: Icon(icon, color: const Color(0xFFD9A577), size: 22),
-        filled: true,
-        fillColor: const Color(0xFF3B1B45),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
-        ),
-        errorStyle: const TextStyle(color: Color(0xFFFF7070)),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFFD9A577), width: 1.5),
-        ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-      ),
-    );
-  }
-
-  Widget _radioOption(String label, String value, IconData icon) {
-    final selected = _measuredAt == value;
-    return GestureDetector(
-      onTap: () => setState(() => _measuredAt = value),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-        decoration: BoxDecoration(
-          color: selected
-              ? const Color(0xFFD9A577).withOpacity(0.15)
-              : const Color(0xFF3B1B45),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: selected ? const Color(0xFFD9A577) : Colors.transparent,
-            width: 1.5,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon,
-                color: selected ? const Color(0xFFD9A577) : Colors.white38,
-                size: 20),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: selected ? const Color(0xFFD9A577) : Colors.white54,
-                fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _circularIconButton(IconData icon, Color bgColor, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
-        child: Icon(icon, color: Colors.white, size: 24),
       ),
     );
   }
