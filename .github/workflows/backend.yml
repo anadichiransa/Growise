@@ -58,9 +58,10 @@ jobs:
           cat << 'EOF' > firebase-key.json
           ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           EOF
-                
+
       - name: Lint with Ruff
         run: ruff check .
+             ruff format --check .
 
       - name: Run Pytest
         env:
@@ -71,3 +72,40 @@ jobs:
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           python -m pytest tests/
+
+  schemathesis:
+    needs: test_backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install schemathesis
+
+      - name: Run Schemathesis Tests
+        env:
+          # We need to pass dummy keys so the app can start up
+          FIREBASE_CREDENTIALS_PATH: ./firebase-key.json
+          GROQ_API_KEY: "dummy"
+          USDA_API_KEY: "dummy"
+          FIREBASE_PROJECT_ID: "growise-test"
+        run: |
+          # 1. Start the FastAPI server in the background
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 & 
+          
+          # 2. Wait for the server to be ready
+          sleep 5 
+          
+          # 3. Run Schemathesis against the local server
+          schemathesis run http://localhost:8000/openapi.json --checks all
