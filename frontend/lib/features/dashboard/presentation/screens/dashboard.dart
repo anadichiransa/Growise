@@ -75,3 +75,79 @@ class _BabyTrackerHomeState extends State<BabyTrackerHome> {
                       ],
                     ),
                   ),
+                  GestureDetector(
+                    onTap: () => Get.toNamed('/notification'),
+                    child: _buildIconButton(Icons.notifications_none),
+                  )
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 30),
+
+            /// ---------------- BODY ----------------
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    /// STATUS SUMMARY CARD
+                    _buildStatusCard(),
+
+                    const SizedBox(height: 24),
+
+                    /// MODULE GRID (The Core Features)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _FeatureCard(
+                            icon: Icons.bar_chart_rounded,
+                            title: "Growth\nMonitoring",
+                            subtitle: "WHO Standards",
+                            onTap: () => Get.toNamed('/growth'),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _FeatureCard(
+                            icon: Icons.vaccines_outlined,
+                            title: "Vaccination\nSchedule",
+                            subtitle: "Due Reminders",
+                            onTap: () => Get.toNamed('/vaccines'),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _FeatureCard(
+                            icon: Icons.restaurant_menu,
+                            title: "Meal Planner",
+                            subtitle: "Nutrition AI",
+                            onTap: () => Get.toNamed('/meals'),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _FeatureCard(
+                            icon: Icons.school_outlined,
+                            title: "Education Hub",
+                            subtitle: "Child Milestones",
+                            onTap: () => Get.toNamed('/education'),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 90),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
