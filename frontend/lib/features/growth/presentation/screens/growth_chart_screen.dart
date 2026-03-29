@@ -24,7 +24,8 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
   late ChildController _childController;
   late TabController _tabController;
 
-  final GrowthController _controller = GrowthController();
+  // Use Get.find() to get the shared instance, or create one if it doesn't exist
+  late GrowthController _controller;
 
   DateTime? _dateOfBirth;
   String? _childId;
@@ -94,6 +95,8 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
   void initState() {
     super.initState();
     _childController = Get.find<ChildController>();
+    // Get the shared GrowthController instance, or put a new one if it doesn't exist
+    _controller = Get.put(GrowthController());
     _tabController = TabController(length: 2, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -159,11 +162,12 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
     });
 
     try {
-      final records = await _controller.loadRecords(_childId!);
-      records.sort((a, b) => b.date.compareTo(a.date));
+      await _controller.loadRecords(_childId!);
+      // Use the controller's growthRecords list directly
       if (!mounted) return;
       setState(() {
-        _records = records;
+        _records = List.from(_controller.growthRecords);
+        _records.sort((a, b) => b.date.compareTo(a.date));
       });
     } catch (_) {
       if (!mounted) return;

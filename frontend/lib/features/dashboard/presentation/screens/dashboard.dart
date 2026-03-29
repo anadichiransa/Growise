@@ -19,8 +19,7 @@ class _BabyTrackerHomeState extends State<BabyTrackerHome> {
       Get.find<ChildController>().loadChildren();
     });
   }
-
-  @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF140824),
@@ -119,8 +118,7 @@ class _BabyTrackerHomeState extends State<BabyTrackerHome> {
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
                     Row(
                       children: [
@@ -302,8 +300,7 @@ class _BabyTrackerHomeState extends State<BabyTrackerHome> {
       child: Icon(icon, color: Colors.white),
     );
   }
-
-  Widget _buildBottomNav() {
+Widget _buildBottomNav() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       color: const Color(0xFF140824),
