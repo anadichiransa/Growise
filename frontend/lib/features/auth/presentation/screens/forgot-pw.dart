@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Handles password reset logic
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
+import 'package:growise/core/config/routes.dart'; // Handles password reset logic
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -50,7 +52,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         // 4. Auto-navigate back to Login after a short delay
         await Future.delayed(const Duration(seconds: 2));
         if (mounted) {
-          Navigator.pop(context);
+          Get.offNamed(AppRoutes.login);
         }
       }
     } on FirebaseAuthException catch (e) {
