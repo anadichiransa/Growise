@@ -208,12 +208,14 @@ class _GrowthChartScreenState extends State<GrowthChartScreen>
   }
 
   Map<int, List<double>> get _weightRef =>
-      _childController.childGender.toLowerCase() == 'boy'
+      _childController.childGender.toLowerCase() == 'boy' ||
+              _childController.childGender.toLowerCase() == 'male'
           ? _weightRefBoys
           : _weightRefGirls;
 
   Map<int, List<double>> get _heightRef =>
-      _childController.childGender.toLowerCase() == 'boy'
+      _childController.childGender.toLowerCase() == 'boy' ||
+              _childController.childGender.toLowerCase() == 'male'
           ? _heightRefBoys
           : _heightRefGirls;
 

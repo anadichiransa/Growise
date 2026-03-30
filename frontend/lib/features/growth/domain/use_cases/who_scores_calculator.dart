@@ -36,8 +36,10 @@ class WhoScoresCalculator {
     required String gender,
     required String childName,
   }) {
-    final weightZ = _calculateWeightForAge(weight, ageInMonths, gender);
-    final heightZ = _calculateHeightForAge(height, ageInMonths, gender);
+    // Normalize gender: accept 'boy'/'girl' (from ChildController) or 'male'/'female'
+    final normalizedGender = _normalizeGender(gender);
+    final weightZ = _calculateWeightForAge(weight, ageInMonths, normalizedGender);
+    final heightZ = _calculateHeightForAge(height, ageInMonths, normalizedGender);
     final category = _categorize(weightZ, heightZ);
     final bmi = _calculateBMI(weight, height);
 
@@ -49,6 +51,15 @@ class WhoScoresCalculator {
       recommendations: _getRecommendations(category),
       bmi: bmi,
     );
+  }
+
+  // ─── Gender normalization ──────────────────────────────────────────────────
+
+  /// Accepts 'male'/'female' OR 'boy'/'girl' (case-insensitive) → 'male'/'female'
+  String _normalizeGender(String gender) {
+    final g = gender.toLowerCase();
+    if (g == 'male' || g == 'boy') return 'male';
+    return 'female';
   }
 
   // ─── Z-score formula ────────────────────────────────────────────────────────

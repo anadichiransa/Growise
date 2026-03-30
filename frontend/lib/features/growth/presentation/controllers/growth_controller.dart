@@ -123,17 +123,6 @@ class GrowthController extends GetxController {
     if (latestRecord == null) {
       return 'No measurements recorded yet. Add your first measurement to start tracking.';
     }
-    // Summary was built by WhoScoresCalculator and stored in the record
-    // Re-generate from category for display (avoids storing long strings in Firestore)
-    final result = _whoCalculator(
-      weight: latestRecord!.weight,
-      height: latestRecord!.height,
-      ageInMonths:
-          0, // not used for summary regeneration — pass stored z-scores instead
-      gender: 'male', // placeholder
-      childName: childName,
-    );
-    // Actually — just return a simple message based on the stored category
     return _summaryFromCategory(latestRecord!.category ?? 'unknown', childName,
         latestRecord!.weightForAgeZ, latestRecord!.heightForAgeZ);
   }
@@ -211,10 +200,9 @@ class GrowthController extends GetxController {
   Future<bool> updateRecord(GrowthRecord record) async {
     try {
       isLoading.value = true;
-      await _repository.deleteRecord(record.id);
-      final saved = await _repository.saveRecord(record);
+      await _repository.updateRecord(record);
       final index = growthRecords.indexWhere((r) => r.id == record.id);
-      if (index != -1) growthRecords[index] = saved;
+      if (index != -1) growthRecords[index] = record;
       return true;
     } catch (e) {
       errorMessage.value = 'Failed to update record: $e';

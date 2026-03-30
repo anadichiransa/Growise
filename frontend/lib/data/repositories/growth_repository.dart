@@ -71,6 +71,10 @@ class GrowthRepository {
     await _firestore.deleteRecord(recordId);
   }
 
+  Future<void> updateRecord(GrowthRecord record) async {
+    await _firestore.updateRecord(record);
+  }
+
   Future<void> _syncRecordToBackend(GrowthRecord record) async {
     try {
       await _api.syncGrowthRecord(record.toJson());

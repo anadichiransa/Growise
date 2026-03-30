@@ -38,6 +38,14 @@ class FirebaseGrowthProvider {
     await _db.collection(_collection).doc(recordId).delete();
   }
 
+  /// Update an existing growth record in-place (preserves the document ID).
+  Future<void> updateRecord(GrowthRecord record) async {
+    await _db
+        .collection(_collection)
+        .doc(record.id)
+        .update(record.toFirestore());
+  }
+
   /// Mark a record as synced to backend.
   Future<void> markSyncedToBackend(String recordId) async {
     await _db
