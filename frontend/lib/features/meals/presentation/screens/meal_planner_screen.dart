@@ -9,41 +9,50 @@ import 'package:growise/core/config/routes.dart';
 class MealPlannerScreen extends StatelessWidget {
   const MealPlannerScreen({super.key});
 
-  static const _bg      = Color(0xFF1A0A2E);
-  static const _card    = Color(0xFF2D1B4E);
-  static const _accent  = Color(0xFFD4A017);
-  static const _purple  = Color(0xFF7C3AED);
-  static const _soft    = Color(0xFF3D2069);
+  static const _bg = Color(0xFF1A0A2E);
+  static const _card = Color(0xFF2D1B4E);
+  static const _accent = Color(0xFFD4A017);
+  static const _purple = Color(0xFF7C3AED);
+  static const _soft = Color(0xFF3D2069);
   static const _textSub = Color(0xFFB39DDB);
-  static const _green   = Color(0xFF4CAF50);
-  static const _red     = Color(0xFFEF5350);
+  static const _green = Color(0xFF4CAF50);
+  static const _red = Color(0xFFEF5350);
 
   static const _foodOptions = [
-    'Rice', 'Chicken', 'Dhal', 'Carrot', 'Banana',
-    'Sweet Potato', 'Pumpkin', 'Fish', 'Egg',
-    'Avocado', 'Papaya', 'Gotukola', 'Breadfruit',
+    'Rice',
+    'Chicken',
+    'Dhal',
+    'Carrot',
+    'Banana',
+    'Sweet Potato',
+    'Pumpkin',
+    'Fish',
+    'Egg',
+    'Avocado',
+    'Papaya',
+    'Gotukola',
+    'Breadfruit',
   ];
 
   static const _prepOptions = [
-    'Boiled', 'Steamed', 'Mashed', 'Pureed', 'Baked', 'Fried',
+    'Boiled',
+    'Steamed',
+    'Mashed',
+    'Pureed',
+    'Baked',
+    'Fried',
   ];
 
   @override
   Widget build(BuildContext context) {
-    final ctrl = Get.put(MealController());
+    final MealController ctrl = Get.put(MealController());
 
     return Scaffold(
       backgroundColor: _bg,
-
-      /// Bottom Navigation
       bottomNavigationBar: const AppBottomNav(currentIndex: 2),
-
-      /// Top bar
       appBar: AppBar(
         backgroundColor: _bg,
         elevation: 0,
-
-        /// SAFE BACK BUTTON
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
@@ -57,7 +66,6 @@ class MealPlannerScreen extends StatelessWidget {
             }
           },
         ),
-
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -81,9 +89,7 @@ class MealPlannerScreen extends StatelessWidget {
             ),
           ],
         ),
-
         centerTitle: true,
-
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 14),
@@ -99,17 +105,13 @@ class MealPlannerScreen extends StatelessWidget {
           ),
         ],
       ),
-
       body: SingleChildScrollView(
         child: Column(
           children: [
-
-            /// HERO SECTION
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
               child: Column(
                 children: [
-
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Container(
@@ -126,10 +128,7 @@ class MealPlannerScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  /// Robot icon
                   Stack(
                     alignment: Alignment.center,
                     children: [
@@ -160,7 +159,6 @@ class MealPlannerScreen extends StatelessWidget {
                           size: 60,
                         ),
                       ),
-
                       Positioned(
                         bottom: 4,
                         right: 4,
@@ -180,9 +178,7 @@ class MealPlannerScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 18),
-
                   const Text(
                     "Hello, I'm your",
                     style: TextStyle(
@@ -190,9 +186,7 @@ class MealPlannerScreen extends StatelessWidget {
                       fontSize: 18,
                     ),
                   ),
-
                   const SizedBox(height: 2),
-
                   const Text(
                     'Nutrition Guide!',
                     style: TextStyle(
@@ -201,9 +195,7 @@ class MealPlannerScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   const SizedBox(height: 8),
-
                   const Text(
                     'Tailoring health advice for Sri Lankan child\n'
                     'development with data-driven precision.',
@@ -214,13 +206,11 @@ class MealPlannerScreen extends StatelessWidget {
                       height: 1.5,
                     ),
                   ),
-
                   const SizedBox(height: 24),
                 ],
               ),
             ),
 
-            /// MAIN CARD
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
@@ -230,17 +220,12 @@ class MealPlannerScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 padding: const EdgeInsets.all(18),
-
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
-                    /// AGE HEADER
                     Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-
                         const Text(
                           'DAILY SUGGESTION',
                           style: TextStyle(
@@ -250,18 +235,15 @@ class MealPlannerScreen extends StatelessWidget {
                             letterSpacing: 1.1,
                           ),
                         ),
-
                         Obx(
                           () => Container(
-                            padding:
-                                const EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 10,
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
                               color: _soft,
-                              borderRadius:
-                                  BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
                               'For Age: ${ctrl.childAge.value} Months+',
@@ -278,38 +260,31 @@ class MealPlannerScreen extends StatelessWidget {
 
                     const SizedBox(height: 8),
 
-                    /// SLIDER
                     Obx(
                       () => SliderTheme(
-                        data: SliderTheme.of(context)
-                            .copyWith(
+                        data: SliderTheme.of(context).copyWith(
                           activeTrackColor: _accent,
                           inactiveTrackColor: _soft,
                           thumbColor: _accent,
-                          overlayColor:
-                              _accent.withOpacity(0.2),
+                          overlayColor: _accent.withOpacity(0.2),
                           trackHeight: 4,
                         ),
-
                         child: Slider(
-                          value:
-                              ctrl.childAge.value.toDouble(),
+                          value: ctrl.childAge.value.toDouble(),
                           min: 6,
                           max: 24,
                           divisions: 18,
-                          label:
-                              '${ctrl.childAge.value} months',
-                          onChanged: (v) =>
-                              ctrl.childAge.value =
-                                  v.round(),
+                          label: '${ctrl.childAge.value} months',
+                          onChanged: (v) {
+                            ctrl.childAge.value = v.round();
+                          },
                         ),
                       ),
                     ),
 
-                    Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                      children: const [
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
                         Text(
                           '6 months',
                           style: TextStyle(
@@ -329,23 +304,19 @@ class MealPlannerScreen extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    /// LIKED FOODS
-                    _Label(
+                    const _Label(
                       'Foods Baby Likes',
                       Icons.favorite_rounded,
                       _green,
                     ),
-
                     const SizedBox(height: 8),
 
                     Obx(
                       () => IngredientSelector(
                         options: _foodOptions,
-                        selectedItems:
-                            ctrl.likedFoods.toList(),
+                        selectedItems: ctrl.likedFoods.toList(),
                         onToggle: ctrl.toggleLiked,
-                        selectedColor:
-                            const Color(0xFF1B4332),
+                        selectedColor: const Color(0xFF1B4332),
                         selectedBorder: _green,
                         selectedText: _green,
                       ),
@@ -353,13 +324,11 @@ class MealPlannerScreen extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    /// DISLIKED FOODS
-                    _Label(
+                    const _Label(
                       'Foods Baby Refuses',
                       Icons.block_rounded,
                       _red,
                     ),
-
                     const SizedBox(height: 4),
 
                     const Text(
@@ -375,12 +344,9 @@ class MealPlannerScreen extends StatelessWidget {
                     Obx(
                       () => IngredientSelector(
                         options: _foodOptions,
-                        selectedItems:
-                            ctrl.dislikedFoods.toList(),
-                        onToggle:
-                            ctrl.toggleDisliked,
-                        selectedColor:
-                            const Color(0xFF3B0A0A),
+                        selectedItems: ctrl.dislikedFoods.toList(),
+                        onToggle: ctrl.toggleDisliked,
+                        selectedColor: const Color(0xFF3B0A0A),
                         selectedBorder: _red,
                         selectedText: _red,
                       ),
@@ -388,24 +354,19 @@ class MealPlannerScreen extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    /// COOKING METHOD
-                    _Label(
+                    const _Label(
                       'Preferred Cooking',
                       Icons.local_fire_department,
                       _accent,
                     ),
-
                     const SizedBox(height: 8),
 
                     Obx(
                       () => IngredientSelector(
                         options: _prepOptions,
-                        selectedItems:
-                            ctrl.prepMethods.toList(),
-                        onToggle:
-                            ctrl.togglePrepMethod,
-                        selectedColor:
-                            const Color(0xFF3B2800),
+                        selectedItems: ctrl.prepMethods.toList(),
+                        onToggle: ctrl.togglePrepMethod,
+                        selectedColor: const Color(0xFF3B2800),
                         selectedBorder: _accent,
                         selectedText: _accent,
                       ),
@@ -413,48 +374,86 @@ class MealPlannerScreen extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    /// GENERATE BUTTON
                     Obx(
                       () => SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed:
-                              ctrl.isLoading.value
-                                  ? null
-                                  : ctrl
-                                      .generateMealPlan,
-
-                          style:
-                              ElevatedButton.styleFrom(
-                            backgroundColor:
-                                _accent,
-                            foregroundColor:
-                                Colors.black,
-                            padding:
-                                const EdgeInsets
-                                    .symmetric(
-                              vertical: 16,
-                            ),
-                            shape:
-                                RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius
-                                      .circular(14),
+                          onPressed: ctrl.isLoading.value
+                              ? null
+                              : () async {
+                                  await ctrl.generateMealPlan();
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _accent,
+                            foregroundColor: Colors.black,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
                             ),
                           ),
-
                           child: ctrl.isLoading.value
-                              ? const CircularProgressIndicator()
+                              ? const SizedBox(
+                                  height: 22,
+                                  width: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    color: Colors.black,
+                                  ),
+                                )
                               : const Text(
                                   'Explore More Meal Ideas',
                                   style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                         ),
                       ),
                     ),
+
+                    const SizedBox(height: 20),
+
+                    Obx(() {
+                      if (ctrl.error.value.isNotEmpty) {
+                        return Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF3B0A0A),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: _red),
+                          ),
+                          child: Text(
+                            ctrl.error.value,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              height: 1.4,
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (ctrl.mealPlan.value != null) {
+                        return RecipeCard(mealPlan: ctrl.mealPlan.value!);
+                      }
+
+                      return Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: _soft,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: const Text(
+                          'Choose the baby preferences and press "Explore More Meal Ideas" to generate a meal plan.',
+                          style: TextStyle(
+                            color: _textSub,
+                            fontSize: 13,
+                            height: 1.4,
+                          ),
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ),
